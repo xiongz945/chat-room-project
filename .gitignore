@@ -1,3 +1,4 @@
+# ---------- Gitignore for backend -------------
 lib-cov
 *.seed
 *.log
@@ -44,3 +45,10 @@ yarn.lock
 *.njsproj
 *.sln
 *.sw?
+
+
+# ---------- Gitignore for frontend -------------
+
+lib
+dist
+node_modules
