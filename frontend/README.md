@@ -3,7 +3,7 @@
 ## Install the dependencies
 
 ```sh
-npm install
+npm install --no-save
 ```
 
 ## Run it
