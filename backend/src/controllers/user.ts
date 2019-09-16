@@ -8,6 +8,7 @@ import { IVerifyOptions } from 'passport-local';
 import { WriteError } from 'mongodb';
 import { check, sanitize, validationResult } from 'express-validator';
 import '../config/passport';
+import { reservedUsernames } from '../config/passport';
 
 /**
  * POST /login
@@ -58,35 +59,25 @@ export const logout = (req: Request, res: Response) => {
  * Create a new local account.
  */
 export const postSignup = (req: Request, res: Response, next: NextFunction) => {
-  check('firstName', 'First name cannot be blank').isLength({ min: 1 });
-  check('lastName', 'Last name cannot be blank').isLength({ min: 1 });
-  check('email', 'Email is not valid').isEmail();
-  check('password', 'Password must be at least 4 characters long').isLength({
-    min: 4,
-  });
-  sanitize('email').normalizeEmail({ gmail_remove_dots: false });
-
   const errors = validationResult(req);
-
+  console.log(errors);
   if (!errors.isEmpty()) {
     return res.status(400).json({ err: errors.array() });
   }
 
   const user = new User({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
+    username: req.body.username,
     password: req.body.password,
   });
 
-  User.findOne({ email: req.body.email }, (err, existingUser) => {
+  User.findOne({ username: req.body.username }, (err, existingUser) => {
     if (err) {
       return next(err);
     }
     if (existingUser) {
       return res
         .status(400)
-        .json({ err: 'Account with that email address already exists.' });
+        .json({ err: 'Account with that username already exists.' });
     }
     user.save((err) => {
       if (err) {
@@ -385,3 +376,15 @@ export const postForgot = (req: Request, res: Response, next: NextFunction) => {
     }
   );
 };
+
+export const emailRule = check('email', 'Email is not valid').isEmail();
+export const usernameRule =
+check('username').isLength({min: 3,}).withMessage(
+    'Usernames must be at least 3 characters long.'
+    ).not().isIn(reservedUsernames).withMessage(
+      'This username is reserved'
+    );
+export const passwordRule =
+  check('password', 'Password must be at least 4 characters long').isLength({
+    min: 4,
+  });
