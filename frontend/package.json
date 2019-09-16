@@ -8,7 +8,8 @@
     "build": "npm run build:types && npm run build:js",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src  --ignore src/assets --out-dir dist --source-maps inline",
-    "serve": "http-server ./src -p 4000"
+    "serve": "http-server ./src -p 4000",
+    "lint": "prettier --write --config ./package.json \"**/*.{ts,js,json,css,scss,html,md,vue,less}\"",
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
@@ -28,5 +29,13 @@
     "fsevents": "^2.0.7",
     "redux": "^4.0.4",
     "vuex": "^3.1.1"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "printWidth": 80,
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "arrowParens": "always"
   }
 }
