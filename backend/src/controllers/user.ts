@@ -48,7 +48,7 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
             return next(err);
           }
           if (!user) {
-            return res.status(400).json({ err: info.message });
+            return res.status(400).json({status: 'invalid password'});
           }
           req.logIn(user, { session: false }, (err) => {
             if (err) {
@@ -59,7 +59,10 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
               password: user.password,
             };
             const token = jwt.sign(plainUserObject, JWT_SECRET);
-            return res.status(200).json({ user: plainUserObject, token });
+            return res.status(200).json({
+              user: plainUserObject, token,
+              status: 'authenticated'
+            });
           });
         }
       )(req, res, next);
@@ -78,11 +81,14 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
               username: user.username
             };
             const token = jwt.sign(plainUserObject, JWT_SECRET);
-            return res.status(200).json({ user: plainUserObject, token });
+            return res.status(200).json({
+              user: plainUserObject, token,
+              status: 'registered'
+            });
           });
         });
       } else {
-        return res.json({confirmed: false});
+        return res.json({status: 'invalid user'});
       }
     }
   });
