@@ -69,11 +69,16 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
           if (err) {
             return next(err);
           }
-          req.logIn(user, (err) => {
+          req.logIn(user, { session: false }, (err) => {
             if (err) {
               return next(err);
             }
-            return res.status(200).json({ user });
+            const plainUserObject = {
+              password: user.password,
+              username: user.username
+            };
+            const token = jwt.sign(plainUserObject, JWT_SECRET);
+            return res.status(200).json({ user: plainUserObject, token });
           });
         });
       } else {
