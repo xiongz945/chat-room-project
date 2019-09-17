@@ -13,8 +13,7 @@ type comparePasswordFunction = (
 ) => void;
 
 export type UserDocument = mongoose.Document & {
-  firstName: string;
-  lastName: string;
+  username: string;
   email: string;
   password: string;
   passwordResetToken: string;
@@ -38,9 +37,8 @@ export type UserDocument = mongoose.Document & {
 
 const userSchema = new mongoose.Schema(
   {
-    firstName: String,
-    lastName: String,
-    email: { type: String, unique: true },
+    username: String,
+    email: { type: String },
     password: String,
     passwordResetToken: String,
     passwordResetExpires: Date,

@@ -2,47 +2,15 @@ import async from 'async';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import passport from 'passport';
+import jwt from 'jsonwebtoken';
 import { User, UserDocument, AuthToken } from '../models/User';
 import { Request, Response, NextFunction } from 'express';
 import { IVerifyOptions } from 'passport-local';
 import { WriteError } from 'mongodb';
 import { check, sanitize, validationResult } from 'express-validator';
+import { JWT_SECRET } from '../config/secrets';
 import '../config/passport';
-
-/**
- * POST /login
- * Sign in using email and password.
- */
-export const postLogin = (req: Request, res: Response, next: NextFunction) => {
-  check('email', 'Email is not valid').isEmail();
-  check('password', 'Password cannot be blank').isLength({ min: 1 });
-  sanitize('email').normalizeEmail({ gmail_remove_dots: false });
-
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    req.flash('errors', errors.array());
-    return res.status(400).json({ err: errors.array() });
-  }
-
-  passport.authenticate(
-    'local',
-    (err: Error, user: UserDocument, info: IVerifyOptions) => {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        return res.status(400).json({ err: info.message });
-      }
-      req.logIn(user, (err) => {
-        if (err) {
-          return next(err);
-        }
-        return res.status(200).json({ user });
-      });
-    }
-  )(req, res, next);
-};
+import reservedUsernames from '../config/reservedUsernames.json';
 
 /**
  * GET /logout
@@ -54,51 +22,82 @@ export const logout = (req: Request, res: Response) => {
 };
 
 /**
- * POST /signup
- * Create a new local account.
+ * POST /login
+ * Login or Create a new local account.
  */
-export const postSignup = (req: Request, res: Response, next: NextFunction) => {
-  check('firstName', 'First name cannot be blank').isLength({ min: 1 });
-  check('lastName', 'Last name cannot be blank').isLength({ min: 1 });
-  check('email', 'Email is not valid').isEmail();
-  check('password', 'Password must be at least 4 characters long').isLength({
-    min: 4,
-  });
-  sanitize('email').normalizeEmail({ gmail_remove_dots: false });
-
+export const postLogin = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
-
   if (!errors.isEmpty()) {
-    return res.status(400).json({ err: errors.array() });
+    const errMsgs: any[] = [];
+    errors.array().forEach(element => {
+      errMsgs.push(element.msg);
+    });
+    return res.status(400).json({ message: errMsgs });
   }
 
   const user = new User({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
+    username: req.body.username,
     password: req.body.password,
   });
 
-  User.findOne({ email: req.body.email }, (err, existingUser) => {
+  User.findOne({ username: req.body.username }, (err, existingUser) => {
     if (err) {
       return next(err);
     }
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ err: 'Account with that email address already exists.' });
-    }
-    user.save((err) => {
-      if (err) {
-        return next(err);
-      }
-      req.logIn(user, (err) => {
-        if (err) {
-          return next(err);
+      passport.authenticate(
+        'local',
+        { session: false },
+        (err: Error, user: UserDocument, info: IVerifyOptions) => {
+          if (err) {
+            return next(err);
+          }
+          if (!user) {
+            return res.status(400).json({ message: ['invalid password'] });
+          }
+          req.logIn(user, { session: false }, (err) => {
+            if (err) {
+              return next(err);
+            }
+            const plainUserObject = {
+              username: user.username,
+              password: user.password,
+            };
+            const token = jwt.sign(plainUserObject, JWT_SECRET);
+            return res.status(200).json({
+              user: plainUserObject,
+              token,
+              message: ['authenticated'],
+            });
+          });
         }
-        return res.status(200).json({ user });
-      });
-    });
+      )(req, res, next);
+    } else {
+      if (req.body.confirm == true) {
+        user.save((err) => {
+          if (err) {
+            return next(err);
+          }
+          req.logIn(user, { session: false }, (err) => {
+            if (err) {
+              return next(err);
+            }
+            const plainUserObject = {
+              password: user.password,
+              username: user.username,
+            };
+            const token = jwt.sign(plainUserObject, JWT_SECRET);
+            return res.status(200).json({
+              user: plainUserObject,
+              token,
+              message: ['registered'],
+            });
+          });
+        });
+      } else {
+        return res.status(400).json({ message: ['non-existing username'] });
+      }
+    }
   });
 };
 
@@ -385,3 +384,16 @@ export const postForgot = (req: Request, res: Response, next: NextFunction) => {
     }
   );
 };
+
+export const usernameRule = check('username')
+  .isLength({ min: 3 })
+  .withMessage('invalid username length')
+  .not()
+  .isIn(reservedUsernames)
+  .withMessage('reserved username');
+export const passwordRule = check(
+  'password',
+  'invalid password length'
+).isLength({
+  min: 4,
+});
