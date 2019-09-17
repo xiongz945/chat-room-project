@@ -5,10 +5,10 @@ import axios from 'axios';
 
 // Send a GET request to URL and return the json from the server.
 export async function get(
-  url: String,
-  params: any = {},
-  headers: any = {},
-  options: any = {}
+  url,
+  params = {},
+  headers = {},
+  options = {}
 ) {
   try {
     const response = await axios({
@@ -53,10 +53,10 @@ export async function get(
 // Send a POST request to URL with json DATA and return the json from the
 // server.
 export async function post(
-  url: String,
-  data: any = {},
-  headers: any = {},
-  options: any = {}
+  url,
+  data = {},
+  headers = {},
+  options = {}
 ) {
   try {
     const response = await axios({
@@ -101,10 +101,10 @@ export async function post(
 // Send a PUT request to URL with json DATA and return the json from the
 // server.
 export async function patch(
-  url: String,
-  data: any = {},
-  headers: any = {},
-  options: any = {}
+  url,
+  data = {},
+  headers = {},
+  options = {}
 ) {
   try {
     const response = await axios({
@@ -147,7 +147,7 @@ export async function patch(
 }
 
 // Send a DELETE request to URL and return the json from the server.
-export async function del(url: String, headers: any = {}, options: any = {}) {
+export async function del(url, headers = {}, options = {}) {
   try {
     const response = await axios({
       method: 'delete',
