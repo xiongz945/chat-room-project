@@ -2,48 +2,14 @@ import async from 'async';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import passport from 'passport';
+import jwt from 'jsonwebtoken';
 import { User, UserDocument, AuthToken } from '../models/User';
 import { Request, Response, NextFunction } from 'express';
 import { IVerifyOptions } from 'passport-local';
 import { WriteError } from 'mongodb';
 import { check, sanitize, validationResult } from 'express-validator';
+import { JWT_SECRET } from '../config/secrets';
 import '../config/passport';
-import { reservedUsernames } from '../config/passport';
-
-/**
- * POST /login
- * Sign in using email and password.
- */
-export const postLogin = (req: Request, res: Response, next: NextFunction) => {
-  check('email', 'Email is not valid').isEmail();
-  check('password', 'Password cannot be blank').isLength({ min: 1 });
-  sanitize('email').normalizeEmail({ gmail_remove_dots: false });
-
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    req.flash('errors', errors.array());
-    return res.status(400).json({ err: errors.array() });
-  }
-
-  passport.authenticate(
-    'local',
-    (err: Error, user: UserDocument, info: IVerifyOptions) => {
-      if (err) {
-        return next(err);
-      }
-      if (!user) {
-        return res.status(400).json({ err: info.message });
-      }
-      req.logIn(user, (err) => {
-        if (err) {
-          return next(err);
-        }
-        return res.status(200).json({ user });
-      });
-    }
-  )(req, res, next);
-};
 
 /**
  * GET /logout
@@ -55,12 +21,11 @@ export const logout = (req: Request, res: Response) => {
 };
 
 /**
- * POST /signup
- * Create a new local account.
+ * POST /login
+ * Login or Create a new local account.
  */
-export const postSignup = (req: Request, res: Response, next: NextFunction) => {
+export const postLogin = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
-  console.log(errors);
   if (!errors.isEmpty()) {
     return res.status(400).json({ err: errors.array() });
   }
@@ -75,21 +40,46 @@ export const postSignup = (req: Request, res: Response, next: NextFunction) => {
       return next(err);
     }
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ err: 'Account with that username already exists.' });
-    }
-    user.save((err) => {
-      if (err) {
-        return next(err);
-      }
-      req.logIn(user, (err) => {
-        if (err) {
-          return next(err);
+      passport.authenticate(
+        'local',
+        { session: false },
+        (err: Error, user: UserDocument, info: IVerifyOptions) => {
+          if (err) {
+            return next(err);
+          }
+          if (!user) {
+            return res.status(400).json({ err: info.message });
+          }
+          req.logIn(user, { session: false }, (err) => {
+            if (err) {
+              return next(err);
+            }
+            const plainUserObject = {
+              username: user.username,
+              password: user.password,
+            };
+            const token = jwt.sign(plainUserObject, JWT_SECRET);
+            return res.status(200).json({ user: plainUserObject, token });
+          });
         }
-        return res.status(200).json({ user });
-      });
-    });
+      )(req, res, next);
+    } else {
+      if (req.body.confirm == true) {
+        user.save((err) => {
+          if (err) {
+            return next(err);
+          }
+          req.logIn(user, (err) => {
+            if (err) {
+              return next(err);
+            }
+            return res.status(200).json({ user });
+          });
+        });
+      } else {
+        return res.json({confirmed: false});
+      }
+    }
   });
 };
 
@@ -377,14 +367,14 @@ export const postForgot = (req: Request, res: Response, next: NextFunction) => {
   );
 };
 
-export const emailRule = check('email', 'Email is not valid').isEmail();
-export const usernameRule =
-check('username').isLength({min: 3,}).withMessage(
-    'Usernames must be at least 3 characters long.'
-    ).not().isIn(reservedUsernames).withMessage(
-      'This username is reserved'
-    );
-export const passwordRule =
-  check('password', 'Password must be at least 4 characters long').isLength({
-    min: 4,
-  });
+// export const emailRule = check('email', 'Email is not valid').isEmail();
+// export const usernameRule =
+// check('username').isLength({min: 3,}).withMessage(
+//     'Usernames must be at least 3 characters long.'
+//     ).not().isIn(reservedUsernames).withMessage(
+//       'This username is reserved'
+//     );
+// export const passwordRule =
+//   check('password', 'Password must be at least 4 characters long').isLength({
+//     min: 4,
+//   });

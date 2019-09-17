@@ -9,9 +9,6 @@ router.post('/login', userController.postLogin);
 router.get('/logout', userController.logout);
 router.post('/forgot', userController.postForgot);
 router.post('/reset/:token', userController.postReset);
-router.post('/signup',
-  [userController.usernameRule, userController.passwordRule],
-  userController.postSignup);
 
 // Get / edit info
 router.post(
