@@ -38,7 +38,7 @@ export type UserDocument = mongoose.Document & {
 const userSchema = new mongoose.Schema(
   {
     username: String,
-    email: { type: String},
+    email: { type: String },
     password: String,
     passwordResetToken: String,
     passwordResetExpires: Date,
