@@ -48,7 +48,7 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
             return next(err);
           }
           if (!user) {
-            return res.status(400).json({status: 'invalid password'});
+            return res.status(400).json({message: 'invalid password'});
           }
           req.logIn(user, { session: false }, (err) => {
             if (err) {
@@ -61,7 +61,7 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
             const token = jwt.sign(plainUserObject, JWT_SECRET);
             return res.status(200).json({
               user: plainUserObject, token,
-              status: 'authenticated'
+              message: 'authenticated'
             });
           });
         }
@@ -83,12 +83,12 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
             const token = jwt.sign(plainUserObject, JWT_SECRET);
             return res.status(200).json({
               user: plainUserObject, token,
-              status: 'registered'
+              message: 'registered'
             });
           });
         });
       } else {
-        return res.json({status: 'invalid user'});
+        return res.json({message: 'invalid user'});
       }
     }
   });
