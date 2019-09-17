@@ -48,7 +48,7 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
             return next(err);
           }
           if (!user) {
-            return res.status(400).json({message: 'invalid password'});
+            return res.json({message: 'invalid password'});
           }
           req.logIn(user, { session: false }, (err) => {
             if (err) {
