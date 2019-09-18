@@ -14,7 +14,7 @@ export type UserDocument = mongoose.Document & {
   passwordResetToken: string;
   passwordResetExpires: Date;
 
-  facebook: string;
+  isFirstLogin: Boolean;
 
   profile: {
     name: string;
@@ -36,6 +36,8 @@ const userSchema = new mongoose.Schema(
     password: String,
     passwordResetToken: String,
     passwordResetExpires: Date,
+
+    isFirstLogin: { type: Boolean, default: true },
 
     profile: {
       name: String,

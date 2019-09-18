@@ -98,5 +98,16 @@ async function validateForm(event) {
   }
 }
 
-let form = document.getElementById('userForm');
-form.addEventListener('submit', validateForm, true);
+let form = document.getElementById("userForm");
+form.addEventListener("submit", validateForm, true);
+
+let acknowledgeBtn = document.getElementById("acknowledgeBtn");
+acknowledgeBtn.onclick = () => {
+    onAcknowledgeBtnClick();
+}
+
+function onAcknowledgeBtnClick() {
+    $('#myModal').modal('hide');
+    // Should return to the home page
+    window.location.replace("http://localhost:4000/");
+}

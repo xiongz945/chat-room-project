@@ -26,4 +26,10 @@ router.delete(
   userController.deleteAccount
 );
 
+router.patch(
+  '/loginTag',
+  passportConfig.isAuthenticated,
+  userController.patchChangeLoginTag
+);
+
 export default router;
