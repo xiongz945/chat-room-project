@@ -11,26 +11,26 @@ router.get('/logout', userController.logout);
 router.post('/forgot', userController.postForgot);
 router.post('/reset/:token', userController.postReset);
 
-// Get / edit info
+// Get account editing info
+router.get(
+  '/profile',
+  passportConfig.isAuthenticated,
+  userController.getProfile
+);
 router.post(
-  '/account/profile',
+  '/profile',
   passportConfig.isAuthenticated,
   userController.postUpdateProfile
 );
 router.post(
-  '/account/password',
+  '/password',
   passportConfig.isAuthenticated,
   userController.postUpdatePassword
 );
 router.post(
-  '/account/delete',
+  '/delete',
   passportConfig.isAuthenticated,
-  userController.postDeleteAccount
-);
-router.get(
-  '/account/unlink/:provider',
-  passportConfig.isAuthenticated,
-  userController.getOauthUnlink
+  userController.deleteAccount
 );
 
 export default router;

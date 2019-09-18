@@ -2,11 +2,6 @@ import bcrypt from 'bcrypt-nodejs';
 import crypto from 'crypto';
 import mongoose from 'mongoose';
 
-export type AuthToken = {
-  accessToken: string;
-  kind: string;
-};
-
 type comparePasswordFunction = (
   candidatePassword: string,
   cb: (err: any, isMatch: any) => {}
@@ -20,7 +15,6 @@ export type UserDocument = mongoose.Document & {
   passwordResetExpires: Date;
 
   facebook: string;
-  tokens: AuthToken[];
 
   profile: {
     name: string;
@@ -42,11 +36,6 @@ const userSchema = new mongoose.Schema(
     password: String,
     passwordResetToken: String,
     passwordResetExpires: Date,
-
-    facebook: String,
-    twitter: String,
-    google: String,
-    tokens: Array,
 
     profile: {
       name: String,
