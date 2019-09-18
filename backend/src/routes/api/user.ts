@@ -37,6 +37,6 @@ router.patch(
   '/loginTag',
   passportConfig.isAuthenticated,
   userController.patchChangeLoginTag
-)
+);
 
 export default router;
