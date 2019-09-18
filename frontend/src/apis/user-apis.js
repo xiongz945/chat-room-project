@@ -1,4 +1,4 @@
-import { get, patch, post } from '../utils/http';
+import { get, patch, post } from '../utils/http.js';
 
 export default {
   // User Login

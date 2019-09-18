@@ -1,6 +1,6 @@
-import { API_ROOT } from '../config';
+import { API_ROOT } from '../config.js';
 
-import axios from 'axios';
+//import axios from 'axios';
 // import store from '@/store/index';
 
 // Send a GET request to URL and return the json from the server.
