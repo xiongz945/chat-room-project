@@ -1,11 +1,34 @@
 import { SHA256 } from '../../utils/hash.js';
 import userApis from '../../apis/user-apis.js';
 
+function cleanTextBox(username, password) {
+  username.value = '';
+  password.value = '';
+}
+
+function resetHelpMessages(usernameMessage, passwordMessage) {
+  usernameMessage.innerHTML = '';
+  passwordMessage.innerHTML = '';
+}
+
+function cleanTextBoxAndShowHelpMessage(
+  username,
+  password,
+  helpMessage,
+  content
+) {
+  cleanTextBox(username, password);
+  helpMessage.innerHTML = content;
+}
+
 async function validateForm(event) {
   event.preventDefault();
 
-  const username = document.getElementById('username');
-  const password = document.getElementById('password');
+  let username = document.getElementById('username');
+  let password = document.getElementById('password');
+  let usernameMessage = document.getElementById('usernameMessage');
+  let passwordMessage = document.getElementById('passwordMessage');
+  resetHelpMessages(usernameMessage, passwordMessage);
 
   const passwordHash = SHA256(password.value);
   let data = {
@@ -14,57 +37,77 @@ async function validateForm(event) {
   };
 
   let response = await userApis.login(data);
-  let message = response['data']['message'];
+  let message = response['data']['message'][0];
 
-  if (message == 'authenticated') {
-    // Log into the system and then do nothing.
-    window.location.replace('http://localhost:4000/');
-    return;
-  }
+  switch (message) {
+    case 'invalid username length':
+      cleanTextBoxAndShowHelpMessage(
+        username,
+        password,
+        usernameMessage,
+        'Please lengthen this text to 3 characters or more.'
+      );
+      break;
+    case 'invalid password length':
+      cleanTextBoxAndShowHelpMessage(
+        username,
+        password,
+        passwordMessage,
+        'Please lengthen this text to 4 characters or more.'
+      );
+      break;
+    case 'reserved username':
+      cleanTextBoxAndShowHelpMessage(
+        username,
+        password,
+        usernameMessage,
+        'This username is reserved. Please change it.'
+      );
+      break;
+    case 'invalid password':
+      cleanTextBoxAndShowHelpMessage(
+        username,
+        password,
+        passwordMessage,
+        'This password is wrong. Please correct it.'
+      );
+      break;
+    case 'non-existing username': {
+      const intended = confirm('Do you want to create a new account?');
+      if (!intended) {
+        cleanTextBox(username, password);
+        break;
+      }
 
-  if (message === 'invalid password') {
-    // Pop an alert message and reset the input text boxes.
-    alert('Oops! Invalid password...');
-    username.value = '';
-    password.value = '';
-    return;
-  }
+      data['confirm'] = true;
+      response = await userApis.login(data);
+      message = response['data']['message'][0];
 
-  // The case that the username is not existing.
-  const intended = confirm('Do you want to create a new account?');
-  if (!intended) {
-    // Reset the input text boxes.
-    username.value = '';
-    password.value = '';
-    return;
-  }
-
-  // Notify the backend to create a new account.
-  data['confirm'] = true;
-  response = await userApis.login(data);
-  message = response['data']['message'];
-
-  if (message === 'registered') {
-    // Show the welcome message.
-    $('#myModal').modal('show');
-  } else {
-    // Reset the input text boxes.
-    alert('Oops! Unexpected result...');
-    username.value = '';
-    password.value = '';
+      if (message === 'registered') {
+        console.log(response);
+        $('#myModal').modal('show');
+      } else {
+        alert('Oops! Unexpected result...');
+        cleanTextBox(username, password);
+      }
+      break;
+    }
+    case 'authenticated':
+      window.location.replace('http://localhost:4000/');
+      break;
   }
 }
 
-let form = document.getElementById("userForm");
-form.addEventListener("submit", validateForm, true);
+let form = document.getElementById('userForm');
+form.addEventListener('submit', validateForm, true);
 
-let acknowledgeBtn = document.getElementById("acknowledgeBtn");
+let acknowledgeBtn = document.getElementById('acknowledgeBtn');
 acknowledgeBtn.onclick = () => {
-    onAcknowledgeBtnClick();
-}
+  onAcknowledgeBtnClick();
+};
 
 function onAcknowledgeBtnClick() {
-    $('#myModal').modal('hide');
-    // Should return to the home page
-    window.location.replace("http://localhost:4000/");
+  $('#myModal').modal('hide');
+  // Should return to the home page
+  window.location.replace('http://localhost:4000/');
 }

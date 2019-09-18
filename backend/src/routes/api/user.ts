@@ -29,7 +29,7 @@ router.delete(
 router.patch(
   '/loginTag',
   passportConfig.isAuthenticated,
-  userController.patchChangeLoginTag
+  //userController.patchChangeLoginTag
 );
 
 export default router;
