@@ -1,60 +1,110 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
 
-    <title>Login</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="/assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
+  <title>Login</title>
 
-    <link href="/assets/css/animate.css" rel="stylesheet" />
-    <link href="/assets/css/style.css" rel="stylesheet" />
-    <link href="./login.css" rel="stylesheet" />
-  </head>
+  <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/font-awesome/css/font-awesome.css" rel="stylesheet">
 
-  <body class="gray-bg">
-    <div class="loginColumns animated fadeInDown">
-      <div class="row">
-        <div class="col-md-6 col-centered">
-          <div class="ibox-content">
-            <form class="m-t" id="userForm" action="index.html" role="form">
-              <div class="form-group">
-                <input
-                  type="text"
-                  id="username"
-                  class="form-control"
-                  placeholder="Username"
-                  required=""
-                  required
-                  minlength="3"
-                />
-              </div>
-              <div class="form-group">
-                <input
-                  type="text"
-                  id="password"
-                  class="form-control"
-                  placeholder="Password"
-                  required=""
-                  required
-                  minlength="4"
-                />
-              </div>
-              <button
-                type="submit"
-                class="btn btn-primary block full-width m-b"
-              >
-                Login
-              </button>
-            </form>
-          </div>
+  <link href="/assets/css/animate.css" rel="stylesheet">
+  <link href="/assets/css/style.css" rel="stylesheet">
+  <link href="./login.css" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+
+  <div class="loginColumns animated fadeInDown">
+    <div class="row">
+      <div class="col-md-6 col-centered">
+        <div class="ibox-content">
+          <form class="m-t" id="userForm" action="index.html" role="form"">
+            <div class="form-group">
+              <input type="text" id="username" class="form-control" placeholder="Username" required="" required minlength="3">
+            </div>
+            <div class="form-group">
+              <input type="text" id="password" class="form-control" placeholder="Password" required="" required minlength="4">
+            </div>
+            <button type="submit" class="btn btn-primary block full-width m-b" id="loginBtn">Login</button>
+          </form>
         </div>
       </div>
     </div>
+  </div>
 
+    <div class="modal inmodal fade" id="myModal" tabindex="-1" role="dialog"  aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Welcome to ESN!</h4>
+                    <small class="font-bold">Please read through the following information before you proceed.</small>
+                </div>
+                <div class="modal-body">
+                    <p>You will able to share your status in the ESN. The categories of status are the following:</p>
+                    <p><table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Status</th>
+                            <th scope="col">Explanation</th>
+                            <th scope="col">Color Code</th>
+                            <th scope="col">Possible Icon</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">OK</th>
+                            <td>I am OK: I do not need help.</td>
+                            <td>Green</td>
+                            <td><img src="../../assets/img/green.jpg"</img></td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Help</th>
+                            <td>I need help, but this is not a life threatening emergency.</td>
+                            <td>Yellow</td>
+                            <td><img src="../../assets/img/yellow.jpg"</img></td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Emergency</th>
+                            <td>I need help now: this is a life threatening emergency!</td>
+                            <td>Red</td>
+                            <td><img src="../../assets/img/red.jpg"</img></td>
+                          </tr>
+                          <tr>
+                            <th scope="row">Undefined</th>
+                            <td>The user has not proved any status info.</td>
+                            <td>N/A</td>
+                            <td></td>
+                          </tr>
+                        </tbody>
+                      </table></p>
+                    <p>Please <strong>acknowledge</strong> if you have read the above information and understood the corresponding explanations. </p>
+                </div>
+
+                <div class="modal-footer">
+                    <!-- <button type="button" class="btn btn-white" data-dismiss="modal">Close</button> -->
+                    <button type="button" class="btn btn-primary" id="acknowledgeBtn">Acknowledge</button>
+                </div>
+            </div>
+        </div>
+    </div>
+                                          
+    <!-- Mainly scripts -->
+    <script src="../../assets/LESS/js/jquery-3.1.1.min.js"></script>
+    <script src="../../assets/LESS/js/popper.min.js"></script>
+    <script src="../../assets/LESS/js/bootstrap.js"></script>
+    <script src="../../assets/LESS/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="../../assets/LESS/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="../../assets/LESS/js/inspinia.js"></script>
+    <script src="../../assets/LESS/js/plugins/pace/pace.min.js"></script>    
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script type="module" src="./login.js"></script>
-  </body>
+    <script type="module" src="./login.js"></script>                                                                                                                      
+</body>
+
+
 </html>

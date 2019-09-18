@@ -25,4 +25,10 @@ export default {
     const res = await post('/user/password', data);
     return res;
   },
+
+  // Update User Login Status
+  async updateLoginStatus() {
+    const res = await patch('/users/loginTag');
+    return res;
+  },
 };
