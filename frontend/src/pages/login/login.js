@@ -47,7 +47,7 @@ async function validateForm(event) {
 
   if (message == "registered") {
     // Show the welcome message.
-
+    $('#myModal').modal('show');
   } else {
     // Reset the input text boxes.
     alert("Oops! Unexpected result...");
@@ -60,29 +60,13 @@ async function validateForm(event) {
 let form = document.getElementById("userForm");
 form.addEventListener("submit", validateForm, true);
 
-
-// Login logics goes here
-// Got user instance 
-async function showAcknowlege() {
-    const res = await userApis.login();
-    // user.isFirstLogin  == True
-    // trigger Modal window
-    if (res.user.isFirstLogin) {
-        $('#myModal').modal();
-    }
-    
+let acknowledgeBtn = document.getElementById("acknowledgeBtn");
+acknowledgeBtn.onclick = () => {
+    onAcknowledgeBtnClick();
 }
 
-
-// if user clicked acknowledge button 
-
-async function changeUserLoginStatus() {
-   const res = await userApis.updateLoginStatus();
-   if (res.status === 200) {
-        // Redirect to chatroom page
-        res.redirect("/chatroom");
-   } else {
-       // show user the error msg
-
-   }
+function onAcknowledgeBtnClick() {
+    $('#myModal').modal('hide');
+    // Should return to the home page
+    window.location.replace("http://localhost:4000/");
 }
