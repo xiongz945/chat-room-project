@@ -4,12 +4,7 @@ import { API_ROOT } from '../config.js';
 // import store from '@/store/index';
 
 // Send a GET request to URL and return the json from the server.
-export async function get(
-  url,
-  params = {},
-  headers = {},
-  options = {}
-) {
+export async function get(url, params = {}, headers = {}, options = {}) {
   try {
     const response = await axios({
       method: 'get',
@@ -52,12 +47,7 @@ export async function get(
 
 // Send a POST request to URL with json DATA and return the json from the
 // server.
-export async function post(
-  url,
-  data = {},
-  headers = {},
-  options = {}
-) {
+export async function post(url, data = {}, headers = {}, options = {}) {
   try {
     const response = await axios({
       method: 'post',
@@ -100,12 +90,7 @@ export async function post(
 
 // Send a PUT request to URL with json DATA and return the json from the
 // server.
-export async function patch(
-  url,
-  data = {},
-  headers = {},
-  options = {}
-) {
+export async function patch(url, data = {}, headers = {}, options = {}) {
   try {
     const response = await axios({
       method: 'patch',

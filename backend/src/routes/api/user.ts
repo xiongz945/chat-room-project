@@ -4,33 +4,26 @@ import * as passportConfig from '../../config/passport';
 
 const router = express.Router();
 
-// User login
-router.post('/login', userController.postLogin);
-router.get('/logout', userController.logout);
-router.post('/forgot', userController.postForgot);
-router.post('/reset/:token', userController.postReset);
-router.post('/signup', userController.postSignup);
-
-// Get / edit info
-router.post(
-  '/account/profile',
-  passportConfig.isAuthenticated,
-  userController.postUpdateProfile
-);
-router.post(
-  '/account/password',
-  passportConfig.isAuthenticated,
-  userController.postUpdatePassword
-);
-router.post(
-  '/account/delete',
-  passportConfig.isAuthenticated,
-  userController.postDeleteAccount
-);
+// Get account editing info
 router.get(
-  '/account/unlink/:provider',
+  '/profile',
   passportConfig.isAuthenticated,
-  userController.getOauthUnlink
+  userController.getProfile
+);
+router.patch(
+  '/profile',
+  passportConfig.isAuthenticated,
+  userController.patchUpdateProfile
+);
+router.patch(
+  '/password',
+  passportConfig.isAuthenticated,
+  userController.patchUpdatePassword
+);
+router.delete(
+  '/delete',
+  passportConfig.isAuthenticated,
+  userController.deleteAccount
 );
 
 router.patch(

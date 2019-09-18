@@ -7,7 +7,6 @@ import user from './modules/user';
 
 Vue.use(Vuex);
 
-
 const vuexPersist = new VuexPersistence({
   key: 'livechat',
   storage: localStorage,
