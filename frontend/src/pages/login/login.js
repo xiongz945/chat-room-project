@@ -1,5 +1,6 @@
 import { SHA256 } from '../../utils/hash.js';
 import userApis from '../../apis/user-apis.js';
+import route from '../../router.js';
 
 function cleanTextBox(username, password) {
   username.value = '';
@@ -31,7 +32,7 @@ async function validateForm(event) {
   resetHelpMessages(usernameMessage, passwordMessage);
 
   const passwordHash = SHA256(password.value);
-  let data = {
+  const data = {
     username: username.value,
     password: passwordHash,
   };
@@ -73,27 +74,49 @@ async function validateForm(event) {
       );
       break;
     case 'non-existing username': {
-      const intended = confirm('Do you want to create a new account?');
-      if (!intended) {
-        cleanTextBox(username, password);
-        break;
-      }
+      swal(
+        {
+          title: "We didn't recongize this username",
+          text: 'Do you want to create a new account?',
+          type: 'info',
+          showCancelButton: true,
+          confirmButtonColor: '#1ab394',
+          confirmButtonText: 'Yes, create it!',
+          closeOnConfirm: true,
+          closeOnCancel: true,
+        },
+        async function(isConfirm) {
+          if (isConfirm) {
+            data['confirm'] = true;
+            response = await userApis.login(data);
+            message = response['data']['message'][0];
 
-      data['confirm'] = true;
-      response = await userApis.login(data);
-      message = response['data']['message'][0];
-
-      if (message === 'registered') {
-        console.log(response);
-        $('#myModal').modal('show');
-      } else {
-        alert('Oops! Unexpected result...');
-        cleanTextBox(username, password);
-      }
+            if (message === 'registered') {
+              // User dadta returned
+              console.log(response);
+              $('#myModal').modal('show');
+            } else {
+              swal({
+                title: '',
+                text: 'Oops! Unexpected result...',
+                type: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#DD6B55',
+                confirmButtonText: 'Ok',
+                closeOnConfirm: true,
+              });
+              cleanTextBox(username, password);
+            }
+          } else {
+            cleanTextBox(username, password);
+            swal('Cancelled', 'No new user created.', 'warning');
+          }
+        }
+      );
       break;
     }
     case 'authenticated':
-      window.location.replace('http://localhost:4000/');
+      route('chatroom');
       break;
   }
 }
@@ -109,5 +132,5 @@ acknowledgeBtn.onclick = () => {
 function onAcknowledgeBtnClick() {
   $('#myModal').modal('hide');
   // Should return to the home page
-  window.location.replace('http://localhost:4000/');
+  route('chatroom');
 }
