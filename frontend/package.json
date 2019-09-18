@@ -9,7 +9,7 @@
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src  --ignore src/assets --out-dir dist --source-maps inline",
     "serve": "http-server ./src -p 4000",
-    "lint": "prettier --write --config ./package.json \"**/*.{ts,js,json,css,scss,html,md,vue,less}\"",
+    "lint": "prettier --write --config ./package.json \"**/*.{ts,js,json,css,scss,html,md,vue,less}\""
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
