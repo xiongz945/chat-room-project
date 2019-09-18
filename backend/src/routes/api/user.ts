@@ -1,15 +1,8 @@
 import express from 'express';
 import * as userController from '../../controllers/user';
 import * as passportConfig from '../../config/passport';
-import { usernameRule, passwordRule } from '../../controllers/user';
 
 const router = express.Router();
-
-// User login
-router.post('/login', [usernameRule, passwordRule], userController.postLogin);
-router.get('/logout', userController.logout);
-router.post('/forgot', userController.postForgot);
-router.post('/reset/:token', userController.postReset);
 
 // Get account editing info
 router.get(
@@ -17,17 +10,17 @@ router.get(
   passportConfig.isAuthenticated,
   userController.getProfile
 );
-router.post(
+router.patch(
   '/profile',
   passportConfig.isAuthenticated,
-  userController.postUpdateProfile
+  userController.patchUpdateProfile
 );
-router.post(
+router.patch(
   '/password',
   passportConfig.isAuthenticated,
-  userController.postUpdatePassword
+  userController.patchUpdatePassword
 );
-router.post(
+router.delete(
   '/delete',
   passportConfig.isAuthenticated,
   userController.deleteAccount
