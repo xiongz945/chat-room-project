@@ -33,4 +33,10 @@ router.get(
   userController.getOauthUnlink
 );
 
+router.patch(
+  '/loginTag',
+  passportConfig.isAuthenticated,
+  userController.patchChangeLoginTag
+)
+
 export default router;

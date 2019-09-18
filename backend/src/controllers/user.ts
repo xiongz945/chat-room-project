@@ -385,3 +385,26 @@ export const postForgot = (req: Request, res: Response, next: NextFunction) => {
     }
   );
 };
+
+/**
+ * PATCH /loginTag
+ * Update profile information.
+ */
+export const patchChangeLoginTag = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  User.findById(req.user.id, (err, user: UserDocument) => {
+    if (err) {
+      return next(err);
+    }
+    user.isFirstLogin = false;
+    user.save((err: WriteError) => {
+      if (err) {
+        return next(err);
+      }
+      return res.status(200);
+    });
+  });
+};

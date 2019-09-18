@@ -59,3 +59,30 @@ async function validateForm(event) {
 
 let form = document.getElementById("userForm");
 form.addEventListener("submit", validateForm, true);
+
+
+// Login logics goes here
+// Got user instance 
+async function showAcknowlege() {
+    const res = await userApis.login();
+    // user.isFirstLogin  == True
+    // trigger Modal window
+    if (res.user.isFirstLogin) {
+        $('#myModal').modal();
+    }
+    
+}
+
+
+// if user clicked acknowledge button 
+
+async function changeUserLoginStatus() {
+   const res = await userApis.updateLoginStatus();
+   if (res.status === 200) {
+        // Redirect to chatroom page
+        res.redirect("/chatroom");
+   } else {
+       // show user the error msg
+
+   }
+}
