@@ -1,6 +1,7 @@
 import { SHA256 } from '../../utils/hash.js';
 import userApis from '../../apis/user-apis.js';
 import route from '../../router.js';
+import userStore from '../../store/user.js';
 
 function cleanTextBox(username, password) {
   username.value = '';
@@ -93,8 +94,8 @@ async function validateForm(event) {
 
             if (message === 'registered') {
               // User dadta returned
-              console.log(response);
               $('#myModal').modal('show');
+              userStore.userActions.loginUser(response.data);
             } else {
               swal({
                 title: '',
@@ -116,6 +117,7 @@ async function validateForm(event) {
       break;
     }
     case 'authenticated':
+      userStore.userActions.loginUser(response.data);
       route('chatroom');
       break;
   }
