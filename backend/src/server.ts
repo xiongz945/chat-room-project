@@ -27,19 +27,8 @@ export default server;
  * Attach Socket to Server
  */
 export const io = socket(server);
-// Add log for io connection
+
+// // Add log for io connection
 io.on('connection', function(socket) {
   console.log(`SOCKET CONNECTED: ${socket.id}`);
-  socket.on('SEND_MESSAGE', function(data) {
-    const message = new Message({
-      senderName: data.senderName,
-      senderId: data.senderId,
-      reciverId: data.reciverId,
-      content: data.content,
-      created: Date.now(),
-    });
-    message.save();
-
-    io.emit('RECEIVE_MESSAGE', data);
-  });
 });
