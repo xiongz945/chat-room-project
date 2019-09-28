@@ -28,7 +28,7 @@ router.delete(
 
 router.patch(
   '/loginTag',
-  passportConfig.isAuthenticated,
+  passportConfig.isAuthenticated
   //userController.patchChangeLoginTag
 );
 
