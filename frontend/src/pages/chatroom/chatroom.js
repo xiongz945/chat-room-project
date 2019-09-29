@@ -140,5 +140,7 @@ function updateMessageBoard(data) {
   message.appendChild(messageContent);
   chatMessage.appendChild(message);
 
-  document.getElementById('message-board').appendChild(chatMessage);
+  const board = document.getElementById('message-board');
+  board.appendChild(chatMessage);
+  board.scrollTop = board.scrollHeight;
 }
