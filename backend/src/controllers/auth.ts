@@ -63,10 +63,15 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
               password: user.password,
             };
             const token = jwt.sign(plainUserObject, JWT_SECRET);
-            return res.status(200).json({
-              user: plainUserObject,
-              token,
-              message: ['authenticated'],
+            user.updateOne({ status: 'logged in' }, (err, raw) => {
+              if (err) {
+                return next(err);
+              }
+              return res.status(200).json({
+                user: plainUserObject,
+                token,
+                message: ['authenticated'],
+              });
             });
           });
         }
@@ -91,10 +96,15 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
               password: user.password,
             };
             const token = jwt.sign(plainUserObject, JWT_SECRET);
-            return res.status(200).json({
-              user: plainUserObject,
-              token,
-              message: ['registered'],
+            user.update({ status: 'logged in' }, (err, raw) => {
+              if (err) {
+                return next(err);
+              }
+              return res.status(200).json({
+                user: plainUserObject,
+                token,
+                message: ['registered'],
+              });
             });
           });
         });
@@ -110,6 +120,15 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
  * Log out.
  */
 export const logout = (req: Request, res: Response) => {
-  req.logout();
-  return res.status(200);
+  User.updateOne(
+    { username: req.user.username },
+    { status: 'logged out' },
+    (err, raw) => {
+      if (err) {
+        return res.status(500).json('logout failed');
+      }
+      req.logout();
+      return res.status(200).json('logout success');
+    }
+  );
 };
