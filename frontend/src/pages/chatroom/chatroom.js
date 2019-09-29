@@ -8,56 +8,118 @@ import router from '../../router.js';
 
 // Set up Socket
 const socket = io(API_ROOT);
-socket.on('connect', function(){
-    console.log('Socket connected')
+socket.on('connect', function() {
+  console.log('Socket connected');
 });
 
-socket.on('PULL_NEW_MESSAGE', function(id){
-    console.log(id)
-    recievePublicMessage();
+socket.on('PULL_NEW_MESSAGE', function(id) {
+  console.log(id);
+  recievePublicMessage();
 });
 
-socket.on('disconnect', function(){
-    console.log('Socket disconnected')
+socket.on('disconnect', function() {
+  console.log('Socket disconnected');
 });
 
 // UI change based on user login status
 if (userStore.userGetters.isLogin) {
-    document.getElementById('join-community-button').style.display = 'none';
-    document.getElementById('welcome-message').innerText = `Welcome, ${userStore.userGetters.user().username}!`;
-    document.getElementById('logout-button').style.display = 'block';
+  document.getElementById('join-community-button').style.display = 'none';
+  document.getElementById('welcome-message').innerText = `Welcome, ${
+    userStore.userGetters.user().username
+  }!`;
+  document.getElementById('logout-button').style.display = 'block';
 }
 
 // Bind event listener
 document.getElementById('logout-button').onclick = () => {
-    userStore.userActions.logoutUser();
-    router('login');
-}
+  userStore.userActions.logoutUser();
+  router('login');
+};
 
-
-document.querySelector('#message').addEventListener('keypress', function (e) {
-    const key = e.which || e.keyCode;
-    if (key === 13) { // 13 is enter
-       sendPublicMessage();
-    }
+document.querySelector('#message').addEventListener('keypress', function(e) {
+  const key = e.which || e.keyCode;
+  if (key === 13) {
+    // 13 is enter
+    sendPublicMessage();
+    cleanTextArea();
+  }
 });
 
+// Load history messages
+receivePublicHistoryMessage();
+
 // Function definations
-async function sendPublicMessage(){
-    const newMessage = {
-        senderName: userStore.userGetters.user().username,
-        senderId: userStore.userGetters.user().id,
-        message: document.querySelector('#message').value,
-    };
-    try {
-        await messageApis.postPublicMessage(newMessage)
-    } catch(e) {
-        console.log(e)
-    }
+async function receivePublicHistoryMessage() {
 
+  // TODO: Decide the number of messages to be loaded.
+  const query = {
+    start: 0,
+    end: 10
+  };
+
+  const response = await messageApis.getPublicHistoryMessage(query);
+  const messages = response['data']['messages'];
+  for (let i = messages.length - 1; i >= 0 ; --i) {
+    updateMessageBoard(messages[i]);
+  }
 }
 
-function recievePublicMessage(){
+async function sendPublicMessage() {
+  const newMessage = {
+    senderName: userStore.userGetters.user().username,
+    senderId: userStore.userGetters.user().id,
+    message: document.querySelector('#message').value,
+  };
+  try {
+    await messageApis.postPublicMessage(newMessage);
+  } catch (e) {
+    console.log(e);
+  }
 }
 
+function recievePublicMessage() {}
 
+function updateMessageBoard(data) {
+  const chatMessage = document.createElement('div');
+  if (userStore.userGetters.user().username == data['senderName']) {
+    chatMessage.className = 'chat-message right';
+  } else {
+    chatMessage.className = 'chat-message left';
+  }
+
+  const messageAvatar = document.createElement('img');
+  messageAvatar.className = 'message-avatar';
+  messageAvatar.src = '/assets/img/avatar-default-icon.png';
+  messageAvatar.alt = '';
+  chatMessage.appendChild(messageAvatar);
+
+  const message = document.createElement('div');
+  message.className = 'message';
+
+  const messageAuthor = document.createElement('a');
+  messageAuthor.className = 'message-author';
+  messageAuthor.innerText = data['senderName'];
+  messageAuthor.href = '#';
+
+  const messageDate = document.createElement('span');
+  messageDate.className = 'message-date';
+  messageDate.innerHTML = data['createdAt'];
+  // Mon Jan 26 2015 - 18:39:23
+  // dateFormat(now, "dddd, mmmm dS, yyyy, h:MM:ss TT");
+
+  const messageContent = document.createElement('span');
+  messageContent.className = 'message-content';
+  messageContent.innerText = data['content'];
+
+  message.appendChild(messageAuthor);
+  message.appendChild(messageDate);
+  message.appendChild(messageContent);
+  chatMessage.appendChild(message);
+
+  document.getElementById('message-board').appendChild(chatMessage);
+}
+
+function cleanTextArea() {
+  document.querySelector('#message').value = '';
+  // TODO: Remove the new-line effect.
+}
