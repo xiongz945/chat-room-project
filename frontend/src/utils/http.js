@@ -1,4 +1,5 @@
 import { API_ROOT } from '../config.js';
+import userStore from '../store/user.js';
 
 //import axios from 'axios';
 // import store from '@/store/index';
@@ -11,7 +12,7 @@ export async function get(url, params = {}, headers = {}, options = {}) {
       url: `${API_ROOT}${url}`,
       params,
       headers: {
-        // Authorization: `JWT ${store.getters.userToken}`,
+        Authorization: `Bearer ${userStore.userGetters.userJWT()}`,
         ...headers,
       },
       ...options,
@@ -54,7 +55,7 @@ export async function post(url, data = {}, headers = {}, options = {}) {
       url: `${API_ROOT}${url}`,
       data,
       headers: {
-        // Authorization: `JWT ${store.getters.userToken}`,
+        Authorization: `Bearer ${userStore.userGetters.userJWT()}`,
         ...headers,
       },
       ...options,
@@ -97,7 +98,7 @@ export async function patch(url, data = {}, headers = {}, options = {}) {
       url: `${API_ROOT}${url}`,
       data,
       headers: {
-        // Authorization: `JWT ${store.getters.userToken}`,
+        Authorization: `Bearer ${userStore.userGetters.userJWT()}`,
         ...headers,
       },
       ...options,
@@ -138,7 +139,7 @@ export async function del(url, headers = {}, options = {}) {
       method: 'delete',
       url: `${API_ROOT}${url}`,
       headers: {
-        // Authorization: `JWT ${store.getters.userToken}`,
+        Authorization: `Bearer ${userStore.userGetters.userJWT()}`,
         ...headers,
       },
       ...options,

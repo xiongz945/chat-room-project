@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>INSPINIA | Chat view</title>
+    <title>ESN | Public Chatroom</title>
 
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
     <link href="/assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
@@ -71,8 +71,11 @@
               class="nav navbar-top-links navbar-right"
               style="padding-right: 15px"
             >
-              <li>
-                <a href="/pages/login/login.html">
+            <li id="welcome-message" style="padding-right: 15px">
+              Welcome! 
+            </li>
+              <li id="logout-button" style="display:none">
+                <a>
                   <i class="fa fa-sign-out"></i> Log out
                 </a>
               </li>
@@ -81,17 +84,22 @@
         </div>
         <div class="row wrapper white-bg page-heading">
           <div class="col-lg-12">
-          <a style="margin-top: 20px" class="pull-right btn btn-primary" href="/pages/login/login.html">Join Community</a>
-          <h2>Public Chatroom</h2> 
+            <a
+              id="join-community-button"
+              style="margin-top: 20px; display: block"
+              class="pull-right btn btn-primary"
+              href="/pages/login/login.html"
+              >Join Community</a
+            >
+            <h2>Public Chatroom</h2>
           </div>
         </div>
 
         <div class="wrapper wrapper-content animated fadeInRight">
-        
           <div class="row">
             <div class="col-lg-12">
-                <div class="alert alert-warning">
-                  <strong>Annoucement: </strong> This is a sample annoucement.
+              <div class="alert alert-warning">
+                <strong>Annoucement: </strong> This is a sample annoucement.
               </div>
             </div>
           </div>
@@ -315,6 +323,7 @@
                           <textarea
                             class="form-control message-input"
                             name="message"
+                            id="message"
                             placeholder="Enter message text"
                           ></textarea>
                         </div>
@@ -327,8 +336,8 @@
           </div>
         </div>
         <div class="footer">
-          <div class="float-right">10GB of <strong>250GB</strong> Free.</div>
-          <div><strong>Copyright</strong> Example Company &copy; 2014-2018</div>
+          <div class="float-right">FSE @ <strong>CMU-SV</strong></div>
+          <div><strong>Copyright</strong> Team SA3 &copy; 2019</div>
         </div>
       </div>
     </div>
@@ -344,6 +353,13 @@
     <script src="/assets/js/inspinia.js"></script>
     <script src="/assets/js/plugins/pace/pace.min.js"></script>
 
-    <script src="/assets/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="/assets/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>\
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
+    <!-- Socket.io -->
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+ 
+    <script type="module" src="./chatroom.js"></script>
+    
   </body>
 </html>
