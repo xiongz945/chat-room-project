@@ -62,8 +62,8 @@ async function receivePublicHistoryMessage() {
   try {
     const response = await messageApis.getPublicHistoryMessage(query);
     const messages = response['data']['messages'];
-    for (const message in messages) {
-      updateMessageBoard(message);
+    for (const index in messages) {
+      updateMessageBoard(messages[index]);
     }
 
     clockStore.clockActions.uupdateClock(Date.now());
@@ -94,8 +94,8 @@ async function recievePublicMessage() {
   try {
     const response = await messageApis.getPublicMessage(query);
     const messages = response['data']['messages'];
-    for (const message in messages) {
-      updateMessageBoard(message);
+    for (const index in messages) {
+      updateMessageBoard(messages[index]);
     }
 
     clockStore.clockActions.uupdateClock(Date.now());
