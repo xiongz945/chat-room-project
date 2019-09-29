@@ -53,17 +53,16 @@ receivePublicHistoryMessage();
 
 // Function definations
 async function receivePublicHistoryMessage() {
-
   // FIXME: Decide the number of messages to be loaded.
   const query = {
     start: 0,
-    end: 10
+    end: 10,
   };
 
   try {
     const response = await messageApis.getPublicHistoryMessage(query);
     const messages = response['data']['messages'];
-    for (let i = 0 ; i < messages.length ; ++i) {
+    for (let i = 0; i < messages.length; ++i) {
       updateMessageBoard(messages[i]);
     }
 
@@ -89,13 +88,13 @@ async function sendPublicMessage() {
 
 async function recievePublicMessage() {
   const query = {
-    timestamp: clockStore.clockGetters.clock()
-  }
+    timestamp: clockStore.clockGetters.clock(),
+  };
 
   try {
     const response = await messageApis.getPublicMessage(query);
     const messages = response['data']['messages'];
-    for (let i = 0 ; i < messages.length ; ++i) {
+    for (let i = 0; i < messages.length; ++i) {
       updateMessageBoard(messages[i]);
     }
 
