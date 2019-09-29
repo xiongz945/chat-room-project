@@ -2,6 +2,7 @@ import { API_ROOT } from '../../config.js';
 
 import messageApis from '../../apis/message-apis.js';
 import messageStore from '../../store/message.js';
+import clockStore from '../../store/clock.js';
 
 import userStore from '../../store/user.js';
 import router from '../../router.js';
@@ -41,7 +42,9 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
   if (key === 13) {
     // 13 is enter
     sendPublicMessage();
-    cleanTextArea();
+
+    e.preventDefault();
+    this.value = '';
   }
 });
 
@@ -51,16 +54,22 @@ receivePublicHistoryMessage();
 // Function definations
 async function receivePublicHistoryMessage() {
 
-  // TODO: Decide the number of messages to be loaded.
+  // FIXME: Decide the number of messages to be loaded.
   const query = {
     start: 0,
     end: 10
   };
 
-  const response = await messageApis.getPublicHistoryMessage(query);
-  const messages = response['data']['messages'];
-  for (let i = messages.length - 1; i >= 0 ; --i) {
-    updateMessageBoard(messages[i]);
+  try {
+    const response = await messageApis.getPublicHistoryMessage(query);
+    const messages = response['data']['messages'];
+    for (let i = 0 ; i < messages.length ; ++i) {
+      updateMessageBoard(messages[i]);
+    }
+
+    clockStore.clockActions.uupdateClock(Date.now());
+  } catch (e) {
+    console.log(e);
   }
 }
 
@@ -72,12 +81,29 @@ async function sendPublicMessage() {
   };
   try {
     await messageApis.postPublicMessage(newMessage);
+    socket.emit('PUSH_NEW_MESSAGE');
   } catch (e) {
     console.log(e);
   }
 }
 
-function recievePublicMessage() {}
+async function recievePublicMessage() {
+  const query = {
+    timestamp: clockStore.clockGetters.clock()
+  }
+
+  try {
+    const response = await messageApis.getPublicMessage(query);
+    const messages = response['data']['messages'];
+    for (let i = 0 ; i < messages.length ; ++i) {
+      updateMessageBoard(messages[i]);
+    }
+
+    clockStore.clockActions.uupdateClock(Date.now());
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 function updateMessageBoard(data) {
   const chatMessage = document.createElement('div');
@@ -103,9 +129,8 @@ function updateMessageBoard(data) {
 
   const messageDate = document.createElement('span');
   messageDate.className = 'message-date';
+  // FIXME: Beautify the datetime.
   messageDate.innerHTML = data['createdAt'];
-  // Mon Jan 26 2015 - 18:39:23
-  // dateFormat(now, "dddd, mmmm dS, yyyy, h:MM:ss TT");
 
   const messageContent = document.createElement('span');
   messageContent.className = 'message-content';
@@ -117,9 +142,4 @@ function updateMessageBoard(data) {
   chatMessage.appendChild(message);
 
   document.getElementById('message-board').appendChild(chatMessage);
-}
-
-function cleanTextArea() {
-  document.querySelector('#message').value = '';
-  // TODO: Remove the new-line effect.
 }
