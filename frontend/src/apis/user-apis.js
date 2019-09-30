@@ -8,6 +8,13 @@ export default {
     return res;
   },
 
+  // User Logout
+  async logout(){
+    const res = await get('/auth/logout');
+    console.log(res);
+    return res;
+  },
+
   // Get User Info
   async getUserProfile() {
     const res = await get('/user/profile');
