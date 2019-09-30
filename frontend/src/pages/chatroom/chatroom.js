@@ -66,7 +66,7 @@ async function receivePublicHistoryMessage() {
       updateMessageBoard(messages[index]);
     }
 
-    clockStore.clockActions.uupdateClock(Date.now());
+    clockStore.clockActions.updateClock(Date.now());
   } catch (e) {
     console.log(e);
   }
@@ -98,7 +98,7 @@ async function recievePublicMessage() {
       updateMessageBoard(messages[index]);
     }
 
-    clockStore.clockActions.uupdateClock(Date.now());
+    clockStore.clockActions.updateClock(Date.now());
   } catch (e) {
     console.log(e);
   }

@@ -3,7 +3,7 @@ import router from '../router.js';
 const storage = window.localStorage;
 
 const clockActions = {
-  uupdateClock(timestamp) {
+  updateClock(timestamp) {
     storage.setItem('clock', timestamp);
   },
 };
