@@ -5,6 +5,7 @@ import messageStore from '../../store/message.js';
 
 import userStore from '../../store/user.js';
 import router from '../../router.js';
+import userApis from '../../apis/user-apis.js';
 
 // Set up Socket
 const socket = io(API_ROOT);
@@ -29,7 +30,8 @@ if (userStore.userGetters.isLogin) {
 }
 
 // Bind event listener
-document.getElementById('logout-button').onclick = () => {
+document.getElementById('logout-button').onclick = async () => {
+    await userApis.logout();
     userStore.userActions.logoutUser();
     router('login');
 }
