@@ -31,4 +31,9 @@ export const io = socket(server);
 // // Add log for io connection
 io.on('connection', function(socket) {
   console.log(`SOCKET CONNECTED: ${socket.id}`);
+
+  // FIXME: Need to refactor this snippet.
+  socket.on('PUSH_NEW_MESSAGE', function() {
+    io.emit('PULL_NEW_MESSAGE', 'public');
+  });
 });

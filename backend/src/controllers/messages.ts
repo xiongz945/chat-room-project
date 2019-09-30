@@ -47,10 +47,10 @@ export const postMessage = (
 
   // Add log for io connection
   // io.on('connection', function() {
-  io.emit('PULL_NEW_MESSAGE', 'public');
+  // io.emit('PULL_NEW_MESSAGE', 'public');
   // })
 
-  return res.status(200);
+  return res.status(200).json("{}");
 };
 
 export const getMessage = (
@@ -58,11 +58,12 @@ export const getMessage = (
   res: Response,
   next: NextFunction
 ) => {
-  const timestamp: Date = new Date(req.timestamp);
-  Message.find({ reciverId: 'public', created: { $gte: timestamp } }, function(
+  const timestamp: Date = new Date(parseInt(req.query.timestamp));
+  Message.find({ reciverId: 'public', createdAt: { $gte: timestamp } }, function(
     err,
     messages
   ) {
+    //console.log(messages);
     return res.status(200).json({ messages });
   });
 };

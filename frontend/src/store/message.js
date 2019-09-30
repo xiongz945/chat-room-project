@@ -6,9 +6,9 @@ const messageActions = {
   appendEndMessage(messages, id) {
     const localMessageList = messageGetters.messages();
     if (localMessageList[id]) {
-        localMessageList[id] = localMessageList[id].concat(messages)
+      localMessageList[id] = localMessageList[id].concat(messages);
     } else {
-        localMessageList[id] = messages
+      localMessageList[id] = messages;
     }
 
     storage.setItem('messages', JSON.stringify(localMessageList));
@@ -16,9 +16,9 @@ const messageActions = {
   appendFrontMessage(messages, id) {
     const localMessageList = messageGetters.messages();
     if (localMessageList[id]) {
-        localMessageList[id] = localMessageList[id].unshift(...messages)
+      localMessageList[id] = localMessageList[id].unshift(...messages);
     } else {
-        localMessageList[id] = messages
+      localMessageList[id] = messages;
     }
 
     storage.setItem('messages', JSON.stringify(localMessageList));
@@ -27,7 +27,7 @@ const messageActions = {
 
 const messageGetters = {
   messages: () => JSON.parse(storage.getItem('messages')),
-  messagesById: (id) => JSON.parse(storage.getItem('messages'))[id]
+  messagesById: (id) => JSON.parse(storage.getItem('messages'))[id],
 };
 
 export default {
