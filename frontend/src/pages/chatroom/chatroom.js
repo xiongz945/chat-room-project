@@ -37,7 +37,7 @@ document.getElementById('logout-button').onclick = async () => {
   await userApis.logout();
   userStore.userActions.logoutUser();
   router('login');
-}
+};
 
 document.querySelector('#message').addEventListener('keypress', function(e) {
   const key = e.which || e.keyCode;

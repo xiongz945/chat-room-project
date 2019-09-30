@@ -50,7 +50,7 @@ export const postMessage = (
   // io.emit('PULL_NEW_MESSAGE', 'public');
   // })
 
-  return res.status(200).json("{}");
+  return res.status(200).json('{}');
 };
 
 export const getMessage = (
@@ -59,11 +59,11 @@ export const getMessage = (
   next: NextFunction
 ) => {
   const timestamp: Date = new Date(parseInt(req.query.timestamp));
-  Message.find({ reciverId: 'public', createdAt: { $gte: timestamp } }, function(
-    err,
-    messages
-  ) {
-    //console.log(messages);
-    return res.status(200).json({ messages });
-  });
+  Message.find(
+    { reciverId: 'public', createdAt: { $gte: timestamp } },
+    function(err, messages) {
+      //console.log(messages);
+      return res.status(200).json({ messages });
+    }
+  );
 };

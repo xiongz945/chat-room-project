@@ -9,7 +9,7 @@ export default {
   },
 
   // User Logout
-  async logout(){
+  async logout() {
     const res = await get('/auth/logout');
     console.log(res);
     return res;
