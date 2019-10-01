@@ -52,8 +52,8 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
 });
 
 // Set user status to 'logged out' when page unloads
-window.onbeforeunload = (e)=>{
-  logout();
+window.onbeforeunload = async (e)=>{
+  await logout();
 }
 
 // Set user status to 'logged in' when page is ready
