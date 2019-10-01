@@ -21,6 +21,12 @@ export default {
     return res;
   },
 
+  // Get All User Info
+  async getAllUserProfile() {
+    const res = await get('/user/profile/all');
+    return res;
+  },
+
   // Update User Info
   async updateUserInfo(data) {
     const res = await patch('/user/profile', data);

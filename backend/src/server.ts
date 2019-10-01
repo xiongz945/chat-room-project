@@ -36,4 +36,12 @@ io.on('connection', function(socket) {
   socket.on('PUSH_NEW_MESSAGE', function() {
     io.emit('PULL_NEW_MESSAGE', 'public');
   });
+
+  socket.on('NOTIFY_USER_LOGIN', function(username) {
+    io.emit('USER_LOGIN', username);
+  });
+
+  socket.on('NOTIFY_USER_LOGOUT', function(username) {
+    io.emit('USER_LOGOUT', username);
+  });
 });

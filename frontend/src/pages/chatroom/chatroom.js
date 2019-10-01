@@ -19,6 +19,14 @@ socket.on('PULL_NEW_MESSAGE', function(id) {
   recievePublicMessage();
 });
 
+socket.on('USER_LOGIN', function(username) {
+  updateChatUser(username, 'logged in');
+});
+
+socket.on('USER_LOGOUT', function(username) {
+  updateChatUser(username, 'logged out');
+});
+
 socket.on('disconnect', function() {
   console.log('Socket disconnected');
 });
@@ -35,6 +43,7 @@ if (userStore.userGetters.isLogin) {
 // Bind event listener
 document.getElementById('logout-button').onclick = async () => {
   await userApis.logout();
+  socket.emit('NOTIFY_USER_LOGOUT', userStore.userGetters.user().username);
   userStore.userActions.logoutUser();
   router('login');
 };
@@ -52,6 +61,9 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
 
 // Load history messages
 receivePublicHistoryMessage();
+
+// Get all users
+getAllUserInfo();
 
 // Function definations
 async function receivePublicHistoryMessage() {
@@ -106,9 +118,23 @@ async function recievePublicMessage() {
   }
 }
 
+async function getAllUserInfo() {
+  try {
+    const response = await userApis.getAllUserProfile();
+    const users = response['data']['users'];
+    for (const index in users) {
+      appendUserList(users[index]);
+    }
+
+    socket.emit('NOTIFY_USER_LOGIN', userStore.userGetters.user().username);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 function updateMessageBoard(data) {
   const chatMessage = document.createElement('div');
-  if (userStore.userGetters.user().username == data['senderName']) {
+  if (userStore.userGetters.user().username === data['senderName']) {
     chatMessage.className = 'chat-message right';
   } else {
     chatMessage.className = 'chat-message left';
@@ -145,4 +171,63 @@ function updateMessageBoard(data) {
   const board = document.getElementById('message-board');
   board.appendChild(chatMessage);
   board.scrollTop = board.scrollHeight;
+}
+
+function appendUserList(data) {
+  const chatUser = document.createElement('div');
+  chatUser.className = 'chat-user';
+  chatUser.id = 'chat-user@' + data['username'];
+
+  if (data['status'] === 'logged in') {
+    const statusBar = document.createElement('span');
+    statusBar.className = 'float-right label label-primary';
+    statusBar.id = 'status-bar';
+    statusBar.innerText = 'Online';
+    chatUser.appendChild(statusBar);
+  }
+
+  const chatAvatar = document.createElement('img');
+  chatAvatar.className = 'chat-avatar';
+  chatAvatar.src = '/assets/img/avatar-default-icon.png';
+  chatAvatar.alt = '';
+  chatUser.appendChild(chatAvatar);
+
+  const chatUserName = document.createElement('div');
+  chatUserName.className = 'chat-user-name';
+
+  const username = document.createElement('a');
+  username.innerText = data['username'];
+  username.href = '#';
+  chatUserName.appendChild(username);
+
+  chatUser.appendChild(chatUserName);
+
+  const list = document.getElementById('users-list');
+  list.appendChild(chatUser);
+  list.scrollTop = list.scrollHeight;
+}
+
+function isStatusBarExisting(node) {
+  const child = node.firstChild;
+  return child.id === 'status-bar';
+}
+
+function updateChatUser(username, status) {
+  const chatUser = document.getElementById('chat-user@' + username);
+  if (chatUser === null) {
+    appendUserList({ username: username, status: status });
+    return;
+  }
+
+  if (status === 'logged in' && !isStatusBarExisting(chatUser)) {
+    const statusBar = document.createElement('span');
+    statusBar.className = 'float-right label label-primary';
+    statusBar.id = 'status-bar';
+    statusBar.innerText = 'Online';
+    chatUser.insertBefore(statusBar, chatUser.firstChild);
+    return;
+  }
+  if (status === 'logged out' && isStatusBarExisting(chatUser)) {
+    chatUser.removeChild(chatUser.childNodes[0]);
+  }
 }

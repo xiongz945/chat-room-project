@@ -19,6 +19,24 @@ export const getProfile = (req: Request, res: Response, next: NextFunction) => {
 };
 
 /**
+ * GET /user/profile/all
+ * Retrieve profile information.
+ */
+export const getAllProfile = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  User.find({}, function(err, users) {
+    if (err) {
+      return next(err);
+    }
+
+    return res.status(200).json({ users });
+  });
+};
+
+/**
  * PATCH /user/profile
  * Update profile information.
  */
