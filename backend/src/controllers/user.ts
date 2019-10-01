@@ -19,6 +19,28 @@ export const getProfile = (req: Request, res: Response, next: NextFunction) => {
 };
 
 /**
+ * PATCH /user/status
+ * Update user status
+ */
+
+export const patchUpdateStatus = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  User.updateOne(
+    { username: req.user.username },
+    { status: req.body.status },
+    (err, raw) => {
+      if (err) {
+        return res.status(500).json({ message: 'failed' });
+      }
+      return res.status(200).json({ message: 'success' });
+    }
+  );
+};
+
+/**
  * PATCH /user/profile
  * Update profile information.
  */

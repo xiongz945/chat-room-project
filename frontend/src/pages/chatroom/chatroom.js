@@ -34,7 +34,8 @@ if (userStore.userGetters.isLogin) {
 
 // Bind event listener
 document.getElementById('logout-button').onclick = async () => {
-  await userApis.logout();
+  await logout();
+  window.onbeforeunload = undefined;
   userStore.userActions.logoutUser();
   router('login');
 };
@@ -49,6 +50,14 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
     this.value = '';
   }
 });
+
+// Set user status to 'logged out' when page unloads
+window.onbeforeunload = (e)=>{
+  logout();
+}
+
+// Set user status to 'logged in' when page is ready
+setUserStatus({status: 'logged in'});
 
 // Load history messages
 receivePublicHistoryMessage();
@@ -145,4 +154,14 @@ function updateMessageBoard(data) {
   const board = document.getElementById('message-board');
   board.appendChild(chatMessage);
   board.scrollTop = board.scrollHeight;
+}
+
+async function logout(){
+  const response = userApis.logout();
+  return response;
+}
+
+async function setUserStatus(status) {
+  const response = userApis.patchUserStatus(status);
+  return response;
 }
