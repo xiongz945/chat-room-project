@@ -146,3 +146,13 @@ function updateMessageBoard(data) {
   board.appendChild(chatMessage);
   board.scrollTop = board.scrollHeight;
 }
+
+let hideDirBtn = document.getElementById('hideDirBtn');
+hideDirBtn.onclick = () => {
+  onHideDirBtnClick();
+};
+
+function onHideDirBtnClick() {
+  $('#usersList').toggle();
+  $('#hideDirBtn').text($('#hideDirBtn').text() == "Hide Directory"?"Show Directory":"Hide Directory");  
+}
