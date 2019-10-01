@@ -157,11 +157,11 @@ function updateMessageBoard(data) {
 }
 
 async function logout(){
-  const response = userApis.logout();
+  const response = await userApis.logout();
   return response;
 }
 
 async function setUserStatus(status) {
-  const response = userApis.patchUserStatus(status);
+  const response = await userApis.patchUserStatus(status);
   return response;
 }
