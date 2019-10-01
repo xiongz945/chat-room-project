@@ -10,6 +10,13 @@ router.get(
   passportConfig.isAuthenticated,
   userController.getProfile
 );
+
+router.patch(
+  '/status',
+  passportConfig.isAuthenticated,
+  userController.patchUpdateStatus
+);
+
 router.patch(
   '/profile',
   passportConfig.isAuthenticated,
