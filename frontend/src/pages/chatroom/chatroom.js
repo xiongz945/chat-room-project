@@ -142,6 +142,16 @@ async function getAllUserInfo() {
   }
 }
 
+async function logout() {
+  const response = await userApis.logout();
+  return response;
+}
+
+async function setUserStatus(status) {
+  const response = await userApis.patchUserStatus(status);
+  return response;
+}
+
 function updateMessageBoard(data) {
   const chatMessage = document.createElement('div');
   if (userStore.userGetters.user().username === data['senderName']) {
@@ -240,14 +250,4 @@ function updateChatUser(username, status) {
   if (status === 'logged out' && isStatusBarExisting(chatUser)) {
     chatUser.removeChild(chatUser.childNodes[0]);
   }
-}
-
-async function logout() {
-  const response = await userApis.logout();
-  return response;
-}
-
-async function setUserStatus(status) {
-  const response = await userApis.patchUserStatus(status);
-  return response;
 }
