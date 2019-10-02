@@ -22,11 +22,13 @@ router.patch(
   passportConfig.isAuthenticated,
   userController.patchUpdateProfile
 );
+
 router.patch(
   '/password',
   passportConfig.isAuthenticated,
   userController.patchUpdatePassword
 );
+
 router.delete(
   '/delete',
   passportConfig.isAuthenticated,

@@ -7,6 +7,7 @@ import clockStore from '../../store/clock.js';
 import userStore from '../../store/user.js';
 import router from '../../router.js';
 import userApis from '../../apis/user-apis.js';
+import chatroomApis from '../../apis/chatroom-apis.js';
 
 // Set up Socket
 const socket = io(API_ROOT);
@@ -17,6 +18,14 @@ socket.on('connect', function() {
 socket.on('PULL_NEW_MESSAGE', function(id) {
   console.log(id);
   recievePublicMessage();
+});
+
+socket.on('USER_LOGIN', function(username) {
+  updateChatUser(username, 'logged in');
+});
+
+socket.on('USER_LOGOUT', function(username) {
+  updateChatUser(username, 'logged out');
 });
 
 socket.on('disconnect', function() {
@@ -34,6 +43,7 @@ if (userStore.userGetters.isLogin) {
 
 // Bind event listener
 document.getElementById('logout-button').onclick = async () => {
+  socket.emit('NOTIFY_USER_LOGOUT', userStore.userGetters.user().username);
   await logout();
   window.onbeforeunload = undefined;
   userStore.userActions.logoutUser();
@@ -52,15 +62,18 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
 });
 
 // Set user status to 'logged out' when page unloads
-window.onbeforeunload = async (e)=>{
+window.onbeforeunload = async (e) => {
   await logout();
-}
+};
 
 // Set user status to 'logged in' when page is ready
-setUserStatus({status: 'logged in'});
+setUserStatus({ status: 'logged in' });
 
 // Load history messages
 receivePublicHistoryMessage();
+
+// Get all users
+getAllUserInfo();
 
 // Function definations
 async function receivePublicHistoryMessage() {
@@ -115,9 +128,33 @@ async function recievePublicMessage() {
   }
 }
 
+async function getAllUserInfo() {
+  try {
+    const response = await chatroomApis.getPublicUsers();
+    const users = response['data']['users'];
+    for (const index in users) {
+      appendUserList(users[index]);
+    }
+
+    socket.emit('NOTIFY_USER_LOGIN', userStore.userGetters.user().username);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function logout() {
+  const response = await userApis.logout();
+  return response;
+}
+
+async function setUserStatus(status) {
+  const response = await userApis.patchUserStatus(status);
+  return response;
+}
+
 function updateMessageBoard(data) {
   const chatMessage = document.createElement('div');
-  if (userStore.userGetters.user().username == data['senderName']) {
+  if (userStore.userGetters.user().username === data['senderName']) {
     chatMessage.className = 'chat-message right';
   } else {
     chatMessage.className = 'chat-message left';
@@ -156,12 +193,61 @@ function updateMessageBoard(data) {
   board.scrollTop = board.scrollHeight;
 }
 
-async function logout(){
-  const response = await userApis.logout();
-  return response;
+function appendUserList(data) {
+  const chatUser = document.createElement('div');
+  chatUser.className = 'chat-user';
+  chatUser.id = 'chat-user@' + data['username'];
+
+  if (data['status'] === 'logged in') {
+    const statusBar = document.createElement('span');
+    statusBar.className = 'float-right label label-primary';
+    statusBar.id = 'status-bar';
+    statusBar.innerText = 'Online';
+    chatUser.appendChild(statusBar);
+  }
+
+  const chatAvatar = document.createElement('img');
+  chatAvatar.className = 'chat-avatar';
+  chatAvatar.src = '/assets/img/avatar-default-icon.png';
+  chatAvatar.alt = '';
+  chatUser.appendChild(chatAvatar);
+
+  const chatUserName = document.createElement('div');
+  chatUserName.className = 'chat-user-name';
+
+  const username = document.createElement('a');
+  username.innerText = data['username'];
+  username.href = '#';
+  chatUserName.appendChild(username);
+
+  chatUser.appendChild(chatUserName);
+
+  const list = document.getElementById('users-list');
+  list.appendChild(chatUser);
+  list.scrollTop = list.scrollHeight;
 }
 
-async function setUserStatus(status) {
-  const response = await userApis.patchUserStatus(status);
-  return response;
+function isStatusBarExisting(node) {
+  const child = node.firstChild;
+  return child.id === 'status-bar';
+}
+
+function updateChatUser(username, status) {
+  const chatUser = document.getElementById('chat-user@' + username);
+  if (chatUser === null) {
+    appendUserList({ username: username, status: status });
+    return;
+  }
+
+  if (status === 'logged in' && !isStatusBarExisting(chatUser)) {
+    const statusBar = document.createElement('span');
+    statusBar.className = 'float-right label label-primary';
+    statusBar.id = 'status-bar';
+    statusBar.innerText = 'Online';
+    chatUser.insertBefore(statusBar, chatUser.firstChild);
+    return;
+  }
+  if (status === 'logged out' && isStatusBarExisting(chatUser)) {
+    chatUser.removeChild(chatUser.childNodes[0]);
+  }
 }

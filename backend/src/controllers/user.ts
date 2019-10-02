@@ -22,7 +22,6 @@ export const getProfile = (req: Request, res: Response, next: NextFunction) => {
  * PATCH /user/status
  * Update user status
  */
-
 export const patchUpdateStatus = (
   req: Request,
   res: Response,
