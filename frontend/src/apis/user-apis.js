@@ -4,14 +4,17 @@ export default {
   // User Login
   async login(data) {
     const res = await post('/auth/login', data);
-    console.log(res);
     return res;
   },
 
   // User Logout
   async logout() {
     const res = await get('/auth/logout');
-    console.log(res);
+    return res;
+  },
+
+  async patchUserStatus(status) {
+    const res = await patch('/user/status', status);
     return res;
   },
 

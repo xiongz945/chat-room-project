@@ -63,15 +63,10 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
               password: user.password,
             };
             const token = jwt.sign(plainUserObject, JWT_SECRET);
-            user.updateOne({ status: 'logged in' }, (err, raw) => {
-              if (err) {
-                return next(err);
-              }
-              return res.status(200).json({
-                user: plainUserObject,
-                token,
-                message: ['authenticated'],
-              });
+            return res.status(200).json({
+              user: plainUserObject,
+              token,
+              message: ['authenticated'],
             });
           });
         }
@@ -81,6 +76,7 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
         const user = new User({
           username: req.body.username,
           password: req.body.password,
+          status: 'logged out',
         });
 
         user.save((err) => {
@@ -96,15 +92,10 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
               password: user.password,
             };
             const token = jwt.sign(plainUserObject, JWT_SECRET);
-            user.update({ status: 'logged in' }, (err, raw) => {
-              if (err) {
-                return next(err);
-              }
-              return res.status(200).json({
-                user: plainUserObject,
-                token,
-                message: ['registered'],
-              });
+            return res.status(200).json({
+              user: plainUserObject,
+              token,
+              message: ['registered'],
             });
           });
         });

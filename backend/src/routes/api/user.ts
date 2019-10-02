@@ -10,6 +10,7 @@ router.get(
   passportConfig.isAuthenticated,
   userController.getProfile
 );
+
 router.get(
   '/profile/all',
   passportConfig.isAuthenticated,
@@ -17,15 +18,23 @@ router.get(
 );
 
 router.patch(
+  '/status',
+  passportConfig.isAuthenticated,
+  userController.patchUpdateStatus
+);
+
+router.patch(
   '/profile',
   passportConfig.isAuthenticated,
   userController.patchUpdateProfile
 );
+
 router.patch(
   '/password',
   passportConfig.isAuthenticated,
   userController.patchUpdatePassword
 );
+
 router.delete(
   '/delete',
   passportConfig.isAuthenticated,

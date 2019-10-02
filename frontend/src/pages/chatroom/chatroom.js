@@ -42,8 +42,9 @@ if (userStore.userGetters.isLogin) {
 
 // Bind event listener
 document.getElementById('logout-button').onclick = async () => {
-  await userApis.logout();
   socket.emit('NOTIFY_USER_LOGOUT', userStore.userGetters.user().username);
+  await logout();
+  window.onbeforeunload = undefined;
   userStore.userActions.logoutUser();
   router('login');
 };
@@ -58,6 +59,14 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
     this.value = '';
   }
 });
+
+// Set user status to 'logged out' when page unloads
+window.onbeforeunload = async (e) => {
+  await logout();
+}
+
+// Set user status to 'logged in' when page is ready
+setUserStatus({status: 'logged in'});
 
 // Load history messages
 receivePublicHistoryMessage();
@@ -230,4 +239,14 @@ function updateChatUser(username, status) {
   if (status === 'logged out' && isStatusBarExisting(chatUser)) {
     chatUser.removeChild(chatUser.childNodes[0]);
   }
+}
+
+async function logout(){
+  const response = await userApis.logout();
+  return response;
+}
+
+async function setUserStatus(status) {
+  const response = await userApis.patchUserStatus(status);
+  return response;
 }
