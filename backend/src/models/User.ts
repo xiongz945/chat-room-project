@@ -15,6 +15,7 @@ export type UserDocument = mongoose.Document & {
   passwordResetExpires: Date;
 
   isFirstLogin: Boolean;
+  status: string;
 
   profile: {
     name: string;
@@ -38,6 +39,7 @@ const userSchema = new mongoose.Schema(
     passwordResetExpires: Date,
 
     isFirstLogin: { type: Boolean, default: true },
+    status: String,
 
     profile: {
       name: String,

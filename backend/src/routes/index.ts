@@ -4,6 +4,7 @@ import passport from 'passport';
 import auth from './api/auth';
 import user from './api/user';
 import message from './api/message';
+import chatroom from './api/chatroom';
 
 const router = express.Router();
 
@@ -14,5 +15,6 @@ router.use(
   passport.authenticate('jwt', { session: false }),
   message
 );
+router.use('/chat', passport.authenticate('jwt', { session: false }), chatroom);
 
 export default router;

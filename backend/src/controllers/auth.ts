@@ -76,6 +76,7 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
         const user = new User({
           username: req.body.username,
           password: req.body.password,
+          status: 'logged out',
         });
 
         user.save((err) => {
@@ -110,6 +111,15 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
  * Log out.
  */
 export const logout = (req: Request, res: Response) => {
-  req.logout();
-  return res.status(200);
+  User.updateOne(
+    { username: req.user.username },
+    { status: 'logged out' },
+    (err, raw) => {
+      if (err) {
+        return res.status(500).json('logout failed');
+      }
+      req.logout();
+      return res.status(200).json('logout success');
+    }
+  );
 };

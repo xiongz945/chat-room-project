@@ -4,13 +4,29 @@ export default {
   // User Login
   async login(data) {
     const res = await post('/auth/login', data);
-    console.log(res);
+    return res;
+  },
+
+  // User Logout
+  async logout() {
+    const res = await get('/auth/logout');
+    return res;
+  },
+
+  async patchUserStatus(status) {
+    const res = await patch('/user/status', status);
     return res;
   },
 
   // Get User Info
   async getUserProfile() {
     const res = await get('/user/profile');
+    return res;
+  },
+
+  // Get All User Info
+  async getAllUserProfile() {
+    const res = await get('/user/profile/all');
     return res;
   },
 

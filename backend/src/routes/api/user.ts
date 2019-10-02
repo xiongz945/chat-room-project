@@ -10,16 +10,25 @@ router.get(
   passportConfig.isAuthenticated,
   userController.getProfile
 );
+
+router.patch(
+  '/status',
+  passportConfig.isAuthenticated,
+  userController.patchUpdateStatus
+);
+
 router.patch(
   '/profile',
   passportConfig.isAuthenticated,
   userController.patchUpdateProfile
 );
+
 router.patch(
   '/password',
   passportConfig.isAuthenticated,
   userController.patchUpdatePassword
 );
+
 router.delete(
   '/delete',
   passportConfig.isAuthenticated,
@@ -28,7 +37,7 @@ router.delete(
 
 router.patch(
   '/loginTag',
-  passportConfig.isAuthenticated,
+  passportConfig.isAuthenticated
   //userController.patchChangeLoginTag
 );
 
