@@ -11,12 +11,6 @@ router.get(
   userController.getProfile
 );
 
-router.get(
-  '/profile/all',
-  passportConfig.isAuthenticated,
-  userController.getAllProfile
-);
-
 router.patch(
   '/status',
   passportConfig.isAuthenticated,

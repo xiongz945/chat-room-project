@@ -7,6 +7,7 @@ import clockStore from '../../store/clock.js';
 import userStore from '../../store/user.js';
 import router from '../../router.js';
 import userApis from '../../apis/user-apis.js';
+import chatroomApis from '../../apis/chatroom-apis.js';
 
 // Set up Socket
 const socket = io(API_ROOT);
@@ -63,10 +64,10 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
 // Set user status to 'logged out' when page unloads
 window.onbeforeunload = async (e) => {
   await logout();
-}
+};
 
 // Set user status to 'logged in' when page is ready
-setUserStatus({status: 'logged in'});
+setUserStatus({ status: 'logged in' });
 
 // Load history messages
 receivePublicHistoryMessage();
@@ -129,7 +130,7 @@ async function recievePublicMessage() {
 
 async function getAllUserInfo() {
   try {
-    const response = await userApis.getAllUserProfile();
+    const response = await chatroomApis.getPublicUsers();
     const users = response['data']['users'];
     for (const index in users) {
       appendUserList(users[index]);
@@ -241,7 +242,7 @@ function updateChatUser(username, status) {
   }
 }
 
-async function logout(){
+async function logout() {
   const response = await userApis.logout();
   return response;
 }
