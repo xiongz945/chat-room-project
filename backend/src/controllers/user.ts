@@ -1,4 +1,4 @@
-import { User, UserDocument } from '../models/User';
+import {IUser, User} from '../models/User';
 import { Request, Response, NextFunction } from 'express';
 import { WriteError } from 'mongodb';
 import { check, sanitize, validationResult } from 'express-validator';
@@ -9,7 +9,7 @@ import '../config/passport';
  * Retrieve profile information.
  */
 export const getProfile = (req: Request, res: Response, next: NextFunction) => {
-  User.findById(req.user.id, (err, user: UserDocument) => {
+  User.findById(req.user.id, (err, user: IUser) => {
     if (err) {
       return next(err);
     }
@@ -57,7 +57,7 @@ export const patchUpdateProfile = (
     return res.status(400).json({ err: errors.array() });
   }
 
-  User.findById(req.user.id, (err, user: UserDocument) => {
+  User.findById(req.user.id, (err, user: IUser) => {
     if (err) {
       return next(err);
     }
@@ -102,7 +102,7 @@ export const patchUpdatePassword = (
     return res.redirect('/account');
   }
 
-  User.findById(req.user.id, (err, user: UserDocument) => {
+  User.findById(req.user.id, (err, user: IUser) => {
     if (err) {
       return next(err);
     }

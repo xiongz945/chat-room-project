@@ -1,6 +1,6 @@
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import { User, UserDocument } from '../models/User';
+import { User, IUser } from '../models/User';
 import { Request, Response, NextFunction } from 'express';
 import { IVerifyOptions } from 'passport-local';
 import { check, sanitize, validationResult } from 'express-validator';
@@ -38,8 +38,7 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
     });
     return res.status(400).json({ message: errMsgs });
   }
-
-  User.findOne({ username: req.body.username }, (err, existingUser) => {
+  User.findUserByName(req.body.username, (err: Error, existingUser: IUser) => {
     if (err) {
       return next(err);
     }
@@ -47,7 +46,7 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
       passport.authenticate(
         'local',
         { session: false },
-        (err: Error, user: UserDocument, info: IVerifyOptions) => {
+        (err: Error, user: IUser, info: IVerifyOptions) => {
           if (err) {
             return next(err);
           }
@@ -73,23 +72,19 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
       )(req, res, next);
     } else {
       if (req.body.confirm == true) {
-        const user = new User({
+        User.createNewUser({
           username: req.body.username,
           password: req.body.password,
-          status: 'logged out',
-        });
-
-        user.save((err) => {
-          if (err) {
+        }, (err, newUser) => {
+          if(err)
             return next(err);
-          }
-          req.logIn(user, { session: false }, (err) => {
+          req.logIn(newUser, { session: false }, (err) => {
             if (err) {
               return next(err);
             }
             const plainUserObject = {
-              username: user.username,
-              password: user.password,
+              username: newUser.username,
+              password: newUser.password,
             };
             const token = jwt.sign(plainUserObject, JWT_SECRET);
             return res.status(200).json({

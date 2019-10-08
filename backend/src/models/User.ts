@@ -1,20 +1,19 @@
 import bcrypt from 'bcrypt-nodejs';
 import crypto from 'crypto';
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 
 type comparePasswordFunction = (
   candidatePassword: string,
   cb: (err: any, isMatch: any) => {}
 ) => void;
 
-export type UserDocument = mongoose.Document & {
+export interface UserDocument extends mongoose.Document {
   username: string;
   email: string;
   password: string;
   passwordResetToken: string;
   passwordResetExpires: Date;
-
-  isFirstLogin: Boolean;
+  isOnline: boolean;
   status: string;
 
   profile: {
@@ -25,10 +24,23 @@ export type UserDocument = mongoose.Document & {
     website: string;
     picture: string;
   };
+}
 
+export interface IUser extends UserDocument {
   comparePassword: comparePasswordFunction;
   gravatar: (size: number) => string;
-};
+}
+
+export interface IUserModel extends Model<IUser> {
+  findUserByName(
+    username: string,
+    callback: (err: any, existingUser: any) => void
+  ): void;
+  createNewUser(
+      doc: any,
+      callback: (err: Error, newUser: IUser) => void
+  ): void;
+}
 
 const userSchema = new mongoose.Schema(
   {
@@ -38,7 +50,7 @@ const userSchema = new mongoose.Schema(
     passwordResetToken: String,
     passwordResetExpires: Date,
 
-    isFirstLogin: { type: Boolean, default: true },
+    isOnline: { type: Boolean, default: false },
     status: String,
 
     profile: {
@@ -104,4 +116,25 @@ userSchema.methods.gravatar = function(size: number = 200) {
   return `https://gravatar.com/avatar/${md5}?s=${size}&d=retro`;
 };
 
-export const User = mongoose.model<UserDocument>('User', userSchema);
+userSchema.methods.setIs
+
+userSchema.statics.findUserByName = function findUserByName(
+  username: string,
+  callback: any
+) {
+  User.findOne({ username: username }, function(err, existingUser) {
+    return callback(err, existingUser);
+  });
+};
+
+userSchema.statics.createNewUser = function createNewUser(doc: any, callback: any) {
+  const user = new User(doc);
+  user.save((err, newUser) => {
+    return callback(err, newUser);
+  });
+};
+
+export const User: IUserModel = mongoose.model<IUser, IUserModel>(
+  'User',
+  userSchema
+);
