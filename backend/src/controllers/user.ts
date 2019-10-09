@@ -1,4 +1,4 @@
-import {IUser, User} from '../models/User';
+import { IUserDocument, User } from '../models/User';
 import { Request, Response, NextFunction } from 'express';
 import { WriteError } from 'mongodb';
 import { check, sanitize, validationResult } from 'express-validator';
@@ -9,7 +9,7 @@ import '../config/passport';
  * Retrieve profile information.
  */
 export const getProfile = (req: Request, res: Response, next: NextFunction) => {
-  User.findById(req.user.id, (err, user: IUser) => {
+  User.findById(req.user.id, (err, user: IUserDocument) => {
     if (err) {
       return next(err);
     }
@@ -40,6 +40,24 @@ export const patchUpdateStatus = (
 };
 
 /**
+ * PATCH /user/isOnline
+ * Update user online status
+ */
+export const patchUpdateIsOnline = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const user = req.user as IUserDocument;
+  user.setIsOnline(req.body.isOnline, (err, raw) => {
+    if (err) {
+      return res.status(500).json({ message: 'failed' });
+    }
+    return res.status(200).json({ message: 'success' });
+  });
+};
+
+/**
  * PATCH /user/profile
  * Update profile information.
  */
@@ -57,7 +75,7 @@ export const patchUpdateProfile = (
     return res.status(400).json({ err: errors.array() });
   }
 
-  User.findById(req.user.id, (err, user: IUser) => {
+  User.findById(req.user.id, (err, user: IUserDocument) => {
     if (err) {
       return next(err);
     }
@@ -102,7 +120,7 @@ export const patchUpdatePassword = (
     return res.redirect('/account');
   }
 
-  User.findById(req.user.id, (err, user: IUser) => {
+  User.findById(req.user.id, (err, user: IUserDocument) => {
     if (err) {
       return next(err);
     }

@@ -1,4 +1,4 @@
-import { API_ROOT } from '../../config.js';
+import {API_ROOT} from '../../config.js';
 
 import messageApis from '../../apis/message-apis.js';
 import messageStore from '../../store/message.js';
@@ -17,7 +17,7 @@ socket.on('connect', function() {
 
 socket.on('PULL_NEW_MESSAGE', function(id) {
   console.log(id);
-  recievePublicMessage();
+  receivePublicMessage();
 });
 
 socket.on('USER_LOGIN', function(username) {
@@ -66,8 +66,8 @@ window.onbeforeunload = async (e) => {
   await logout();
 };
 
-// Set user status to 'logged in' when page is ready
-setUserStatus({ status: 'logged in' });
+// Set user isOnline field to 'true' when page is ready
+setUserIsOnline({isOnline: true});
 
 // Load history messages
 receivePublicHistoryMessage();
@@ -110,7 +110,7 @@ async function sendPublicMessage() {
   }
 }
 
-async function recievePublicMessage() {
+async function receivePublicMessage() {
   const query = {
     timestamp: clockStore.clockGetters.clock(),
   };
@@ -143,13 +143,15 @@ async function getAllUserInfo() {
 }
 
 async function logout() {
-  const response = await userApis.logout();
-  return response;
+  return await userApis.logout();
 }
 
 async function setUserStatus(status) {
-  const response = await userApis.patchUserStatus(status);
-  return response;
+  return await userApis.patchUserStatus(status);
+}
+
+async function setUserIsOnline(isOnline) {
+  return await userApis.patchUserIsOnline(isOnline);
 }
 
 function updateMessageBoard(data) {

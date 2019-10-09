@@ -18,6 +18,12 @@ router.patch(
 );
 
 router.patch(
+  '/isOnline',
+  passportConfig.isAuthenticated,
+  userController.patchUpdateIsOnline
+);
+
+router.patch(
   '/profile',
   passportConfig.isAuthenticated,
   userController.patchUpdateProfile

@@ -7,7 +7,7 @@ type comparePasswordFunction = (
   cb: (err: any, isMatch: any) => {}
 ) => void;
 
-export interface UserDocument extends mongoose.Document {
+export interface IUserDocument extends mongoose.Document {
   username: string;
   email: string;
   password: string;
@@ -24,21 +24,21 @@ export interface UserDocument extends mongoose.Document {
     website: string;
     picture: string;
   };
-}
-
-export interface IUser extends UserDocument {
   comparePassword: comparePasswordFunction;
-  gravatar: (size: number) => string;
+  setIsOnline: (
+    isLogin: boolean,
+    callback: (err: Error, raw: any) => void
+  ) => void;
 }
 
-export interface IUserModel extends Model<IUser> {
+export interface IUserModel extends Model<IUserDocument> {
   findUserByName(
     username: string,
     callback: (err: any, existingUser: any) => void
   ): void;
   createNewUser(
-      doc: any,
-      callback: (err: Error, newUser: IUser) => void
+    doc: any,
+    callback: (err: Error, newUser: IUserDocument) => void
   ): void;
 }
 
@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema(
  * Password hash middleware.
  */
 userSchema.pre('save', function save(next) {
-  const user = this as UserDocument;
+  const user = this as IUserDocument;
   if (!user.isModified('password')) {
     return next();
   }
@@ -102,22 +102,6 @@ const comparePassword: comparePasswordFunction = function(
 
 userSchema.methods.comparePassword = comparePassword;
 
-/**
- * Helper method for getting user's gravatar.
- */
-userSchema.methods.gravatar = function(size: number = 200) {
-  if (!this.email) {
-    return `https://gravatar.com/avatar/?s=${size}&d=retro`;
-  }
-  const md5 = crypto
-    .createHash('md5')
-    .update(this.email)
-    .digest('hex');
-  return `https://gravatar.com/avatar/${md5}?s=${size}&d=retro`;
-};
-
-userSchema.methods.setIs
-
 userSchema.statics.findUserByName = function findUserByName(
   username: string,
   callback: any
@@ -127,14 +111,27 @@ userSchema.statics.findUserByName = function findUserByName(
   });
 };
 
-userSchema.statics.createNewUser = function createNewUser(doc: any, callback: any) {
+userSchema.statics.createNewUser = function createNewUser(
+  doc: any,
+  callback: any
+) {
   const user = new User(doc);
   user.save((err, newUser) => {
     return callback(err, newUser);
   });
 };
 
-export const User: IUserModel = mongoose.model<IUser, IUserModel>(
+userSchema.methods.setIsOnline = function setIsOnline(
+  isOnline: boolean,
+  callback: any
+) {
+  const user = this as IUserDocument;
+  user.updateOne({ isOnline: isOnline }, (err, raw) => {
+    callback(err, raw);
+  });
+};
+
+export const User: IUserModel = mongoose.model<IUserDocument, IUserModel>(
   'User',
   userSchema
 );

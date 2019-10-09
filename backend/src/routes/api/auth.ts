@@ -12,7 +12,7 @@ router.get(
   '/logout',
   passport.authenticate('jwt', { session: false }),
   passportConfig.isAuthenticated,
-  authController.logout
+  authController.getLogout
 );
 
 export default router;

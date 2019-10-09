@@ -1,4 +1,4 @@
-import { get, patch, post } from '../utils/http.js';
+import {get, patch, post} from '../utils/http.js';
 
 export default {
   // User Login
@@ -9,13 +9,15 @@ export default {
 
   // User Logout
   async logout() {
-    const res = await get('/auth/logout');
-    return res;
+    return await get('/auth/logout');
   },
 
   async patchUserStatus(status) {
-    const res = await patch('/user/status', status);
-    return res;
+    return await patch('/user/status', status);
+  },
+
+  async patchUserIsOnline(isOnline){
+    return await patch('/user/isOnline', isOnline);
   },
 
   // Get User Info
