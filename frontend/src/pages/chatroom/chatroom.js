@@ -21,11 +21,11 @@ socket.on('PULL_NEW_MESSAGE', function(id) {
 });
 
 socket.on('USER_LOGIN', function(username) {
-  updateChatUser(username, 'logged in');
+  updateChatUser(username, true);
 });
 
 socket.on('USER_LOGOUT', function(username) {
-  updateChatUser(username, 'logged out');
+  updateChatUser(username, false);
 });
 
 socket.on('disconnect', function() {
@@ -61,7 +61,7 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
   }
 });
 
-// Set user status to 'logged out' when page unloads
+// Set user isOnline to false when page unloads
 window.onbeforeunload = async (e) => {
   await logout();
 };
@@ -200,7 +200,7 @@ function appendUserList(data) {
   chatUser.className = 'chat-user';
   chatUser.id = 'chat-user@' + data['username'];
 
-  if (data['status'] === 'logged in') {
+  if (data['isOnline'] === true) {
     const statusBar = document.createElement('span');
     statusBar.className = 'float-right label label-primary';
     statusBar.id = 'status-bar';
@@ -234,14 +234,14 @@ function isStatusBarExisting(node) {
   return child.id === 'status-bar';
 }
 
-function updateChatUser(username, status) {
+function updateChatUser(username, isOnline) {
   const chatUser = document.getElementById('chat-user@' + username);
   if (chatUser === null) {
-    appendUserList({ username: username, status: status });
+    appendUserList({ username: username, isOnline: isOnline });
     return;
   }
 
-  if (status === 'logged in' && !isStatusBarExisting(chatUser)) {
+  if (isOnline === true && !isStatusBarExisting(chatUser)) {
     const statusBar = document.createElement('span');
     statusBar.className = 'float-right label label-primary';
     statusBar.id = 'status-bar';
@@ -249,7 +249,7 @@ function updateChatUser(username, status) {
     chatUser.insertBefore(statusBar, chatUser.firstChild);
     return;
   }
-  if (status === 'logged out' && isStatusBarExisting(chatUser)) {
+  if (isOnline === false && isStatusBarExisting(chatUser)) {
     chatUser.removeChild(chatUser.childNodes[0]);
   }
 }

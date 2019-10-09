@@ -40,6 +40,10 @@ export interface IUserModel extends Model<IUserDocument> {
     doc: any,
     callback: (err: Error, newUser: IUserDocument) => void
   ): void;
+  getAllUsers(
+      callback: (err: Error, users: IUserDocument[]) => void,
+      projection?: string
+  ): void;
 }
 
 const userSchema = new mongoose.Schema(
@@ -118,6 +122,12 @@ userSchema.statics.createNewUser = function createNewUser(
   const user = new User(doc);
   user.save((err, newUser) => {
     return callback(err, newUser);
+  });
+};
+
+userSchema.statics.getAllUsers = function getAllUsers(callback: any, projection: string = undefined) {
+  User.find({}, projection,(err, users: IUserDocument[]) => {
+    callback(err, users);
   });
 };
 

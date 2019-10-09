@@ -3,8 +3,7 @@ import {get, patch, post} from '../utils/http.js';
 export default {
   // User Login
   async login(data) {
-    const res = await post('/auth/login', data);
-    return res;
+    return await post('/auth/login', data);
   },
 
   // User Logout
@@ -22,8 +21,7 @@ export default {
 
   // Get User Info
   async getUserProfile() {
-    const res = await get('/user/profile');
-    return res;
+    return await get('/user/profile');
   },
 
   // Get All User Info
@@ -44,9 +42,4 @@ export default {
     return res;
   },
 
-  // Update User Login Status
-  async updateLoginStatus() {
-    const res = await patch('/users/loginTag');
-    return res;
-  },
 };

@@ -11,11 +11,10 @@ export const getPublicUsers = (
   res: Response,
   next: NextFunction
 ) => {
-  User.find({}, function(err, users) {
+  User.getAllUsers( (err, users) => {
     if (err) {
       return next(err);
     }
-
-    return res.status(200).json({ users });
-  });
+    return res.status(200).json({users});
+  }, 'username isOnline');
 };
