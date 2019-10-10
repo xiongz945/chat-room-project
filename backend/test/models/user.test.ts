@@ -6,22 +6,26 @@ import {MONGODB_URI, SESSION_SECRET} from '../../src/config/secrets';
 
 describe('Test User Model', () => {
 
-  beforeAll(() => {
-    const mongoUrl = MONGODB_URI;
+  beforeAll( async() => {
     mongoose
-    .connect(mongoUrl, { useNewUrlParser: true })
+    .connect(MONGODB_URI, { useNewUrlParser: true })
     .then(() => {
     })
     .catch((err) => {
+      console.log(err);
     });
+
+    const user = new User({username: '123', password: '123'});
+    await user.save();
   })
 
-  afterAll(() => {
+  afterAll( async() => {
+    await User.deleteOne({username: '123'});
   })
 
   test('findUserByName() can find an exsiting user', async () => {
-    const existingUser = await User.findUserByName('alice');
-    expect(existingUser['username']).toBe('alice');
+    const existingUser = await User.findUserByName('123');
+    expect(existingUser['username']).toBe('123');
   });
 })
 
