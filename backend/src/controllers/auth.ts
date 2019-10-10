@@ -29,7 +29,11 @@ export const passwordRule = check(
  * POST /login
  * Login or create a new account.
  */
-export const postLogin = (req: Request, res: Response, next: NextFunction) => {
+export const postLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const errMsgs: any[] = [];
@@ -38,85 +42,81 @@ export const postLogin = (req: Request, res: Response, next: NextFunction) => {
     });
     return res.status(400).json({ message: errMsgs });
   }
-  User.findUserByName(
-    req.body.username,
-    (err: Error, existingUser: IUserDocument) => {
-      if (err) {
-        return next(err);
-      }
-      if (existingUser) {
-        passport.authenticate(
-          'local',
-          { session: false },
-          (err: Error, user: IUserDocument, info: IVerifyOptions) => {
+  try {
+    const existingUser = await User.findUserByName(req.body.username);
+    if (existingUser) {
+      passport.authenticate(
+        'local',
+        { session: false },
+        (err: Error, user: IUserDocument, info: IVerifyOptions) => {
+          if (err) {
+            return next(err);
+          }
+          if (!user) {
+            return res.status(400).json({ message: ['invalid password'] });
+          }
+          req.logIn(user, { session: false }, (err) => {
             if (err) {
               return next(err);
             }
-            if (!user) {
-              return res.status(400).json({ message: ['invalid password'] });
-            }
-            req.logIn(user, { session: false }, (err) => {
-              if (err) {
-                return next(err);
-              }
-              const plainUserObject = {
-                username: user.username,
-                password: user.password,
-              };
-              const token = jwt.sign(plainUserObject, JWT_SECRET);
-              return res.status(200).json({
-                user: plainUserObject,
-                token,
-                message: ['authenticated'],
-              });
+            const plainUserObject = {
+              username: user.username,
+              password: user.password,
+            };
+            const token = jwt.sign(plainUserObject, JWT_SECRET);
+            return res.status(200).json({
+              user: plainUserObject,
+              token,
+              message: ['authenticated'],
             });
-          }
-        )(req, res, next);
-      } else {
-        if (req.body.confirm == true) {
-          User.createNewUser(
-            {
-              username: req.body.username,
-              password: req.body.password,
-            },
-            (err, newUser) => {
-              if (err) return next(err);
-              req.logIn(newUser, { session: false }, (err) => {
-                if (err) {
-                  return next(err);
-                }
-                const plainUserObject = {
-                  username: newUser.username,
-                  password: newUser.password,
-                };
-                const token = jwt.sign(plainUserObject, JWT_SECRET);
-                return res.status(200).json({
-                  user: plainUserObject,
-                  token,
-                  message: ['registered'],
-                });
-              });
-            }
-          );
-        } else {
-          return res.status(400).json({ message: ['non-existing username'] });
+          });
         }
+      )(req, res, next);
+    } else {
+      if (req.body.confirm == true) {
+        try {
+          const newUser = await User.createNewUser({
+            username: req.body.username,
+            password: req.body.password,
+          });
+          req.logIn(newUser, { session: false }, (err) => {
+            if (err) {
+              return next(err);
+            }
+            const plainUserObject = {
+              username: newUser.username,
+              password: newUser.password,
+            };
+            const token = jwt.sign(plainUserObject, JWT_SECRET);
+            return res.status(200).json({
+              user: plainUserObject,
+              token,
+              message: ['registered'],
+            });
+          });
+        } catch (err) {
+          return next(err);
+        }
+      } else {
+        return res.status(400).json({ message: ['non-existing username'] });
       }
     }
-  );
+  } catch (err) {
+    return next(err);
+  }
 };
 
 /**
  * GET /auth/logout
  * Log out.
  */
-export const getLogout = (req: Request, res: Response) => {
+export const getLogout = async (req: Request, res: Response) => {
   const user = req.user as IUserDocument;
-  user.setIsOnline(false, (err, raw) => {
-    if (err) {
-      return res.status(500).json('logout failed');
-    }
+  try {
+    await user.setIsOnline(false);
     req.logout();
-    return res.status(200).json('logout success');
-  });
+    return res.status(200).json({ message: 'logout success' });
+  } catch (err) {
+    return res.status(500).json({ message: 'logout failed' });
+  }
 };

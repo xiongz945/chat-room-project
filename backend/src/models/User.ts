@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt-nodejs';
-import crypto from 'crypto';
 import mongoose, { Model } from 'mongoose';
 
 type comparePasswordFunction = (
@@ -25,25 +24,13 @@ export interface IUserDocument extends mongoose.Document {
     picture: string;
   };
   comparePassword: comparePasswordFunction;
-  setIsOnline: (
-    isLogin: boolean,
-    callback: (err: Error, raw: any) => void
-  ) => void;
+  setIsOnline: (isLogin: boolean) => void;
 }
 
 export interface IUserModel extends Model<IUserDocument> {
-  findUserByName(
-    username: string,
-    callback: (err: any, existingUser: any) => void
-  ): void;
-  createNewUser(
-    doc: any,
-    callback: (err: Error, newUser: IUserDocument) => void
-  ): void;
-  getAllUsers(
-      callback: (err: Error, users: IUserDocument[]) => void,
-      projection?: string
-  ): void;
+  findUserByName(username: string): IUserDocument;
+  createNewUser(doc: any): IUserDocument;
+  getAllUsers(projection?: string): IUserDocument[];
 }
 
 const userSchema = new mongoose.Schema(
@@ -106,39 +93,42 @@ const comparePassword: comparePasswordFunction = function(
 
 userSchema.methods.comparePassword = comparePassword;
 
-userSchema.statics.findUserByName = function findUserByName(
-  username: string,
-  callback: any
+userSchema.statics.findUserByName = async function findUserByName(
+  username: string
 ) {
-  User.findOne({ username: username }, function(err, existingUser) {
-    return callback(err, existingUser);
-  });
+  try {
+    return await User.findOne({ username: username }).exec();
+  } catch (err) {
+    throw err;
+  }
 };
 
-userSchema.statics.createNewUser = function createNewUser(
-  doc: any,
-  callback: any
-) {
+userSchema.statics.createNewUser = async function createNewUser(doc: any) {
   const user = new User(doc);
-  user.save((err, newUser) => {
-    return callback(err, newUser);
-  });
+  try {
+    return await user.save();
+  } catch (err) {
+    throw err;
+  }
 };
 
-userSchema.statics.getAllUsers = function getAllUsers(callback: any, projection: string = undefined) {
-  User.find({}, projection,(err, users: IUserDocument[]) => {
-    callback(err, users);
-  });
-};
-
-userSchema.methods.setIsOnline = function setIsOnline(
-  isOnline: boolean,
-  callback: any
+userSchema.statics.getAllUsers = async function getAllUsers(
+  projection: string = undefined
 ) {
+  try {
+    return await User.find({}, projection).exec();
+  } catch (err) {
+    throw err;
+  }
+};
+
+userSchema.methods.setIsOnline = async function setIsOnline(isOnline: boolean) {
   const user = this as IUserDocument;
-  user.updateOne({ isOnline: isOnline }, (err, raw) => {
-    callback(err, raw);
-  });
+  try {
+    await user.updateOne({ isOnline: isOnline }).exec();
+  } catch (err) {
+    throw err;
+  }
 };
 
 export const User: IUserModel = mongoose.model<IUserDocument, IUserModel>(

@@ -43,18 +43,18 @@ export const patchUpdateStatus = (
  * PATCH /user/isOnline
  * Update user online status
  */
-export const patchUpdateIsOnline = (
+export const patchUpdateIsOnline = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const user = req.user as IUserDocument;
-  user.setIsOnline(req.body.isOnline, (err, raw) => {
-    if (err) {
-      return res.status(500).json({ message: 'failed' });
-    }
+  try {
+    await user.setIsOnline(req.body.isOnline);
     return res.status(200).json({ message: 'success' });
-  });
+  } catch (err) {
+    return res.status(500).json({ message: 'failed' });
+  }
 };
 
 /**
