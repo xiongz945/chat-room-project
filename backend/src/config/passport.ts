@@ -36,17 +36,19 @@ passport.use(
             message: `Username ${username} not found.`,
           });
         }
-        user.comparePassword(password, (err: Error, isMatch: boolean) => {
-          if (err) {
+        user
+          .comparePassword(password)
+          .then((isMatch: boolean) => {
+            if (isMatch) {
+              return done(undefined, user);
+            }
+            return done(undefined, false, {
+              message: 'Invalid email or password',
+            });
+          })
+          .catch((err: Error) => {
             return done(err);
-          }
-          if (isMatch) {
-            return done(undefined, user);
-          }
-          return done(undefined, false, {
-            message: 'Invalid email or password.',
           });
-        });
       });
     }
   )

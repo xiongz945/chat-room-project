@@ -50,6 +50,7 @@ export const patchUpdateIsOnline = async (
 ) => {
   const user = req.user as IUserDocument;
   try {
+    user.isOnline = req.body.isOnline;
     await user.setIsOnline(req.body.isOnline);
     return res.status(200).json({ message: 'success' });
   } catch (err) {
