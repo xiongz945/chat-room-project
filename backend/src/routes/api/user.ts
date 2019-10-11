@@ -6,45 +6,39 @@ const router = express.Router();
 
 // Get account editing info
 router.get(
-  '/profile',
+  '/me/profile',
   passportConfig.isAuthenticated,
   userController.getProfile
 );
 
 router.patch(
-  '/status',
+  '/me/status',
   passportConfig.isAuthenticated,
   userController.patchUpdateStatus
 );
 
 router.patch(
-  '/isOnline',
+  '/me/isOnline',
   passportConfig.isAuthenticated,
   userController.patchUpdateIsOnline
 );
 
 router.patch(
-  '/profile',
+  '/me/profile',
   passportConfig.isAuthenticated,
   userController.patchUpdateProfile
 );
 
 router.patch(
-  '/password',
+  '/me/password',
   passportConfig.isAuthenticated,
   userController.patchUpdatePassword
 );
 
 router.delete(
-  '/delete',
+  '/me/delete',
   passportConfig.isAuthenticated,
   userController.deleteAccount
-);
-
-router.patch(
-  '/loginTag',
-  passportConfig.isAuthenticated
-  //userController.patchChangeLoginTag
 );
 
 export default router;

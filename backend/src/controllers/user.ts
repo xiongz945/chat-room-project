@@ -5,42 +5,46 @@ import { check, sanitize, validationResult } from 'express-validator';
 import '../config/passport';
 
 /**
- * GET /user/profile
+ * GET /user/me/profile
  * Retrieve profile information.
  */
-export const getProfile = (req: Request, res: Response, next: NextFunction) => {
-  User.findById(req.user.id, (err, user: IUserDocument) => {
-    if (err) {
-      return next(err);
-    }
-
-    return res.status(200).json({ userProfile: user.profile });
-  });
-};
-
-/**
- * PATCH /user/status
- * Update user status
- */
-export const patchUpdateStatus = (
+export const getProfile = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  User.updateOne(
-    { username: req.user.username },
-    { status: req.body.status },
-    (err, raw) => {
-      if (err) {
-        return res.status(500).json({ message: 'failed' });
-      }
-      return res.status(200).json({ message: 'success' });
-    }
-  );
+  try {
+    const user: any = await User.findById(req.user.id).exec();
+    return res.status(200).json({ userProfile: user.profile });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 /**
- * PATCH /user/isOnline
+ * PATCH /user/me/status
+ * Update user status
+ */
+export const patchUpdateStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await User.updateOne(
+      { username: req.user.username },
+      { status: req.body.status }
+    ).exec();
+    return res
+      .status(200)
+      .json({ message: 'success', userStatus: req.body.status });
+  } catch (err) {
+    return res.status(500).json({ err });
+  }
+};
+
+/**
+ * PATCH /user/me/online
  * Update user online status
  */
 export const patchUpdateIsOnline = async (
@@ -51,17 +55,19 @@ export const patchUpdateIsOnline = async (
   const user = req.user as IUserDocument;
   try {
     await user.setIsOnline(req.body.isOnline);
-    return res.status(200).json({ message: 'success' });
+    return res
+      .status(200)
+      .json({ message: 'success', isOnline: req.body.isOnline });
   } catch (err) {
-    return res.status(500).json({ message: 'failed' });
+    return res.status(500).json({ err });
   }
 };
 
 /**
- * PATCH /user/profile
+ * PATCH /user/me/profile
  * Update profile information.
  */
-export const patchUpdateProfile = (
+export const patchUpdateProfile = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -71,39 +77,35 @@ export const patchUpdateProfile = (
 
   const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ err: errors.array() });
-  }
+  if (!errors.isEmpty()) return res.status(400).json({ err: errors.array() });
 
-  User.findById(req.user.id, (err, user: IUserDocument) => {
-    if (err) {
-      return next(err);
-    }
+  try {
+    const user: any = await User.findById(req.user.id);
+
     user.email = req.body.email || '';
     user.profile.name = req.body.name || '';
     user.profile.gender = req.body.gender || '';
     user.profile.location = req.body.location || '';
     user.profile.website = req.body.website || '';
-    user.save((err: WriteError) => {
-      if (err) {
-        if (err.code === 11000) {
-          return res.status(400).json({
-            err:
-              'The email address you have entered is already associated with an account.',
-          });
-        }
-        return next(err);
-      }
-      return res.status(200).json({ userProfile: user.profile });
-    });
-  });
+
+    await user.save();
+    return res.status(200).json({ userProfile: user.profile });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({
+        err:
+          'The email address you have entered is already associated with an account.',
+      });
+    }
+    return next(err);
+  }
 };
 
 /**
- * PATCH /user/password
+ * PATCH /user/me/password
  * Update current password.
  */
-export const patchUpdatePassword = (
+export const patchUpdatePassword = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -115,41 +117,29 @@ export const patchUpdatePassword = (
 
   const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    req.flash('errors', errors.array());
-    return res.redirect('/account');
-  }
+  if (!errors.isEmpty()) return res.status(400).json({ err: errors.array() });
 
-  User.findById(req.user.id, (err, user: IUserDocument) => {
-    if (err) {
-      return next(err);
-    }
+  try {
+    const user: any = await User.findById(req.user.id);
     user.password = req.body.password;
-    user.save((err: WriteError) => {
-      if (err) {
-        return next(err);
-      }
-      req.flash('success', { msg: 'Password has been changed.' });
-      res.redirect('/account');
-    });
-  });
+
+    await user.save();
+    return res.status(200).json({ message: 'success' });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 /**
- * DELETE /user/delete
+ * DELETE /user/me/delete
  * Delete user account.
  */
-export const deleteAccount = (
+export const deleteAccount = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  User.remove({ _id: req.user.id }, (err) => {
-    if (err) {
-      return next(err);
-    }
-    req.logout();
-    req.flash('info', { msg: 'Your account has been deleted.' });
-    res.redirect('/');
-  });
+  await User.remove({ _id: req.user.id });
+  req.logout();
+  return res.status(200).json({ message: 'Your account has been deleted.' });
 };
