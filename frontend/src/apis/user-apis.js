@@ -16,7 +16,7 @@ export default {
   },
 
   async patchUserIsOnline(isOnline){
-    return await patch('/user/me/Online', isOnline);
+    return await patch('/user/me/isOnline', isOnline);
   },
 
   // Get User Info
