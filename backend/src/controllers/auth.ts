@@ -70,6 +70,7 @@ const serveNonExistingUser = async (
         username: req.body.username,
         password: req.body.password,
       });
+
       req.logIn(newUser, { session: false }, (err) => {
         if (err) {
           return next(err);
