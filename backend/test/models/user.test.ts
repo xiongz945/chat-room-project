@@ -87,4 +87,5 @@ describe('Test User Model', () => {
     const isMatch = await user.comparePassword('123123123123');
     expect(isMatch).toBe(false);
   });
+
 });
