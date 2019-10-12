@@ -24,7 +24,7 @@ const mongoUrl = MONGODB_URI;
 (<any>mongoose).Promise = bluebird;
 
 mongoose
-  .connect(mongoUrl, { useNewUrlParser: true })
+  .connect(mongoUrl, { useNewUrlParser: true, useCreateIndex: true })
   .then(() => {
     /** ready to use. The `mongoose.connect()` promise resolves to undefined. */
   })
