@@ -1,11 +1,6 @@
 import bcrypt from 'bcrypt-nodejs';
 import mongoose, { Model } from 'mongoose';
 
-type comparePasswordFunction = (
-  candidatePassword: string,
-  cb: (err: any, isMatch: any) => {}
-) => void;
-
 export interface IUserDocument extends mongoose.Document {
   username: string;
   email: string;
@@ -23,7 +18,7 @@ export interface IUserDocument extends mongoose.Document {
     website: string;
     picture: string;
   };
-  comparePassword: comparePasswordFunction;
+  comparePassword: (candidatePassword: string) => Promise<boolean>;
   setIsOnline: (isLogin: boolean) => void;
 }
 
@@ -35,9 +30,9 @@ export interface IUserModel extends Model<IUserDocument> {
 
 const userSchema = new mongoose.Schema(
   {
-    username: String,
+    username: { type: String, unique: true, required: true },
     email: { type: String },
-    password: String,
+    password: { type: String, required: true },
     passwordResetToken: String,
     passwordResetExpires: Date,
 
@@ -78,20 +73,21 @@ userSchema.pre('save', function save(next) {
   });
 });
 
-const comparePassword: comparePasswordFunction = function(
-  candidatePassword,
-  cb
-) {
-  bcrypt.compare(
-    candidatePassword,
-    this.password,
-    (err: mongoose.Error, isMatch: boolean) => {
-      cb(err, isMatch);
-    }
-  );
+userSchema.methods.comparePassword = function(candidatePassword: string) {
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(
+      candidatePassword,
+      this.password,
+      (err: mongoose.Error, isMatch: boolean) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(isMatch);
+        }
+      }
+    );
+  });
 };
-
-userSchema.methods.comparePassword = comparePassword;
 
 userSchema.statics.findUserByName = async function findUserByName(
   username: string
@@ -125,7 +121,8 @@ userSchema.statics.getAllUsers = async function getAllUsers(
 userSchema.methods.setIsOnline = async function setIsOnline(isOnline: boolean) {
   const user = this as IUserDocument;
   try {
-    await user.updateOne({ isOnline: isOnline }).exec();
+    user.isOnline = isOnline;
+    return await user.updateOne({ isOnline: isOnline }).exec();
   } catch (err) {
     throw err;
   }

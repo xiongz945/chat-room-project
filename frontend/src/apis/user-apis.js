@@ -12,33 +12,27 @@ export default {
   },
 
   async patchUserStatus(status) {
-    return await patch('/user/status', status);
+    return await patch('/user/me/status', status);
   },
 
   async patchUserIsOnline(isOnline){
-    return await patch('/user/isOnline', isOnline);
+    return await patch('/user/me/isOnline', isOnline);
   },
 
   // Get User Info
   async getUserProfile() {
-    return await get('/user/profile');
-  },
-
-  // Get All User Info
-  async getAllUserProfile() {
-    const res = await get('/user/profile/all');
-    return res;
+    return await get('/user/me/profile');
   },
 
   // Update User Info
   async updateUserInfo(data) {
-    const res = await patch('/user/profile', data);
+    const res = await patch('/user/me/profile', data);
     return res;
   },
 
   // Update User Password
   async updateUserPassword(data) {
-    const res = await post('/user/password', data);
+    const res = await post('/user/me/password', data);
     return res;
   },
 
