@@ -23,7 +23,7 @@ export const getHistoryMessage = async (
 ) => {
   try {
     const query: any = req.query;
-    var messages: any = await Message.find({}).exec();
+    let messages: any = await Message.find({}).exec();
     const messageLength = messages.length;
     messages = messages.slice(
       messageLength - query.end,
