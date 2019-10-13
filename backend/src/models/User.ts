@@ -1,20 +1,13 @@
 import bcrypt from 'bcrypt-nodejs';
-import crypto from 'crypto';
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 
-type comparePasswordFunction = (
-  candidatePassword: string,
-  cb: (err: any, isMatch: any) => {}
-) => void;
-
-export type UserDocument = mongoose.Document & {
+export interface IUserDocument extends mongoose.Document {
   username: string;
   email: string;
   password: string;
   passwordResetToken: string;
   passwordResetExpires: Date;
-
-  isFirstLogin: Boolean;
+  isOnline: boolean;
   status: string;
 
   profile: {
@@ -25,20 +18,25 @@ export type UserDocument = mongoose.Document & {
     website: string;
     picture: string;
   };
+  comparePassword: (candidatePassword: string) => Promise<boolean>;
+  setIsOnline: (isLogin: boolean) => void;
+}
 
-  comparePassword: comparePasswordFunction;
-  gravatar: (size: number) => string;
-};
+export interface IUserModel extends Model<IUserDocument> {
+  findUserByName(username: string): IUserDocument;
+  createNewUser(doc: any): IUserDocument;
+  getAllUsers(projection?: string): IUserDocument[];
+}
 
 const userSchema = new mongoose.Schema(
   {
-    username: String,
+    username: { type: String, unique: true, required: true },
     email: { type: String },
-    password: String,
+    password: { type: String, required: true },
     passwordResetToken: String,
     passwordResetExpires: Date,
 
-    isFirstLogin: { type: Boolean, default: true },
+    isOnline: { type: Boolean, default: false },
     status: String,
 
     profile: {
@@ -57,7 +55,7 @@ const userSchema = new mongoose.Schema(
  * Password hash middleware.
  */
 userSchema.pre('save', function save(next) {
-  const user = this as UserDocument;
+  const user = this as IUserDocument;
   if (!user.isModified('password')) {
     return next();
   }
@@ -75,33 +73,62 @@ userSchema.pre('save', function save(next) {
   });
 });
 
-const comparePassword: comparePasswordFunction = function(
-  candidatePassword,
-  cb
+userSchema.methods.comparePassword = function(candidatePassword: string) {
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(
+      candidatePassword,
+      this.password,
+      (err: mongoose.Error, isMatch: boolean) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(isMatch);
+        }
+      }
+    );
+  });
+};
+
+userSchema.statics.findUserByName = async function findUserByName(
+  username: string
 ) {
-  bcrypt.compare(
-    candidatePassword,
-    this.password,
-    (err: mongoose.Error, isMatch: boolean) => {
-      cb(err, isMatch);
-    }
-  );
-};
-
-userSchema.methods.comparePassword = comparePassword;
-
-/**
- * Helper method for getting user's gravatar.
- */
-userSchema.methods.gravatar = function(size: number = 200) {
-  if (!this.email) {
-    return `https://gravatar.com/avatar/?s=${size}&d=retro`;
+  try {
+    return await User.findOne({ username: username }).exec();
+  } catch (err) {
+    throw err;
   }
-  const md5 = crypto
-    .createHash('md5')
-    .update(this.email)
-    .digest('hex');
-  return `https://gravatar.com/avatar/${md5}?s=${size}&d=retro`;
 };
 
-export const User = mongoose.model<UserDocument>('User', userSchema);
+userSchema.statics.createNewUser = async function createNewUser(doc: any) {
+  const user = new User(doc);
+  try {
+    return await user.save();
+  } catch (err) {
+    throw err;
+  }
+};
+
+userSchema.statics.getAllUsers = async function getAllUsers(
+  projection: string = undefined
+) {
+  try {
+    return await User.find({}, projection).exec();
+  } catch (err) {
+    throw err;
+  }
+};
+
+userSchema.methods.setIsOnline = async function setIsOnline(isOnline: boolean) {
+  const user = this as IUserDocument;
+  try {
+    user.isOnline = isOnline;
+    return await user.updateOne({ isOnline: isOnline }).exec();
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const User: IUserModel = mongoose.model<IUserDocument, IUserModel>(
+  'User',
+  userSchema
+);

@@ -1,4 +1,4 @@
-import { API_ROOT } from '../../config.js';
+import {API_ROOT} from '../../config.js';
 
 import messageApis from '../../apis/message-apis.js';
 import messageStore from '../../store/message.js';
@@ -17,15 +17,15 @@ socket.on('connect', function() {
 
 socket.on('PULL_NEW_MESSAGE', function(id) {
   console.log(id);
-  recievePublicMessage();
+  receivePublicMessage();
 });
 
 socket.on('USER_LOGIN', function(username) {
-  updateChatUser(username, 'logged in');
+  updateChatUser(username, true);
 });
 
 socket.on('USER_LOGOUT', function(username) {
-  updateChatUser(username, 'logged out');
+  updateChatUser(username, false);
 });
 
 socket.on('disconnect', function() {
@@ -61,13 +61,13 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
   }
 });
 
-// Set user status to 'logged out' when page unloads
+// Set user isOnline to false when page unloads
 window.onbeforeunload = async (e) => {
   await logout();
 };
 
-// Set user status to 'logged in' when page is ready
-setUserStatus({ status: 'logged in' });
+// Set user isOnline field to 'true' when page is ready
+setUserIsOnline({isOnline: true});
 
 // Load history messages
 receivePublicHistoryMessage();
@@ -110,7 +110,7 @@ async function sendPublicMessage() {
   }
 }
 
-async function recievePublicMessage() {
+async function receivePublicMessage() {
   const query = {
     timestamp: clockStore.clockGetters.clock(),
   };
@@ -143,13 +143,15 @@ async function getAllUserInfo() {
 }
 
 async function logout() {
-  const response = await userApis.logout();
-  return response;
+  return await userApis.logout();
 }
 
 async function setUserStatus(status) {
-  const response = await userApis.patchUserStatus(status);
-  return response;
+  return await userApis.patchUserStatus(status);
+}
+
+async function setUserIsOnline(isOnline) {
+  return await userApis.patchUserIsOnline(isOnline);
 }
 
 function updateMessageBoard(data) {
@@ -198,7 +200,7 @@ function appendUserList(data) {
   chatUser.className = 'chat-user';
   chatUser.id = 'chat-user@' + data['username'];
 
-  if (data['status'] === 'logged in') {
+  if (data['isOnline'] === true) {
     const statusBar = document.createElement('span');
     statusBar.className = 'float-right label label-primary';
     statusBar.id = 'status-bar';
@@ -232,14 +234,14 @@ function isStatusBarExisting(node) {
   return child.id === 'status-bar';
 }
 
-function updateChatUser(username, status) {
+function updateChatUser(username, isOnline) {
   const chatUser = document.getElementById('chat-user@' + username);
   if (chatUser === null) {
-    appendUserList({ username: username, status: status });
+    appendUserList({ username: username, isOnline: isOnline });
     return;
   }
 
-  if (status === 'logged in' && !isStatusBarExisting(chatUser)) {
+  if (isOnline === true && !isStatusBarExisting(chatUser)) {
     const statusBar = document.createElement('span');
     statusBar.className = 'float-right label label-primary';
     statusBar.id = 'status-bar';
@@ -247,7 +249,7 @@ function updateChatUser(username, status) {
     chatUser.insertBefore(statusBar, chatUser.firstChild);
     return;
   }
-  if (status === 'logged out' && isStatusBarExisting(chatUser)) {
+  if (isOnline === false && isStatusBarExisting(chatUser)) {
     chatUser.removeChild(chatUser.childNodes[0]);
   }
 }
