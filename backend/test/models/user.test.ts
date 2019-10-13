@@ -5,9 +5,12 @@ import { MONGODB_URI, SESSION_SECRET } from '../../src/config/secrets';
 
 describe('Test User Model', () => {
   let user: IUserDocument;
+  const MONGODB_URI_TEST = MONGODB_URI + '_user_model';
   beforeAll(async () => {
     mongoose
-      .connect(MONGODB_URI, { useNewUrlParser: true, useCreateIndex: true })
+      .connect(MONGODB_URI_TEST, {
+        useNewUrlParser: true,
+      })
       .then(() => {})
       .catch((err) => {
         console.log(err);
@@ -20,10 +23,7 @@ describe('Test User Model', () => {
   });
 
   afterAll(async () => {
-    await User.deleteOne({ username: '123' });
-    await User.deleteOne({ username: 'newuser' });
-    await User.deleteOne({ username: '456' });
-    await User.deleteOne({ username: '789' });
+    await mongoose.connection.db.dropDatabase();
   });
 
   test('findUserByName() - Can find an existing user', async () => {
@@ -87,5 +87,4 @@ describe('Test User Model', () => {
     const isMatch = await user.comparePassword('123123123123');
     expect(isMatch).toBe(false);
   });
-
 });

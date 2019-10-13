@@ -8,9 +8,10 @@ import { request } from 'https';
 import { JsonWebTokenError } from 'jsonwebtoken';
 
 describe('Test Auth Controller', () => {
+  const MONGODB_URI_TEST = MONGODB_URI + '_auth';
   beforeAll(async () => {
     mongoose
-      .connect(MONGODB_URI, { useNewUrlParser: true })
+      .connect(MONGODB_URI_TEST, { useNewUrlParser: true })
       .then(() => {})
       .catch((err) => {
         console.log(err);
@@ -21,8 +22,7 @@ describe('Test Auth Controller', () => {
   });
 
   afterAll(async () => {
-    await User.deleteOne({ username: '123' });
-    await User.deleteOne({ username: '456' });
+    await mongoose.connection.db.dropDatabase();
   });
 
   test('postLogin() - Existing User but Wrong Password', async () => {
