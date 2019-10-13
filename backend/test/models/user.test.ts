@@ -5,9 +5,12 @@ import { MONGODB_URI, SESSION_SECRET } from '../../src/config/secrets';
 
 describe('Test User Model', () => {
   let user: IUserDocument;
+  const MONGODB_URI_TEST = MONGODB_URI + '_user_model';
   beforeAll(async () => {
     mongoose
-      .connect(MONGODB_URI, { useNewUrlParser: true })
+      .connect(MONGODB_URI_TEST, {
+        useNewUrlParser: true,
+      })
       .then(() => {})
       .catch((err) => {
         console.log(err);
@@ -15,85 +18,73 @@ describe('Test User Model', () => {
 
     user = new User({ username: '123', password: '123' });
     await user.save();
+    await new User({ username: '456', password: '456' }).save();
+    await new User({ username: '789', password: '789' }).save();
   });
 
   afterAll(async () => {
-    await User.deleteOne({ username: '123' });
+    await mongoose.connection.db.dropDatabase();
   });
 
-  describe('test findUserByName()', () => {
-    test('findUserByName() can find an exsiting user', async () => {
-      const existingUser = await User.findUserByName('123');
-      expect(existingUser['username']).toBe('123');
-    });
-
-    test('findUserByName() can not find an non-existing user', async () => {
-      const existingUser = await User.findUserByName('none');
-      expect(existingUser).toBeNull();
-    });
+  test('findUserByName() - Can find an existing user', async () => {
+    const existingUser = await User.findUserByName('123');
+    expect(existingUser['username']).toBe('123');
   });
 
-  describe('test createNewUser()', () => {
-    test('createNewUser() can create a new user', async () => {
-      const newUser = await User.createNewUser({
-        username: 'newuser',
-        password: '123456',
+  test('findUserByName() - Can not find an non-existing user', async () => {
+    const existingUser = await User.findUserByName('none');
+    expect(existingUser).toBeNull();
+  });
+
+  test('createNewUser() - Can create a new user', async () => {
+    const newUser = await User.createNewUser({
+      username: 'newuser',
+      password: '123456',
+    });
+    expect(newUser.username).toBe('newuser');
+  });
+
+  test('createNewUser() - Can not create a existing user', async () => {
+    try {
+      await User.createNewUser({
+        username: '123',
+        password: '123',
       });
-      expect(newUser.username).toBe('newuser');
-    });
-
-    afterAll(async () => {
-      await User.deleteOne({ username: 'newuser' });
-    });
+      fail('The duplicate key error can not be thrown');
+    } catch (err) {
+      expect(err.message.startsWith('E11000')).toBe(true);
+    }
   });
 
-  describe('test setIsOnline()', () => {
-    test('setIsOnline() can set user online', async () => {
-      await user.setIsOnline(true);
-      expect(user.isOnline).toBe(true);
-    });
-    test('setIsOnline() can set user offline', async () => {
-      await user.setIsOnline(false);
-      expect(user.isOnline).toBe(false);
-    });
+  test('setIsOnline() - Can set user online', async () => {
+    await user.setIsOnline(true);
+    expect(user.isOnline).toBe(true);
+  });
+  test('setIsOnline() - Can set user offline', async () => {
+    await user.setIsOnline(false);
+    expect(user.isOnline).toBe(false);
   });
 
-  describe('test getAllUsers()', () => {
-    beforeAll(async () => {
-      await new User({ username: '456', password: '456' }).save();
-      await new User({ username: '789', password: '789' }).save();
+  test('getAllUsers() - Can get all users in the collection', async () => {
+    const users: IUserDocument[] = await User.getAllUsers('username');
+    const createdUsernames = ['123', '456', '789'];
+    expect(users.length).toBeGreaterThanOrEqual(3);
+    let cnt = 0;
+    users.forEach((value) => {
+      if (createdUsernames.includes(value.username)) {
+        ++cnt;
+      }
     });
-
-    test('getAllUsers() can get all users in the collection', async () => {
-      const users: IUserDocument[] = await User.getAllUsers('username');
-      const createdUsernames = ['123', '456', '789'];
-      expect(users.length).toBeGreaterThanOrEqual(3);
-      let cnt = 0;
-      users.forEach((value) => {
-        if (createdUsernames.includes(value.username)) {
-          ++cnt;
-        }
-      });
-      expect(cnt).toBe(3);
-    });
-
-    afterAll(async () => {
-      await User.deleteOne({ username: '456' });
-      await User.deleteOne({ username: '789' });
-    });
+    expect(cnt).toBe(3);
   });
 
-  describe('test comparePassword()', () => {
-    test('comparePassword() return true when the password is correct', async () => {
-      const user = await User.findUserByName('123');
-      const isMatch = await user.comparePassword('123');
-      expect(isMatch).toBe(true);
-    });
+  test('comparePassword() - Return true when the password is correct', async () => {
+    const isMatch = await user.comparePassword('123');
+    expect(isMatch).toBe(true);
+  });
 
-    test('comparePassword() return false when the password is not correct', async () => {
-      const user = await User.findUserByName('123');
-      const isMatch = await user.comparePassword('123123123123');
-      expect(isMatch).toBe(false);
-    });
+  test('comparePassword() - Return false when the password is not correct', async () => {
+    const isMatch = await user.comparePassword('123123123123');
+    expect(isMatch).toBe(false);
   });
 });

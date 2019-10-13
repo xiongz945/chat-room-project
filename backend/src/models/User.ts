@@ -30,9 +30,9 @@ export interface IUserModel extends Model<IUserDocument> {
 
 const userSchema = new mongoose.Schema(
   {
-    username: String,
+    username: { type: String, unique: true, required: true },
     email: { type: String },
-    password: String,
+    password: { type: String, required: true },
     passwordResetToken: String,
     passwordResetExpires: Date,
 
