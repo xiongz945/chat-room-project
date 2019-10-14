@@ -3,7 +3,6 @@ import mongoose, { Model } from 'mongoose';
 
 export interface IUserDocument extends mongoose.Document {
   username: string;
-  email: string;
   password: string;
   passwordResetToken: string;
   passwordResetExpires: Date;
@@ -11,15 +10,15 @@ export interface IUserDocument extends mongoose.Document {
   status: string;
 
   profile: {
-    name: string;
-    nickName: string;
-    gender: string;
-    location: string;
-    website: string;
-    picture: string;
+    name?: string;
+    phone?: String;
+    gender?: string;
+    location?: string;
   };
+
   comparePassword: (candidatePassword: string) => Promise<boolean>;
-  setIsOnline: (isLogin: boolean) => void;
+  setIsOnline: (isLogin: boolean) => Promise<any>;
+  setStatus: (status: string) => Promise<any>;
 }
 
 export interface IUserModel extends Model<IUserDocument> {
@@ -31,7 +30,6 @@ export interface IUserModel extends Model<IUserDocument> {
 const userSchema = new mongoose.Schema(
   {
     username: { type: String, unique: true, required: true },
-    email: { type: String },
     password: { type: String, required: true },
     passwordResetToken: String,
     passwordResetExpires: Date,
@@ -41,11 +39,9 @@ const userSchema = new mongoose.Schema(
 
     profile: {
       name: String,
-      nickName: String,
+      phone: String,
       gender: String,
       location: String,
-      website: String,
-      picture: String,
     },
   },
   { timestamps: true }
@@ -93,7 +89,7 @@ userSchema.statics.findUserByName = async function findUserByName(
   username: string
 ) {
   try {
-    return await User.findOne({ username: username }).exec();
+    return await User.findOne({ username }).exec();
   } catch (err) {
     throw err;
   }
@@ -122,7 +118,17 @@ userSchema.methods.setIsOnline = async function setIsOnline(isOnline: boolean) {
   const user = this as IUserDocument;
   try {
     user.isOnline = isOnline;
-    return await user.updateOne({ isOnline: isOnline }).exec();
+    return await user.updateOne({ isOnline }).exec();
+  } catch (err) {
+    throw err;
+  }
+};
+
+userSchema.methods.setStatus = async function setStatus(status: string) {
+  const user = this as IUserDocument;
+  try {
+    user.status = status;
+    return await user.updateOne({ status }).exec();
   } catch (err) {
     throw err;
   }

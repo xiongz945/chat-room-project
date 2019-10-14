@@ -1,7 +1,6 @@
 import { IUserDocument, User } from '../models/User';
 import { Request, Response, NextFunction } from 'express';
-import { WriteError } from 'mongodb';
-import { check, sanitize, validationResult } from 'express-validator';
+import { check, validationResult } from 'express-validator';
 import '../config/passport';
 
 /**
@@ -15,6 +14,7 @@ export const getProfile = async (
 ) => {
   try {
     const user: any = await User.findById(req.user.id).exec();
+
     return res.status(200).json({ userProfile: user.profile });
   } catch (err) {
     return next(err);
@@ -30,14 +30,12 @@ export const patchUpdateStatus = async (
   res: Response,
   next: NextFunction
 ) => {
+  const user = req.user as IUserDocument;
   try {
-    await User.updateOne(
-      { username: req.user.username },
-      { status: req.body.status }
-    ).exec();
+    await user.setStatus(req.body.status);
     return res
       .status(200)
-      .json({ message: 'success', userStatus: req.body.status });
+      .json({ message: 'success', status: req.body.status });
   } catch (err) {
     return res.status(500).json({ err });
   }
@@ -54,7 +52,6 @@ export const patchUpdateIsOnline = async (
 ) => {
   const user = req.user as IUserDocument;
   try {
-    user.isOnline = req.body.isOnline;
     await user.setIsOnline(req.body.isOnline);
     return res
       .status(200)
@@ -73,32 +70,29 @@ export const patchUpdateProfile = async (
   res: Response,
   next: NextFunction
 ) => {
-  check('email', 'Please enter a valid email address.').isEmail();
-  sanitize('email').normalizeEmail({ gmail_remove_dots: false });
-
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) return res.status(400).json({ err: errors.array() });
-
   try {
     const user: any = await User.findById(req.user.id);
 
-    user.email = req.body.email || '';
-    user.profile.name = req.body.name || '';
-    user.profile.gender = req.body.gender || '';
-    user.profile.location = req.body.location || '';
-    user.profile.website = req.body.website || '';
+    user.username = req.body.username || user.username;
+    user.profile.name = req.body.name || user.profile.name;
+    user.profile.gender = req.body.gender || user.profile.gender;
+    user.profile.location = req.body.location || user.profile.location;
+    user.profile.phone = req.body.phone || user.profile.phone;
 
     await user.save();
-    return res.status(200).json({ userProfile: user.profile });
+    return res.status(200).json({
+      message: 'success',
+      userProfile: user.profile.toObject(),
+      username: user.username,
+    });
   } catch (err) {
     if (err.code === 11000) {
       return res.status(400).json({
         err:
-          'The email address you have entered is already associated with an account.',
+          'The username you have entered is already associated with an account.',
       });
     }
-    return next(err);
+    return res.status(500).json({ err });
   }
 };
 
@@ -129,18 +123,4 @@ export const patchUpdatePassword = async (
   } catch (err) {
     return next(err);
   }
-};
-
-/**
- * DELETE /user/me/delete
- * Delete user account.
- */
-export const deleteAccount = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  await User.remove({ _id: req.user.id });
-  req.logout();
-  return res.status(200).json({ message: 'Your account has been deleted.' });
 };
