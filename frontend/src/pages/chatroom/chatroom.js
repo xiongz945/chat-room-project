@@ -1,4 +1,4 @@
-import {API_ROOT} from '../../config.js';
+import { API_ROOT } from '../../config.js';
 
 import messageApis from '../../apis/message-apis.js';
 import messageStore from '../../store/message.js';
@@ -11,6 +11,7 @@ import chatroomApis from '../../apis/chatroom-apis.js';
 
 // Set up Socket
 const socket = io(API_ROOT);
+
 socket.on('connect', function() {
   console.log('Socket connected');
 });
@@ -41,6 +42,22 @@ if (userStore.userGetters.isLogin) {
   document.getElementById('logout-button').style.display = 'block';
 }
 
+// Set user isOnline to false when page unloads
+/*
+window.onbeforeunload = async (e) => {
+  await logout();
+};
+*/
+
+// Set user isOnline field to 'true' when page is ready
+setUserIsOnline({ isOnline: true });
+
+// Load history messages
+receivePublicHistoryMessage();
+
+// Get all users
+getAllUserInfo();
+
 // Bind event listener
 document.getElementById('logout-button').onclick = async () => {
   socket.emit('NOTIFY_USER_LOGOUT', userStore.userGetters.user().username);
@@ -61,19 +78,11 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
   }
 });
 
-// Set user isOnline to false when page unloads
-window.onbeforeunload = async (e) => {
-  await logout();
-};
-
-// Set user isOnline field to 'true' when page is ready
-setUserIsOnline({isOnline: true});
-
-// Load history messages
-receivePublicHistoryMessage();
-
-// Get all users
-getAllUserInfo();
+document
+  .querySelector('#menu-chatroom')
+  .addEventListener('click', function(e) {
+    switchToPublicChat();
+  });
 
 // Function definations
 async function receivePublicHistoryMessage() {
@@ -154,6 +163,11 @@ async function setUserIsOnline(isOnline) {
   return await userApis.patchUserIsOnline(isOnline);
 }
 
+function cleanMessageBoard() {
+  const board = document.getElementById('message-board');
+  board.innerHTML = '';
+}
+
 function updateMessageBoard(data) {
   const chatMessage = document.createElement('div');
   if (userStore.userGetters.user().username === data['senderName']) {
@@ -218,9 +232,15 @@ function appendUserList(data) {
   chatUserName.className = 'chat-user-name';
 
   const username = document.createElement('a');
+  username.className = 'chat-user-name';
   username.innerText = data['username'];
   username.href = '#';
   chatUserName.appendChild(username);
+
+  // Add event listener
+  username.addEventListener('click', function(e) {
+    switchToPrivateChat(data['username']);
+  });
 
   chatUser.appendChild(chatUserName);
 
@@ -252,4 +272,28 @@ function updateChatUser(username, isOnline) {
   if (isOnline === false && isStatusBarExisting(chatUser)) {
     chatUser.removeChild(chatUser.childNodes[0]);
   }
+}
+
+function switchToPublicChat() {
+  cleanMessageBoard();
+  receivePublicHistoryMessage();
+
+  const channel = document.getElementById('chatroom-channel');
+  channel.innerText = 'Public Chatroom';
+}
+
+function switchToPrivateChat(friendName) {
+  userStore.userActions.appendFriendList(friendName);
+  cleanMessageBoard();
+
+  // FIXME: Need to fetch the messages created by me and this friend.
+  const data = {
+    senderName: 'Misc',
+    createdAt: 123,
+    content: 'Hello World',
+  };
+  updateMessageBoard(data);
+
+  const channel = document.getElementById('chatroom-channel');
+  channel.innerText = 'Private Channel';
 }
