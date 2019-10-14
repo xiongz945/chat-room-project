@@ -153,6 +153,5 @@ hideDirBtn.onclick = () => {
 };
 
 function onHideDirBtnClick() {
-  $('#usersList').toggle();
   $('#hideDirBtn').text($('#hideDirBtn').text() == "Hide Directory"?"Show Directory":"Hide Directory"); 
 }
