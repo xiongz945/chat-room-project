@@ -35,10 +35,4 @@ router.patch(
   userController.patchUpdatePassword
 );
 
-router.delete(
-  '/me/delete',
-  passportConfig.isAuthenticated,
-  userController.deleteAccount
-);
-
 export default router;

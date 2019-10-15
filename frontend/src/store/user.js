@@ -12,6 +12,10 @@ const userActions = {
     storage.setItem('isLogin', false);
     storage.removeItem('user');
     storage.removeItem('userJWT');
+    storage.removeItem('status');
+  },
+  updateStatus(status) {
+    storage.setItem('status', status);
   },
 };
 
@@ -19,6 +23,7 @@ const userGetters = {
   user: () => JSON.parse(storage.getItem('user')),
   userJWT: () => storage.getItem('userJWT'),
   isLogin: () => storage.getItem('isLogin'),
+  status: () => storage.getItem('status'),
 };
 
 export default {

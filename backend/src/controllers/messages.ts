@@ -35,7 +35,6 @@ export const getHistoryMessage = async (
   }
 };
 
-
 export const postMessage = async (
   req: IPostMessageRequest,
   res: Response,
@@ -56,7 +55,6 @@ export const postMessage = async (
   }
 };
 
-
 export const getMessage = async (
   req: IGetMessageRequest,
   res: Response,
@@ -64,13 +62,12 @@ export const getMessage = async (
 ) => {
   try {
     const timestamp: Date = new Date(parseInt(req.query.timestamp));
-    const messages: any = await Message.find( 
-      { receiverId: 'public', 
-        createdAt: { $gte: timestamp } 
-      }).exec();
+    const messages: any = await Message.find({
+      receiverId: 'public',
+      createdAt: { $gte: timestamp },
+    }).exec();
     return res.status(200).json({ messages });
   } catch (err) {
     return next(err);
   }
 };
-

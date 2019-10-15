@@ -1,4 +1,4 @@
-import {API_ROOT} from '../../config.js';
+import { API_ROOT } from '../../config.js';
 
 import messageApis from '../../apis/message-apis.js';
 import messageStore from '../../store/message.js';
@@ -8,6 +8,19 @@ import userStore from '../../store/user.js';
 import router from '../../router.js';
 import userApis from '../../apis/user-apis.js';
 import chatroomApis from '../../apis/chatroom-apis.js';
+
+const statusMap = {
+  1: 'OK',
+  2: 'Help',
+  3: 'Emergency',
+};
+
+const imgMap = {
+  OK: '../../assets/img/green.jpg',
+  Help: '../../assets/img/yellow.jpg',
+  Emergency: '../../assets/img/red.jpg',
+  undefined: '../../assets/img/green.jpg',
+};
 
 // Set up Socket
 const socket = io(API_ROOT);
@@ -21,11 +34,15 @@ socket.on('PULL_NEW_MESSAGE', function(id) {
 });
 
 socket.on('USER_LOGIN', function(username) {
-  updateChatUser(username, true);
+  updateChatUserIsOnline(username, true);
 });
 
 socket.on('USER_LOGOUT', function(username) {
-  updateChatUser(username, false);
+  updateChatUserIsOnline(username, false);
+});
+
+socket.on('STATUS_UPDATE', function(updateDetails) {
+  updateChatUserStatus(updateDetails['username'], updateDetails['status']);
 });
 
 socket.on('disconnect', function() {
@@ -61,13 +78,29 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
   }
 });
 
+document.getElementById('shareStatusBtn').onclick = async () => {
+  closeMenu();
+  const statusCode = document.getElementById('statusSelect').value;
+  if (statusCode in statusMap) {
+    const status = statusMap[statusCode];
+    // the status remains the same actually
+    console.log('update status to ' + status);
+    await setUserStatus({ status: status });
+    socket.emit('NOTIFY_STATUS_UPDATE', {
+      username: userStore.userGetters.user().username,
+      status: status,
+    });
+    userStore.userActions.updateStatus(status);
+  }
+};
+
 // Set user isOnline to false when page unloads
 window.onbeforeunload = async (e) => {
   await logout();
 };
 
 // Set user isOnline field to 'true' when page is ready
-setUserIsOnline({isOnline: true});
+setUserIsOnline({ isOnline: true });
 
 // Load history messages
 receivePublicHistoryMessage();
@@ -133,7 +166,8 @@ async function getAllUserInfo() {
     const response = await chatroomApis.getPublicUsers();
     const users = response['data']['users'];
     for (const index in users) {
-      appendUserList(users[index]);
+      const user = users[index];
+      appendUserList(user);
     }
 
     socket.emit('NOTIFY_USER_LOGIN', userStore.userGetters.user().username);
@@ -152,6 +186,12 @@ async function setUserStatus(status) {
 
 async function setUserIsOnline(isOnline) {
   return await userApis.patchUserIsOnline(isOnline);
+}
+
+function closeMenu() {
+  let closeMenuBtn = document.getElementsByClassName('close-canvas-menu');
+  if (closeMenuBtn.length === 0) return;
+  closeMenuBtn[0].click();
 }
 
 function updateMessageBoard(data) {
@@ -200,13 +240,11 @@ function appendUserList(data) {
   chatUser.className = 'chat-user';
   chatUser.id = 'chat-user@' + data['username'];
 
-  if (data['isOnline'] === true) {
-    const statusBar = document.createElement('span');
-    statusBar.className = 'float-right label label-primary';
-    statusBar.id = 'status-bar';
-    statusBar.innerText = 'Online';
-    chatUser.appendChild(statusBar);
-  }
+  const onlineDot = document.createElement('span');
+  onlineDot.className = 'float-left online-dot';
+  onlineDot.id = 'online-dot';
+  onlineDot.style.visibility = data['isOnline'] === true ? 'visible' : 'hidden';
+  chatUser.appendChild(onlineDot);
 
   const chatAvatar = document.createElement('img');
   chatAvatar.className = 'chat-avatar';
@@ -222,6 +260,12 @@ function appendUserList(data) {
   username.href = '#';
   chatUserName.appendChild(username);
 
+  const statusIcon = document.createElement('img');
+  statusIcon.className = 'float-right status-icon';
+  statusIcon.src = imgMap[data['status']];
+  statusIcon.style.visibility =
+    data['status'] === undefined ? 'hidden' : 'visible';
+  chatUserName.appendChild(statusIcon);
   chatUser.appendChild(chatUserName);
 
   const list = document.getElementById('users-list');
@@ -229,27 +273,44 @@ function appendUserList(data) {
   list.scrollTop = list.scrollHeight;
 }
 
-function isStatusBarExisting(node) {
-  const child = node.firstChild;
-  return child.id === 'status-bar';
-}
-
-function updateChatUser(username, isOnline) {
+function updateChatUserIsOnline(username, isOnline) {
   const chatUser = document.getElementById('chat-user@' + username);
   if (chatUser === null) {
-    appendUserList({ username: username, isOnline: isOnline });
+    appendUserList({
+      username: username,
+      isOnline: isOnline,
+      status: undefined,
+    });
     return;
   }
 
-  if (isOnline === true && !isStatusBarExisting(chatUser)) {
-    const statusBar = document.createElement('span');
-    statusBar.className = 'float-right label label-primary';
-    statusBar.id = 'status-bar';
-    statusBar.innerText = 'Online';
-    chatUser.insertBefore(statusBar, chatUser.firstChild);
+  const onlineDot = chatUser.firstChild;
+  onlineDot.style.visibility = isOnline ? 'visible' : 'hidden';
+}
+
+function updateChatUserStatus(username, status) {
+  const chatUser = document.getElementById('chat-user@' + username);
+  if (chatUser === null) {
+    appendUserList({ username: username, isOnline: true, status: status });
     return;
   }
-  if (isOnline === false && isStatusBarExisting(chatUser)) {
-    chatUser.removeChild(chatUser.childNodes[0]);
+  let statusIcon = chatUser.getElementsByClassName('status-icon');
+  if (statusIcon.length > 0) {
+    statusIcon = statusIcon[0];
+    statusIcon.src = imgMap[status];
+    statusIcon.style.visibility = status === undefined ? 'hidden' : 'visible';
   }
+}
+
+let hideDirBtn = document.getElementById('hideDirBtn');
+hideDirBtn.onclick = () => {
+  onHideDirBtnClick();
+};
+
+function onHideDirBtnClick() {
+  $('#hideDirBtn').text(
+    $('#hideDirBtn').text() == 'Hide Directory'
+      ? 'Show Directory'
+      : 'Hide Directory'
+  );
 }
