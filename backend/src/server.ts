@@ -44,4 +44,8 @@ io.on('connection', function(socket) {
   socket.on('NOTIFY_USER_LOGOUT', function(username) {
     io.emit('USER_LOGOUT', username);
   });
+
+  socket.on('NOTIFY_STATUS_UPDATE', function(updateDetails) {
+    io.emit('STATUS_UPDATE', updateDetails);
+  });
 });

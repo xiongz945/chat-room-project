@@ -9,6 +9,12 @@ import router from '../../router.js';
 import userApis from '../../apis/user-apis.js';
 import chatroomApis from '../../apis/chatroom-apis.js';
 
+const statusMap = {
+  1: 'OK',
+  2: 'Help',
+  3: 'Emergency'
+};
+
 const imgMap = {
   'OK': '../../assets/img/green.jpg',
   'Help': '../../assets/img/yellow.jpg',
@@ -33,6 +39,10 @@ socket.on('USER_LOGIN', function(username) {
 
 socket.on('USER_LOGOUT', function(username) {
   updateChatUserIsOnline(username, false);
+});
+
+socket.on('STATUS_UPDATE', function(updateDetails) {
+  updateChatUserStatus(updateDetails['username'], updateDetails['status']);
 });
 
 socket.on('disconnect', function() {
@@ -67,6 +77,24 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
     this.value = '';
   }
 });
+
+document.getElementById('shareStatusBtn').onclick = async () => {
+  closeMenu();
+  const statusCode = document.getElementById('statusSelect').value;
+  if (statusCode in statusMap) {
+    const status = statusMap[statusCode];
+    // the status remains the same actually
+    console.log('update status to ' + status);
+    await setUserStatus({status: status});
+    socket.emit('NOTIFY_STATUS_UPDATE',
+      {
+        username: userStore.userGetters.user().username,
+        status: status
+      }
+    );
+    userStore.userActions.updateStatus(status);
+  }
+};
 
 // Set user isOnline to false when page unloads
 window.onbeforeunload = async (e) => {
@@ -140,7 +168,8 @@ async function getAllUserInfo() {
     const response = await chatroomApis.getPublicUsers();
     const users = response['data']['users'];
     for (const index in users) {
-      appendUserList(users[index]);
+      const user = users[index];
+      appendUserList(user);
     }
 
     socket.emit('NOTIFY_USER_LOGIN', userStore.userGetters.user().username);
@@ -159,6 +188,15 @@ async function setUserStatus(status) {
 
 async function setUserIsOnline(isOnline) {
   return await userApis.patchUserIsOnline(isOnline);
+}
+
+function closeMenu(){
+  let closeMenuBtn = document.getElementsByClassName(
+    'close-canvas-menu'
+  );
+  if (closeMenuBtn.length === 0)
+    return;
+  closeMenuBtn[0].click();
 }
 
 function updateMessageBoard(data) {
@@ -240,11 +278,6 @@ function appendUserList(data) {
   list.scrollTop = list.scrollHeight;
 }
 
-function isOnlineDotVisible(node) {
-  const onlineDot = node.firstChild;
-  return onlineDot.style.visibility === 'visible';
-}
-
 function updateChatUserIsOnline(username, isOnline) {
   const chatUser = document.getElementById('chat-user@' + username);
   if (chatUser === null) {
@@ -267,7 +300,7 @@ function updateChatUserStatus(username, status) {
     statusIcon = statusIcon[0];
     statusIcon.src = imgMap[status];
     statusIcon.style.visibility
-      = data['status'] === undefined ? 'hidden' : 'visible';
+      = status === undefined ? 'hidden' : 'visible';
   }
 }
 

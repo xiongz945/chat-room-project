@@ -12,7 +12,7 @@ export const getPublicUsers = async (
   next: NextFunction
 ) => {
   try {
-    const users = await User.getAllUsers('username isOnline');
+    const users = await User.getAllUsers('username isOnline status');
     return res.status(200).json({ users });
   } catch (err) {
     next(err);
