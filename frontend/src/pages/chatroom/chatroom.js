@@ -11,14 +11,30 @@ import chatroomApis from '../../apis/chatroom-apis.js';
 
 // Set up Socket
 const socket = io(API_ROOT);
+socket.emit('REGISTER', userStore.userGetters.user().username);
 
 socket.on('connect', function() {
   console.log('Socket connected');
 });
 
 socket.on('PULL_NEW_MESSAGE', function(id) {
-  console.log(id);
-  receivePublicMessage();
+  if (userStore.userGetters.chatMode() == 'public') {
+    receivePublicMessage();
+  }
+});
+
+socket.on('PULL_NEW_PRIVATE_MESSAGE', function(payload) {
+  if (userStore.userGetters.chatMode() == 'private') {
+    const me = userStore.userGetters.user()['username'];
+    const peer = userStore.userGetters.chatPeer();
+
+    if (
+      (me === payload.receiverName && peer === payload.senderName) ||
+      (peer === payload.receiverName && me === payload.senderName)
+    ) {
+      receivePrivateMessage(payload);
+    }
+  }
 });
 
 socket.on('USER_LOGIN', function(username) {
@@ -71,18 +87,21 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
   const key = e.which || e.keyCode;
   if (key === 13) {
     // 13 is enter
-    sendPublicMessage();
+
+    if (userStore.userGetters.chatMode() == 'public') {
+      sendPublicMessage();
+    } else {
+      sendPrivateMessage();
+    }
 
     e.preventDefault();
     this.value = '';
   }
 });
 
-document
-  .querySelector('#menu-chatroom')
-  .addEventListener('click', function(e) {
-    switchToPublicChat();
-  });
+document.querySelector('#menu-chatroom').addEventListener('click', function(e) {
+  switchToPublicChat();
+});
 
 // Function definations
 async function receivePublicHistoryMessage() {
@@ -105,15 +124,76 @@ async function receivePublicHistoryMessage() {
   }
 }
 
+async function receivePrivateHistoryMessage() {
+  // FIXME: Decide the number of messages to be loaded.
+  const query = {
+    start: 0,
+    end: 5,
+  };
+
+  try {
+    const me = userStore.userGetters.user()['username'];
+    const peer = userStore.userGetters.chatPeer();
+
+    let messages = [];
+
+    query['senderName'] = me;
+    query['receiverName'] = peer;
+    let response = await messageApis.getPrivateHistoryMessage(peer, query);
+    for (const index in response['data']['messages']) {
+      messages.push(response['data']['messages'][index]);
+    }
+
+    if (me !== peer) {
+      query['senderName'] = peer;
+      query['receiverName'] = me;
+      response = await messageApis.getPrivateHistoryMessage(me, query);
+      for (const index in response['data']['messages']) {
+        messages.push(response['data']['messages'][index]);
+      }
+    }
+
+    messages.sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
+
+    for (const index in messages) {
+      updateMessageBoard(messages[index]);
+    }
+
+    clockStore.clockActions.updateClock(Date.now());
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 async function sendPublicMessage() {
   const newMessage = {
     senderName: userStore.userGetters.user().username,
-    senderId: userStore.userGetters.user().id,
     message: document.querySelector('#message').value,
   };
   try {
     await messageApis.postPublicMessage(newMessage);
     socket.emit('PUSH_NEW_MESSAGE');
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function sendPrivateMessage() {
+  const peer = userStore.userGetters.chatPeer();
+
+  const newMessage = {
+    senderName: userStore.userGetters.user().username,
+    receiverName: peer,
+    message: document.querySelector('#message').value,
+  };
+  try {
+    const payload = {
+      senderName: userStore.userGetters.user().username,
+      receiverName: peer,
+      timestamp: Date.now(),
+    };
+    await messageApis.postPrivateMessage(peer, newMessage);
+    socket.emit('PUSH_NEW_PRIVATE_MESSAGE', payload);
   } catch (e) {
     console.log(e);
   }
@@ -126,6 +206,28 @@ async function receivePublicMessage() {
 
   try {
     const response = await messageApis.getPublicMessage(query);
+    const messages = response['data']['messages'];
+    for (const index in messages) {
+      updateMessageBoard(messages[index]);
+    }
+
+    clockStore.clockActions.updateClock(Date.now());
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function receivePrivateMessage(payload) {
+  const query = {
+    timestamp: payload.timestamp,
+    receiverName: payload.receiverName,
+  };
+
+  try {
+    const response = await messageApis.getPrivateMessage(
+      payload.receiverName,
+      query
+    );
     const messages = response['data']['messages'];
     for (const index in messages) {
       updateMessageBoard(messages[index]);
@@ -275,6 +377,8 @@ function updateChatUser(username, isOnline) {
 }
 
 function switchToPublicChat() {
+  userStore.userActions.switchChatMode('public');
+
   cleanMessageBoard();
   receivePublicHistoryMessage();
 
@@ -282,17 +386,13 @@ function switchToPublicChat() {
   channel.innerText = 'Public Chatroom';
 }
 
-function switchToPrivateChat(friendName) {
-  userStore.userActions.appendFriendList(friendName);
-  cleanMessageBoard();
+function switchToPrivateChat(peer) {
+  userStore.userActions.updateChatPeer(peer);
+  userStore.userActions.updateRecentPeer(peer);
+  userStore.userActions.switchChatMode('private');
 
-  // FIXME: Need to fetch the messages created by me and this friend.
-  const data = {
-    senderName: 'Misc',
-    createdAt: 123,
-    content: 'Hello World',
-  };
-  updateMessageBoard(data);
+  cleanMessageBoard();
+  receivePrivateHistoryMessage();
 
   const channel = document.getElementById('chatroom-channel');
   channel.innerText = 'Private Channel';
