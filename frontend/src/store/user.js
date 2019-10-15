@@ -18,6 +18,7 @@ const userActions = {
     storage.removeItem('peerList');
     storage.removeItem('chatMode');
     storage.removeItem('chatPeer');
+    storage.removeItem('status');
   },
   updateRecentPeer(peer) {
     const peerList = userGetters.peerList();
@@ -32,6 +33,9 @@ const userActions = {
   updateChatPeer(peer) {
     storage.setItem('chatPeer', peer);
   },
+  updateStatus(status) {
+    storage.setItem('status', status);
+  },
 };
 
 const userGetters = {
@@ -41,6 +45,7 @@ const userGetters = {
   peerList: () => JSON.parse(storage.getItem('peerList')),
   chatMode: () => storage.getItem('chatMode'),
   chatPeer: () => storage.getItem('chatPeer'),
+  status: () => storage.getItem('status'),
 };
 
 export default {

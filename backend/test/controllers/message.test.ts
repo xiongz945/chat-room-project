@@ -90,6 +90,7 @@ describe('Test Message Controller', () => {
 
     await msgController.postMessage(req, res, next);
     expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith('{}');
   });
 
   test('getMessage() - get a new message', async () => {
