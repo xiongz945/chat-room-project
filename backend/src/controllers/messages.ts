@@ -22,8 +22,8 @@ export const getHistoryMessage = async (
   next: NextFunction
 ) => {
   try {
-    const receiverId: string = req.params.receiverId || 'public';
-    let messages: MessageDocument[] = await Message.find({ receiverId }).exec();
+    const receiverName: string = req.params.receiverName || 'public';
+    let messages: MessageDocument[] = await Message.find({ receiverName }).exec();
 
     const messageLength = messages.length;
     messages = messages.slice(
@@ -45,7 +45,7 @@ export const postMessage = async (
     const message = new Message({
       senderName: req.body.senderName,
       senderId: req.body.senderId,
-      receiverId: req.params.receiverId || 'public',
+      receiverName: req.params.receiverName || 'public',
       content: req.body.message,
     });
     await message.save();
@@ -63,7 +63,7 @@ export const getMessage = async (
   try {
     const timestamp: Date = new Date(parseInt(req.query.timestamp));
     const messages: any = await Message.find({
-      receiverId: req.params.receiverId || 'public',
+      receiverName: req.params.receiverName || 'public',
       createdAt: { $gte: timestamp },
     }).exec();
     return res.status(200).json({ messages });
