@@ -1,0 +1,41 @@
+ersion: 2.1 # CircleCI syntax version
+jobs: # a collection of steps
+  build: # runs that are not using Workflows must have a `build` job as the entry point
+    docker: # run the steps with Docker
+      - image: circleci/node:8.10.0# ...with this image as the primary container;
+    steps: # a collection of executable commands 
+      - checkout # special step to check out source code to working directory
+      - restore_cache: # special step to restore the dependency cache 
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install-npm-tools
+          command: sudo npm install -g jest
+      - run:
+          name: install-new-modules
+          command: sudo npm install
+      - save_cache: # special step to save the dependency cache
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run: 
+          name: cc-test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run: # run tests
+          name: make_dir
+          command: sudo mkdir -p $CIRCLE_TEST_REPORTS/mocha
+      - run: # run tests
+          name: test
+          environment: 
+            CC_TEST_REPORTER_ID: 3f28740af30153569a3c81da5948b1c12aa13760212b2f2cf59cc8c585e78871
+          command: |
+            if [ "$CIRCLE_BRANCH" == "master" ];
+            then
+              ./cc-test-reporter before-build
+            fi
+            grunt circleci
+            if [ "$CIRCLE_BRANCH" == "master" ];
+            then
+              ./cc-test-reporter after-build -p "/home/circleci/project/" -t lcov --debug --exit-code $?
+            fi
