@@ -195,6 +195,7 @@ function updateMessageBoard(data) {
   board.scrollTop = board.scrollHeight;
 }
 
+<<<<<<< HEAD
 function appendUserList(data) {
   const chatUser = document.createElement('div');
   chatUser.className = 'chat-user';
@@ -253,3 +254,13 @@ function updateChatUser(username, isOnline) {
     chatUser.removeChild(chatUser.childNodes[0]);
   }
 }
+=======
+let hideDirBtn = document.getElementById('hideDirBtn');
+hideDirBtn.onclick = () => {
+  onHideDirBtnClick();
+};
+
+function onHideDirBtnClick() {
+  $('#hideDirBtn').text($('#hideDirBtn').text() == "Hide Directory"?"Show Directory":"Hide Directory"); 
+}
+>>>>>>> xiongzeng@responsive_UI
