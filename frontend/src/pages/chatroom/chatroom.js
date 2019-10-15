@@ -106,7 +106,7 @@ document.getElementById('hideDirBtn').onclick = () => {
       ? 'Show Directory'
       : 'Hide Directory'
   );
-}
+};
 
 document.querySelector('#message').addEventListener('keypress', function(e) {
   const key = e.which || e.keyCode;
@@ -123,7 +123,6 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
     this.value = '';
   }
 });
-
 
 document.querySelector('#menu-chatroom').addEventListener('click', function(e) {
   switchToPublicChat();
@@ -158,7 +157,6 @@ receivePublicHistoryMessage();
 
 // Get all users
 getAllUserInfo();
-
 
 // Function definations
 async function receivePublicHistoryMessage() {
@@ -469,5 +467,3 @@ function switchToPrivateChat(peer) {
   const channel = document.getElementById('chatroom-channel');
   channel.innerText = 'Private Channel';
 }
-
-
