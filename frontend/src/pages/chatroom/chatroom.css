@@ -6,3 +6,9 @@
   width: 8px;
   margin: 0 2px;
 }
+
+.user-card {
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
