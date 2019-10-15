@@ -2,8 +2,7 @@ import mongoose from 'mongoose';
 
 export type MessageDocument = mongoose.Document & {
   senderName: String;
-  senderId: String;
-  receiverId?: String;
+  receiverName: String;
   content: String;
   createdAt: Date;
   updatedAt: Date;
@@ -12,11 +11,9 @@ export type MessageDocument = mongoose.Document & {
 const messageSchema = new mongoose.Schema(
   {
     senderName: String,
-    senderId: String,
-    receiverId: {
+    receiverName: {
       type: String,
-      required: false,
-      default: undefined,
+      default: 'public',
     },
     content: String,
   },

@@ -1,27 +1,29 @@
 import mongoose from 'mongoose';
-import { Request, Response, NextFunction } from 'express';
 import * as msgController from '../../src/controllers/messages';
 
 import { Message } from '../../src/models/Message';
 import { MONGODB_URI } from '../../src/config/secrets';
-const MONGODB_URI_TEST = MONGODB_URI + 'test_message';
+
 describe('Test Message Controller', () => {
   beforeAll(async () => {
+    const MONGODB_URI_TEST = MONGODB_URI + '_message';
     mongoose
       .connect(MONGODB_URI_TEST, { useNewUrlParser: true })
       .then(() => {})
       .catch((err) => {
         console.log(err);
       });
+
     const message = new Message({
       senderName: 'abc',
-      senderId: '123',
       content: 'Testing',
-      receiverId: 'public',
+      receiverName: 'public',
       createdAt: '2019-09-30T19:37:46.495Z',
     });
+
     await message.save();
   });
+
   afterAll(async () => {
     await mongoose.connection.db.dropDatabase();
   });
@@ -31,6 +33,9 @@ describe('Test Message Controller', () => {
       query: {
         start: 0,
         end: 10,
+      },
+      params: {
+        // receiverName: 'public'
       },
     };
     const res: any = {
@@ -56,7 +61,7 @@ describe('Test Message Controller', () => {
         {
           senderName: 'abc',
           content: 'Testing',
-          receiverId: 'public',
+          receiverName: 'public',
         },
       ],
     });
@@ -68,6 +73,9 @@ describe('Test Message Controller', () => {
         senderName: 'def',
         senderId: '456',
         message: 'Testing again',
+      },
+      params: {
+        // receiverName: 'public'
       },
     };
     const res: any = {
@@ -89,6 +97,9 @@ describe('Test Message Controller', () => {
     const req: any = {
       query: {
         timestamp: '2019-09-30T19:37:46.495Z',
+      },
+      params: {
+        // receiverName: 'public'
       },
     };
     const res: any = {
@@ -116,12 +127,12 @@ describe('Test Message Controller', () => {
         {
           senderName: 'abc',
           content: 'Testing',
-          receiverId: 'public',
+          receiverName: 'public',
         },
         {
           senderName: 'def',
           content: 'Testing again',
-          receiverId: 'public',
+          receiverName: 'public',
         },
       ],
     });

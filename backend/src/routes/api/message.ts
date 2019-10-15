@@ -6,17 +6,17 @@ const router = express.Router();
 
 // User login
 router.get(
-  '/public/history',
+  '/:receiverName/history',
   passportConfig.isAuthenticated,
   messageController.getHistoryMessage
 );
 router.post(
-  '/public',
+  '/:receiverName',
   passportConfig.isAuthenticated,
   messageController.postMessage
 );
 router.get(
-  '/public',
+  '/:receiverName',
   passportConfig.isAuthenticated,
   messageController.getMessage
 );

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Message } from '../models/Message';
+import { Message, MessageDocument } from '../models/Message';
 
 import socket from 'socket.io';
 import io from '../server';
@@ -22,12 +22,22 @@ export const getHistoryMessage = async (
   next: NextFunction
 ) => {
   try {
-    const query: any = req.query;
-    let messages: any = await Message.find({}).exec();
+    const receiverName: string = req.params.receiverName || 'public';
+
+    let messages: MessageDocument[] = [];
+    if (req.query.senderName === undefined) {
+      messages = await Message.find({ receiverName }).exec();
+    } else {
+      messages = await Message.find({
+        senderName: req.query.senderName,
+        receiverName: receiverName,
+      }).exec();
+    }
+
     const messageLength = messages.length;
     messages = messages.slice(
-      messageLength - query.end,
-      messageLength - query.start
+      messageLength - req.query.end,
+      messageLength - req.query.start
     );
     return res.status(200).json({ messages });
   } catch (err) {
@@ -44,11 +54,10 @@ export const postMessage = async (
     const message = new Message({
       senderName: req.body.senderName,
       senderId: req.body.senderId,
-      receiverId: 'public',
+      receiverName: req.params.receiverName || 'public',
       content: req.body.message,
     });
     await message.save();
-    console.log(message);
     return res.status(200).json('{}');
   } catch (err) {
     next(err);
@@ -62,11 +71,21 @@ export const getMessage = async (
 ) => {
   try {
     const timestamp: Date = new Date(parseInt(req.query.timestamp));
-    const messages: any = await Message.find({
-      receiverId: 'public',
-      createdAt: { $gte: timestamp },
-    }).exec();
-    return res.status(200).json({ messages });
+
+    if (req.params.senderName === undefined) {
+      const messages: any = await Message.find({
+        receiverName: req.params.receiverName || 'public',
+        createdAt: { $gte: timestamp },
+      }).exec();
+      return res.status(200).json({ messages });
+    } else {
+      const messages: any = await Message.find({
+        senderName: req.params.senderName,
+        receiverName: req.params.receiverName || 'public',
+        createdAt: { $gte: timestamp },
+      }).exec();
+      return res.status(200).json({ messages });
+    }
   } catch (err) {
     return next(err);
   }

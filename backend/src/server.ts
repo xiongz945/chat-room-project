@@ -28,13 +28,28 @@ export default server;
  */
 export const io = socket(server);
 
+const sockets: Record<string, socket.Socket> = {};
+
 // // Add log for io connection
 io.on('connection', function(socket) {
   console.log(`SOCKET CONNECTED: ${socket.id}`);
 
   // FIXME: Need to refactor this snippet.
+  socket.on('REGISTER', function(username: string) {
+    sockets[username] = socket;
+  });
+
   socket.on('PUSH_NEW_MESSAGE', function() {
     io.emit('PULL_NEW_MESSAGE', 'public');
+  });
+
+  socket.on('PUSH_NEW_PRIVATE_MESSAGE', function(payload) {
+    socket.emit('PULL_NEW_PRIVATE_MESSAGE', payload);
+    const senderName = payload['senderName'];
+    const receiverName = payload['receiverName'];
+    if (receiverName in sockets && senderName !== receiverName) {
+      sockets[receiverName].emit('PULL_NEW_PRIVATE_MESSAGE', payload);
+    }
   });
 
   socket.on('NOTIFY_USER_LOGIN', function(username) {
