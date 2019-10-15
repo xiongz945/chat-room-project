@@ -16,9 +16,8 @@ describe('Test Message Controller', () => {
 
     const message = new Message({
       senderName: 'abc',
-      senderId: '123',
       content: 'Testing',
-      receiverId: 'public',
+      receiverName: 'public',
       createdAt: '2019-09-30T19:37:46.495Z',
     });
 
@@ -36,7 +35,7 @@ describe('Test Message Controller', () => {
         end: 10,
       },
       params: {
-        // receiverId: 'public'
+        // receiverName: 'public'
       },
     };
     const res: any = {
@@ -62,7 +61,7 @@ describe('Test Message Controller', () => {
         {
           senderName: 'abc',
           content: 'Testing',
-          receiverId: 'public',
+          receiverName: 'public',
         },
       ],
     });
@@ -76,7 +75,7 @@ describe('Test Message Controller', () => {
         message: 'Testing again',
       },
       params: {
-        // receiverId: 'public'
+        // receiverName: 'public'
       },
     };
     const res: any = {
@@ -99,7 +98,7 @@ describe('Test Message Controller', () => {
         timestamp: '2019-09-30T19:37:46.495Z',
       },
       params: {
-        // receiverId: 'public'
+        // receiverName: 'public'
       },
     };
     const res: any = {
@@ -127,12 +126,12 @@ describe('Test Message Controller', () => {
         {
           senderName: 'abc',
           content: 'Testing',
-          receiverId: 'public',
+          receiverName: 'public',
         },
         {
           senderName: 'def',
           content: 'Testing again',
-          receiverId: 'public',
+          receiverName: 'public',
         },
       ],
     });
