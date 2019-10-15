@@ -254,3 +254,11 @@ function updateChatUser(username, isOnline) {
   }
 }
 
+let hideDirBtn = document.getElementById('hideDirBtn');
+hideDirBtn.onclick = () => {
+  onHideDirBtnClick();
+};
+
+function onHideDirBtnClick() {
+  $('#hideDirBtn').text($('#hideDirBtn').text() == "Hide Directory"?"Show Directory":"Hide Directory"); 
+}
