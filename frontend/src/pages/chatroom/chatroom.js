@@ -144,20 +144,6 @@ document.getElementById('shareStatusBtn').onclick = async () => {
   }
 };
 
-// Set user isOnline to false when page unloads
-window.onbeforeunload = async (e) => {
-  await logout();
-};
-
-// Set user isOnline field to 'true' when page is ready
-setUserIsOnline({ isOnline: true });
-
-// Load history messages
-receivePublicHistoryMessage();
-
-// Get all users
-getAllUserInfo();
-
 // Function definations
 async function receivePublicHistoryMessage() {
   // FIXME: Decide the number of messages to be loaded.
