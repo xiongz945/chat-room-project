@@ -8,7 +8,7 @@
 
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
     <link href="/assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
-    <link href="chatroom.css" rel="stylesheet">
+    <link href="chatroom.css" rel="stylesheet" />
     <link href="/assets/css/animate.css" rel="stylesheet" />
     <link href="/assets/css/style.css" rel="stylesheet" />
   </head>
@@ -28,20 +28,29 @@
                 </h2>
               </div>
             </li>
-            <li style="margin:10px">           
+            <li style="margin:10px">
               <div class="input-group">
-                  <select class="custom-select custom-select-sm" id="statusSelect">
-                    <option selected>Choose Your Status</option>
-                    <option value="1">✅ OK</option>
-                    <option value="2">⚠️ Help</option>
-                    <option value="3">🆘 Emergency</option>
-                  </select>
-                  <div class="input-group-append">
-                    <button class="btn btn-primary btn-sm" type="button" id="shareStatusBtn">Share</button>
-                  </div>
+                <select
+                  class="custom-select custom-select-sm"
+                  id="statusSelect"
+                >
+                  <option selected>Choose Your Status</option>
+                  <option value="1">✅ OK</option>
+                  <option value="2">⚠️ Help</option>
+                  <option value="3">🆘 Emergency</option>
+                </select>
+                <div class="input-group-append">
+                  <button
+                    class="btn btn-primary btn-sm"
+                    type="button"
+                    id="shareStatusBtn"
+                  >
+                    Share
+                  </button>
                 </div>
+              </div>
             </li>
-            <div><br></div>
+            <div><br /></div>
             <div></div>
             <li class="active">
               <a href="/pages/chatroom/chatroom.html"
@@ -129,16 +138,28 @@
                 <div class="ibox-content">
                   <div class="row">
                     <div class="col-md-3">
-                        <div class="d-md-none text-center">
-                            <button class="btn-xs btn-primary btn-outline" id="hideDirBtn" data-toggle="collapse" data-target="#chat-users" aria-expanded="false" aria-controls="chat-users">Hide Directory</button>
-                        </div>                      
-                      <div class="chat-users collapse show card card-body" id="chat-users">
+                      <div class="d-md-none text-center">
+                        <button
+                          class="btn-xs btn-primary btn-outline"
+                          id="hideDirBtn"
+                          data-toggle="collapse"
+                          data-target="#chat-users"
+                          aria-expanded="false"
+                          aria-controls="chat-users"
+                        >
+                          Hide Directory
+                        </button>
+                      </div>
+                      <div
+                        class="chat-users collapse show card card-body"
+                        id="chat-users"
+                      >
                         <div id="users-list" class="users-list"></div>
                       </div>
                     </div>
                     <div class="col-md-9 ">
-                        <div id="message-board" class="chat-discussion"></div>
-                      </div>
+                      <div id="message-board" class="chat-discussion"></div>
+                    </div>
                   </div>
                   <div class="row">
                     <div class="col-lg-12">

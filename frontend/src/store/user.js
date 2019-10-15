@@ -23,7 +23,7 @@ const userGetters = {
   user: () => JSON.parse(storage.getItem('user')),
   userJWT: () => storage.getItem('userJWT'),
   isLogin: () => storage.getItem('isLogin'),
-  status: () => storage.getItem('status')
+  status: () => storage.getItem('status'),
 };
 
 export default {

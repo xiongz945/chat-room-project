@@ -1,8 +1,8 @@
 .online-dot {
-    display: inline-block;
-    border-radius: 50%;
-    background-color: #449D44;
-    height: 8px;
-    width: 8px;
-    margin: 0 2px;
+  display: inline-block;
+  border-radius: 50%;
+  background-color: #449d44;
+  height: 8px;
+  width: 8px;
+  margin: 0 2px;
 }

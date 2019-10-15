@@ -1,4 +1,4 @@
-import {API_ROOT} from '../../config.js';
+import { API_ROOT } from '../../config.js';
 
 import messageApis from '../../apis/message-apis.js';
 import messageStore from '../../store/message.js';
@@ -12,14 +12,14 @@ import chatroomApis from '../../apis/chatroom-apis.js';
 const statusMap = {
   1: 'OK',
   2: 'Help',
-  3: 'Emergency'
+  3: 'Emergency',
 };
 
 const imgMap = {
-  'OK': '../../assets/img/green.jpg',
-  'Help': '../../assets/img/yellow.jpg',
-  'Emergency': '../../assets/img/red.jpg',
-  undefined : '../../assets/img/green.jpg'
+  OK: '../../assets/img/green.jpg',
+  Help: '../../assets/img/yellow.jpg',
+  Emergency: '../../assets/img/red.jpg',
+  undefined: '../../assets/img/green.jpg',
 };
 
 // Set up Socket
@@ -85,13 +85,11 @@ document.getElementById('shareStatusBtn').onclick = async () => {
     const status = statusMap[statusCode];
     // the status remains the same actually
     console.log('update status to ' + status);
-    await setUserStatus({status: status});
-    socket.emit('NOTIFY_STATUS_UPDATE',
-      {
-        username: userStore.userGetters.user().username,
-        status: status
-      }
-    );
+    await setUserStatus({ status: status });
+    socket.emit('NOTIFY_STATUS_UPDATE', {
+      username: userStore.userGetters.user().username,
+      status: status,
+    });
     userStore.userActions.updateStatus(status);
   }
 };
@@ -102,7 +100,7 @@ window.onbeforeunload = async (e) => {
 };
 
 // Set user isOnline field to 'true' when page is ready
-setUserIsOnline({isOnline: true});
+setUserIsOnline({ isOnline: true });
 
 // Load history messages
 receivePublicHistoryMessage();
@@ -190,12 +188,9 @@ async function setUserIsOnline(isOnline) {
   return await userApis.patchUserIsOnline(isOnline);
 }
 
-function closeMenu(){
-  let closeMenuBtn = document.getElementsByClassName(
-    'close-canvas-menu'
-  );
-  if (closeMenuBtn.length === 0)
-    return;
+function closeMenu() {
+  let closeMenuBtn = document.getElementsByClassName('close-canvas-menu');
+  if (closeMenuBtn.length === 0) return;
   closeMenuBtn[0].click();
 }
 
@@ -268,8 +263,8 @@ function appendUserList(data) {
   const statusIcon = document.createElement('img');
   statusIcon.className = 'float-right status-icon';
   statusIcon.src = imgMap[data['status']];
-  statusIcon.style.visibility
-    = data['status'] === undefined ? 'hidden' : 'visible';
+  statusIcon.style.visibility =
+    data['status'] === undefined ? 'hidden' : 'visible';
   chatUserName.appendChild(statusIcon);
   chatUser.appendChild(chatUserName);
 
@@ -281,7 +276,11 @@ function appendUserList(data) {
 function updateChatUserIsOnline(username, isOnline) {
   const chatUser = document.getElementById('chat-user@' + username);
   if (chatUser === null) {
-    appendUserList({ username: username, isOnline: isOnline , status: undefined});
+    appendUserList({
+      username: username,
+      isOnline: isOnline,
+      status: undefined,
+    });
     return;
   }
 
@@ -292,15 +291,14 @@ function updateChatUserIsOnline(username, isOnline) {
 function updateChatUserStatus(username, status) {
   const chatUser = document.getElementById('chat-user@' + username);
   if (chatUser === null) {
-    appendUserList({username: username, isOnline: true, status: status});
+    appendUserList({ username: username, isOnline: true, status: status });
     return;
   }
   let statusIcon = chatUser.getElementsByClassName('status-icon');
   if (statusIcon.length > 0) {
     statusIcon = statusIcon[0];
     statusIcon.src = imgMap[status];
-    statusIcon.style.visibility
-      = status === undefined ? 'hidden' : 'visible';
+    statusIcon.style.visibility = status === undefined ? 'hidden' : 'visible';
   }
 }
 
@@ -310,5 +308,9 @@ hideDirBtn.onclick = () => {
 };
 
 function onHideDirBtnClick() {
-  $('#hideDirBtn').text($('#hideDirBtn').text() == "Hide Directory"?"Show Directory":"Hide Directory"); 
+  $('#hideDirBtn').text(
+    $('#hideDirBtn').text() == 'Hide Directory'
+      ? 'Show Directory'
+      : 'Hide Directory'
+  );
 }

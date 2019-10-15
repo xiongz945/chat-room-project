@@ -1,4 +1,4 @@
-import {get, patch, post} from '../utils/http.js';
+import { get, patch, post } from '../utils/http.js';
 
 export default {
   // User Login
@@ -15,7 +15,7 @@ export default {
     return await patch('/user/me/status', status);
   },
 
-  async patchUserIsOnline(isOnline){
+  async patchUserIsOnline(isOnline) {
     return await patch('/user/me/isOnline', isOnline);
   },
 
@@ -35,5 +35,4 @@ export default {
     const res = await post('/user/me/password', data);
     return res;
   },
-
 };
