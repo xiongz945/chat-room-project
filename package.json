@@ -13,7 +13,7 @@
     "build": "npm run build-ts && npm run tslint",
     "serve": "node dist/server.js",
     "watch-node": "nodemon dist/server.js",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "test": "jest --forceExit --coverage --verbose --detectOpenHandles",
     "watch-test": "npm run test -- --watchAll",
     "build-ts": "tsc",
@@ -22,7 +22,7 @@
     "lint": "prettier --write --config ./package.json \"**/*.{ts,js,json,css,scss,html,md,vue,less}\"",
     "debug": "npm run build && npm run watch-debug",
     "serve-debug": "nodemon --inspect dist/server.js",
-    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
+    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\""
   },
   "dependencies": {
     "@types/express-jwt": "0.0.42",
@@ -91,7 +91,6 @@
     "chai": "^4.2.0",
     "concurrently": "^4.1.0",
     "jest": "^24.8.0",
-    "node-sass": "^4.12.0",
     "nodemon": "^1.19.1",
     "shelljs": "^0.8.3",
     "supertest": "^4.0.2",
