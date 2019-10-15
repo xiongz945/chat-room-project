@@ -65,6 +65,18 @@ describe('Test User Model', () => {
     expect(user.isOnline).toBe(false);
   });
 
+  test('setStatus() - Can set user to OK', async () => {
+    const status = 'OK';
+    await user.setStatus(status);
+    expect(user.status).toBe('OK');
+  });
+
+  test('setStatus() - Can set user to need help', async () => {
+    const status = 'Help';
+    await user.setStatus(status);
+    expect(user.status).toBe('Help');
+  });
+  
   test('getAllUsers() - Can get all users in the collection', async () => {
     const users: IUserDocument[] = await User.getAllUsers('username');
     const createdUsernames = ['123', '456', '789'];
