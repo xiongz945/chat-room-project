@@ -6261,7 +6261,7 @@ dd.project-people {
 }
 .chat-users,
 .chat-statistic {
-  /* margin-left: -30px; */
+  margin-left: -30px;
 }
 @media (max-width: 992px) {
   .chat-users,
