@@ -8,7 +8,7 @@
     "build": "npm run build:types && npm run build:js",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src  --ignore src/assets --out-dir dist --source-maps inline",
-    "serve": "http-server ./src -p 4001",
+    "serve": "http-server ./src -p 4000",
     "lint": "prettier --write --config ./package.json \"**/*.{ts,js,json,css,scss,html,md,vue,less}\""
   },
   "devDependencies": {
