@@ -1,4 +1,4 @@
-import {API_ROOT} from '../../config.js';
+import { API_ROOT } from '../../config.js';
 
 import messageApis from '../../apis/message-apis.js';
 import messageStore from '../../store/message.js';
@@ -11,13 +11,30 @@ import chatroomApis from '../../apis/chatroom-apis.js';
 
 // Set up Socket
 const socket = io(API_ROOT);
+socket.emit('REGISTER', userStore.userGetters.user().username);
+
 socket.on('connect', function() {
   console.log('Socket connected');
 });
 
 socket.on('PULL_NEW_MESSAGE', function(id) {
-  console.log(id);
-  receivePublicMessage();
+  if (userStore.userGetters.chatMode() == 'public') {
+    receivePublicMessage();
+  }
+});
+
+socket.on('PULL_NEW_PRIVATE_MESSAGE', function(payload) {
+  if (userStore.userGetters.chatMode() == 'private') {
+    const me = userStore.userGetters.user()['username'];
+    const peer = userStore.userGetters.chatPeer();
+
+    if (
+      (me === payload.receiverName && peer === payload.senderName) ||
+      (peer === payload.receiverName && me === payload.senderName)
+    ) {
+      receivePrivateMessage(payload);
+    }
+  }
 });
 
 socket.on('USER_LOGIN', function(username) {
@@ -41,6 +58,22 @@ if (userStore.userGetters.isLogin) {
   document.getElementById('logout-button').style.display = 'block';
 }
 
+// Set user isOnline to false when page unloads
+/*
+window.onbeforeunload = async (e) => {
+  await logout();
+};
+*/
+
+// Set user isOnline field to 'true' when page is ready
+setUserIsOnline({ isOnline: true });
+
+// Load history messages
+receivePublicHistoryMessage();
+
+// Get all users
+getAllUserInfo();
+
 // Bind event listener
 document.getElementById('logout-button').onclick = async () => {
   socket.emit('NOTIFY_USER_LOGOUT', userStore.userGetters.user().username);
@@ -54,26 +87,21 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
   const key = e.which || e.keyCode;
   if (key === 13) {
     // 13 is enter
-    sendPublicMessage();
+
+    if (userStore.userGetters.chatMode() == 'public') {
+      sendPublicMessage();
+    } else {
+      sendPrivateMessage();
+    }
 
     e.preventDefault();
     this.value = '';
   }
 });
 
-// Set user isOnline to false when page unloads
-window.onbeforeunload = async (e) => {
-  await logout();
-};
-
-// Set user isOnline field to 'true' when page is ready
-setUserIsOnline({isOnline: true});
-
-// Load history messages
-receivePublicHistoryMessage();
-
-// Get all users
-getAllUserInfo();
+document.querySelector('#menu-chatroom').addEventListener('click', function(e) {
+  switchToPublicChat();
+});
 
 // Function definations
 async function receivePublicHistoryMessage() {
@@ -96,15 +124,76 @@ async function receivePublicHistoryMessage() {
   }
 }
 
+async function receivePrivateHistoryMessage() {
+  // FIXME: Decide the number of messages to be loaded.
+  const query = {
+    start: 0,
+    end: 5,
+  };
+
+  try {
+    const me = userStore.userGetters.user()['username'];
+    const peer = userStore.userGetters.chatPeer();
+
+    let messages = [];
+
+    query['senderName'] = me;
+    query['receiverName'] = peer;
+    let response = await messageApis.getPrivateHistoryMessage(peer, query);
+    for (const index in response['data']['messages']) {
+      messages.push(response['data']['messages'][index]);
+    }
+
+    if (me !== peer) {
+      query['senderName'] = peer;
+      query['receiverName'] = me;
+      response = await messageApis.getPrivateHistoryMessage(me, query);
+      for (const index in response['data']['messages']) {
+        messages.push(response['data']['messages'][index]);
+      }
+    }
+
+    messages.sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1));
+
+    for (const index in messages) {
+      updateMessageBoard(messages[index]);
+    }
+
+    clockStore.clockActions.updateClock(Date.now());
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 async function sendPublicMessage() {
   const newMessage = {
     senderName: userStore.userGetters.user().username,
-    senderId: userStore.userGetters.user().id,
     message: document.querySelector('#message').value,
   };
   try {
     await messageApis.postPublicMessage(newMessage);
     socket.emit('PUSH_NEW_MESSAGE');
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function sendPrivateMessage() {
+  const peer = userStore.userGetters.chatPeer();
+
+  const newMessage = {
+    senderName: userStore.userGetters.user().username,
+    receiverName: peer,
+    message: document.querySelector('#message').value,
+  };
+  try {
+    const payload = {
+      senderName: userStore.userGetters.user().username,
+      receiverName: peer,
+      timestamp: Date.now(),
+    };
+    await messageApis.postPrivateMessage(peer, newMessage);
+    socket.emit('PUSH_NEW_PRIVATE_MESSAGE', payload);
   } catch (e) {
     console.log(e);
   }
@@ -117,6 +206,28 @@ async function receivePublicMessage() {
 
   try {
     const response = await messageApis.getPublicMessage(query);
+    const messages = response['data']['messages'];
+    for (const index in messages) {
+      updateMessageBoard(messages[index]);
+    }
+
+    clockStore.clockActions.updateClock(Date.now());
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function receivePrivateMessage(payload) {
+  const query = {
+    timestamp: payload.timestamp,
+    receiverName: payload.receiverName,
+  };
+
+  try {
+    const response = await messageApis.getPrivateMessage(
+      payload.receiverName,
+      query
+    );
     const messages = response['data']['messages'];
     for (const index in messages) {
       updateMessageBoard(messages[index]);
@@ -152,6 +263,11 @@ async function setUserStatus(status) {
 
 async function setUserIsOnline(isOnline) {
   return await userApis.patchUserIsOnline(isOnline);
+}
+
+function cleanMessageBoard() {
+  const board = document.getElementById('message-board');
+  board.innerHTML = '';
 }
 
 function updateMessageBoard(data) {
@@ -218,9 +334,15 @@ function appendUserList(data) {
   chatUserName.className = 'chat-user-name';
 
   const username = document.createElement('a');
+  username.className = 'chat-user-name';
   username.innerText = data['username'];
   username.href = '#';
   chatUserName.appendChild(username);
+
+  // Add event listener
+  username.addEventListener('click', function(e) {
+    switchToPrivateChat(data['username']);
+  });
 
   chatUser.appendChild(chatUserName);
 
@@ -252,4 +374,26 @@ function updateChatUser(username, isOnline) {
   if (isOnline === false && isStatusBarExisting(chatUser)) {
     chatUser.removeChild(chatUser.childNodes[0]);
   }
+}
+
+function switchToPublicChat() {
+  userStore.userActions.switchChatMode('public');
+
+  cleanMessageBoard();
+  receivePublicHistoryMessage();
+
+  const channel = document.getElementById('chatroom-channel');
+  channel.innerText = 'Public Chatroom';
+}
+
+function switchToPrivateChat(peer) {
+  userStore.userActions.updateChatPeer(peer);
+  userStore.userActions.updateRecentPeer(peer);
+  userStore.userActions.switchChatMode('private');
+
+  cleanMessageBoard();
+  receivePrivateHistoryMessage();
+
+  const channel = document.getElementById('chatroom-channel');
+  channel.innerText = 'Private Channel';
 }

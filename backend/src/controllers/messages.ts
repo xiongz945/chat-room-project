@@ -23,7 +23,16 @@ export const getHistoryMessage = async (
 ) => {
   try {
     const receiverName: string = req.params.receiverName || 'public';
-    let messages: MessageDocument[] = await Message.find({ receiverName }).exec();
+
+    let messages: MessageDocument[] = [];
+    if (req.query.senderName === undefined) {
+      messages = await Message.find({ receiverName }).exec();
+    } else {
+      messages = await Message.find({
+        senderName: req.query.senderName,
+        receiverName: receiverName,
+      }).exec();
+    }
 
     const messageLength = messages.length;
     messages = messages.slice(
@@ -49,7 +58,7 @@ export const postMessage = async (
       content: req.body.message,
     });
     await message.save();
-    return res.status(200);
+    return res.status(200).json('{}');
   } catch (err) {
     next(err);
   }
@@ -62,11 +71,21 @@ export const getMessage = async (
 ) => {
   try {
     const timestamp: Date = new Date(parseInt(req.query.timestamp));
-    const messages: any = await Message.find({
-      receiverName: req.params.receiverName || 'public',
-      createdAt: { $gte: timestamp },
-    }).exec();
-    return res.status(200).json({ messages });
+
+    if (req.params.senderName === undefined) {
+      const messages: any = await Message.find({
+        receiverName: req.params.receiverName || 'public',
+        createdAt: { $gte: timestamp },
+      }).exec();
+      return res.status(200).json({ messages });
+    } else {
+      const messages: any = await Message.find({
+        senderName: req.params.senderName,
+        receiverName: req.params.receiverName || 'public',
+        createdAt: { $gte: timestamp },
+      }).exec();
+      return res.status(200).json({ messages });
+    }
   } catch (err) {
     return next(err);
   }
