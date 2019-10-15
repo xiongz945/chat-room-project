@@ -253,3 +253,4 @@ function updateChatUser(username, isOnline) {
     chatUser.removeChild(chatUser.childNodes[0]);
   }
 }
+
