@@ -13,7 +13,8 @@ export const getProfile = async (
   next: NextFunction
 ) => {
   try {
-    const user: any = await User.findById(req.user.id).exec();
+    const reqUser = req.user as IUserDocument;
+    const user: IUserDocument = await User.findById(reqUser.id).exec();
 
     return res.status(200).json({ userProfile: user.profile });
   } catch (err) {
@@ -71,7 +72,8 @@ export const patchUpdateProfile = async (
   next: NextFunction
 ) => {
   try {
-    const user: any = await User.findById(req.user.id);
+    const reqUser = req.user as IUserDocument;
+    const user: IUserDocument = await User.findById(reqUser.id).exec();
 
     user.username = req.body.username || user.username;
     user.profile.name = req.body.name || user.profile.name;
@@ -115,7 +117,8 @@ export const patchUpdatePassword = async (
   if (!errors.isEmpty()) return res.status(400).json({ err: errors.array() });
 
   try {
-    const user: any = await User.findById(req.user.id);
+    const reqUser = req.user as IUserDocument;
+    const user: IUserDocument = await User.findById(reqUser.id).exec();
     user.password = req.body.password;
 
     await user.save();
