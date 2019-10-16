@@ -438,7 +438,9 @@ function appendUserList(data) {
   statusIcon.innerText =
     data['status'] in emojiMap ? emojiMap[data['status']] : emojiMap[undefined];
   statusIcon.style.visibility =
-    data['status'] === undefined || data['status'] === 'undefined'
+    data['status'] === undefined ||
+    data['status'] === 'undefined' ||
+    !(data['status'] in emojiMap)
       ? 'hidden'
       : 'visible';
   chatUser.appendChild(statusIcon);
