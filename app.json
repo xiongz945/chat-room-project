@@ -4,12 +4,5 @@
     "scripts": {
       "postdeploy": "cd frontend && npm run serve"
     },
-    "success_url": "/frontend",
-    "addons": [
-      "openredis",
-      {
-        "plan": "mongolab:shared-single-small",
-        "as": "MONGO"
-      }
-    ]
+    "success_url": "/frontend"
 }
