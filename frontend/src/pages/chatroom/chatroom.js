@@ -113,6 +113,11 @@ window.onbeforeunload = async (e) => {
 // Set user isOnline field to 'true' when page is ready
 setUserIsOnline({ isOnline: true });
 
+document.querySelector('#chatroom-channel').innerText =
+  userStore.userGetters.chatMode() === 'public'
+    ? 'Public Chatroom'
+    : 'Private Channel with ' + userStore.userGetters.chatPeer();
+
 // Load history messages
 if (userStore.userGetters.chatMode() === 'public') {
   receivePublicHistoryMessage();
@@ -243,7 +248,7 @@ async function sendPublicMessage() {
   const newMessage = {
     senderName: userStore.userGetters.user().username,
     message: document.querySelector('#message').value,
-    status: (status) ? status : 'undefined',
+    status: status ? status : 'undefined',
   };
   try {
     await messageApis.postPublicMessage(newMessage);
@@ -261,7 +266,7 @@ async function sendPrivateMessage() {
     senderName: userStore.userGetters.user().username,
     receiverName: peer,
     message: document.querySelector('#message').value,
-    status: (status) ? status : 'undefined',
+    status: status ? status : 'undefined',
   };
   try {
     const payload = {
@@ -326,7 +331,7 @@ async function getAllUserInfo() {
       // store current status in local storage
       if (user['username'] === userStore.userGetters.user().username) {
         const status = user['status'];
-        userStore.userActions.updateStatus((status)? status : 'undefined');
+        userStore.userActions.updateStatus(status ? status : 'undefined');
         document.querySelector('#statusSelect').value = status
           ? Object.keys(statusMap).find((key) => statusMap[key] === status)
           : 'Choose Your Status';
@@ -386,7 +391,10 @@ function updateMessageBoard(data) {
 
   const messageStatus = document.createElement('span');
   messageStatus.className = 'message-status';
-  messageStatus.innerText = (data['status'] === undefined || data['status'] === 'undefined') ? '' : ' '+ emojiMap[data['status']];
+  messageStatus.innerText =
+    data['status'] === undefined || data['status'] === 'undefined'
+      ? ''
+      : ' ' + emojiMap[data['status']];
 
   const messageDate = document.createElement('span');
   messageDate.className = 'message-date';
@@ -500,5 +508,5 @@ function switchToPrivateChat(peer) {
   receivePrivateHistoryMessage();
 
   const channel = document.getElementById('chatroom-channel');
-  channel.innerText = 'Private Channel';
+  channel.innerText = 'Private Channel with ' + peer;
 }
