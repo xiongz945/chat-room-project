@@ -11,6 +11,7 @@
     "serve": "http-server ./src -p 4000",
     "lint": "prettier --write --config ./package.json \"**/*.{ts,js,json,css,scss,html,md,vue,less}\""
   },
+  "proxy": "http://localhost:3000",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.4.0",
