@@ -27,7 +27,7 @@ export const getHistoryMessage = async (
 
     let messages: MessageDocument[] = [];
     if (req.query.senderName === undefined) {
-      messages = await Message.find({ receiverName }).exec();
+      messages = await Message.find({ receiverName: receiverName }).exec();
     } else {
       messages = await Message.find({
         senderName: req.query.senderName,
@@ -37,8 +37,8 @@ export const getHistoryMessage = async (
 
     const messageLength = messages.length;
     messages = messages.slice(
-      messageLength - req.query.end,
-      messageLength - req.query.start
+      Math.max(messageLength - req.query.end, 0),
+      Math.max(messageLength - req.query.start, 0)
     );
     return res.status(200).json({ messages });
   } catch (err) {
