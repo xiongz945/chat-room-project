@@ -10,6 +10,7 @@ export interface IPostMessageRequest extends Request {
   message: string;
   senderName: string;
   senderId: string;
+  status: string;
 }
 
 export interface IGetMessageRequest extends Request {
@@ -56,6 +57,7 @@ export const postMessage = async (
       senderId: req.body.senderId,
       receiverName: req.params.receiverName || 'public',
       content: req.body.message,
+      status: req.body.status,
     });
     await message.save();
     return res.status(200).json('{}');

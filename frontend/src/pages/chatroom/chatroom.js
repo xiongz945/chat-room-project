@@ -114,7 +114,11 @@ window.onbeforeunload = async (e) => {
 setUserIsOnline({ isOnline: true });
 
 // Load history messages
-receivePublicHistoryMessage();
+if (userStore.userGetters.chatMode() === 'public') {
+  receivePublicHistoryMessage();
+} else {
+  receivePrivateHistoryMessage();
+}
 
 // Get all users
 getAllUserInfo();
@@ -235,9 +239,11 @@ async function receivePrivateHistoryMessage() {
 }
 
 async function sendPublicMessage() {
+  const status = userStore.userGetters.status();
   const newMessage = {
     senderName: userStore.userGetters.user().username,
     message: document.querySelector('#message').value,
+    status: (status) ? status : 'undefined',
   };
   try {
     await messageApis.postPublicMessage(newMessage);
@@ -249,11 +255,13 @@ async function sendPublicMessage() {
 
 async function sendPrivateMessage() {
   const peer = userStore.userGetters.chatPeer();
+  const status = userStore.userGetters.status();
 
   const newMessage = {
     senderName: userStore.userGetters.user().username,
     receiverName: peer,
     message: document.querySelector('#message').value,
+    status: (status) ? status : 'undefined',
   };
   try {
     const payload = {
@@ -315,8 +323,10 @@ async function getAllUserInfo() {
     for (const index in users) {
       const user = users[index];
       // display current user's status on the left side menu
+      // store current status in local storage
       if (user['username'] === userStore.userGetters.user().username) {
         const status = user['status'];
+        userStore.userActions.updateStatus((status)? status : 'undefined');
         document.querySelector('#statusSelect').value = status
           ? Object.keys(statusMap).find((key) => statusMap[key] === status)
           : 'Choose Your Status';
@@ -374,6 +384,10 @@ function updateMessageBoard(data) {
   messageAuthor.innerText = data['senderName'];
   messageAuthor.href = '#';
 
+  const messageStatus = document.createElement('span');
+  messageStatus.className = 'message-status';
+  messageStatus.innerText = (data['status'] === undefined || data['status'] === 'undefined') ? '' : ' '+ emojiMap[data['status']];
+
   const messageDate = document.createElement('span');
   messageDate.className = 'message-date';
   // FIXME: Beautify the datetime.
@@ -384,6 +398,7 @@ function updateMessageBoard(data) {
   messageContent.innerText = data['content'];
 
   message.appendChild(messageAuthor);
+  message.appendChild(messageStatus);
   message.appendChild(messageDate);
   message.appendChild(messageContent);
   chatMessage.appendChild(message);
