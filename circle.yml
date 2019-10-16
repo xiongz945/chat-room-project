@@ -18,34 +18,31 @@ jobs: # a collection of steps
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
-      # - run: # run tests
-      #     name: run test
-      #     command: npm run test
-      # - store_artifacts: # special step to save test results as as artifact
-      #     # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/ 
-      #     path: coverage
-      #     prefix: coverage
-      # - store_test_results:  # special step to save test results
-      #     path: coverage
       - run: 
           name: cc-test-reporter
           command: |
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
       - run: # run tests
-          name: make_dir
-          command: sudo mkdir -p $CIRCLE_TEST_REPORTS/mocha
-      - run: # run tests
           name: test
           environment: 
             CC_TEST_REPORTER_ID: 5b4857b772fd7ec2fcc7d481cf7c432c43db64e01f64a5e3bee7fa3673a6c05f
           command: |
-            if [ "$CIRCLE_BRANCH" == "master" ];
-            then
+            # if [ "$CIRCLE_BRANCH" == "master" ];
+            # then
               ./cc-test-reporter before-build
-            fi
+            # fi
             grunt circleci
-            if [ "$CIRCLE_BRANCH" == "master" ];
-            then
+            # if [ "$CIRCLE_BRANCH" == "master" ];
+            # then
               ./cc-test-reporter after-build -p "/home/circleci/project/" -t lcov --debug --exit-code $?
-            fi
+            # fi
+      - run: # run tests
+          name: run jest test
+          command: npm run test
+      - store_artifacts: # special step to save test results as as artifact
+          # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/ 
+          path: coverage
+          prefix: coverage
+      - store_test_results:  # special step to save test results
+          path: coverage
