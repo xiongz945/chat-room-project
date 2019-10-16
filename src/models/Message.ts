@@ -4,6 +4,7 @@ export type MessageDocument = mongoose.Document & {
   senderName: String;
   receiverName: String;
   content: String;
+  status: String;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -16,6 +17,7 @@ const messageSchema = new mongoose.Schema(
       default: 'public',
     },
     content: String,
+    status: String,
   },
   { timestamps: true }
 );

@@ -15,11 +15,11 @@ const statusMap = {
   3: 'Emergency',
 };
 
-const imgMap = {
-  OK: '../../assets/img/green.jpg',
-  Help: '../../assets/img/yellow.jpg',
-  Emergency: '../../assets/img/red.jpg',
-  undefined: '../../assets/img/green.jpg',
+const emojiMap = {
+  OK: '✅',
+  Help: '⚠️',
+  Emergency: '🆘',
+  undefined: '✅',
 };
 
 // Set up Socket
@@ -113,8 +113,17 @@ window.onbeforeunload = async (e) => {
 // Set user isOnline field to 'true' when page is ready
 setUserIsOnline({ isOnline: true });
 
+document.querySelector('#chatroom-channel').innerText =
+  userStore.userGetters.chatMode() === 'public'
+    ? 'Public Chatroom'
+    : 'Private Channel with ' + userStore.userGetters.chatPeer();
+
 // Load history messages
-receivePublicHistoryMessage();
+if (userStore.userGetters.chatMode() === 'public') {
+  receivePublicHistoryMessage();
+} else {
+  receivePrivateHistoryMessage();
+}
 
 // Get all users
 getAllUserInfo();
@@ -156,7 +165,7 @@ document.querySelector('#menu-chatroom').addEventListener('click', function(e) {
   switchToPublicChat();
 });
 
-document.getElementById('shareStatusBtn').onclick = async () => {
+document.querySelector('#shareStatusBtn').onclick = async () => {
   closeMenu();
   const statusCode = document.getElementById('statusSelect').value;
   if (statusCode in statusMap) {
@@ -235,9 +244,11 @@ async function receivePrivateHistoryMessage() {
 }
 
 async function sendPublicMessage() {
+  const status = userStore.userGetters.status();
   const newMessage = {
     senderName: userStore.userGetters.user().username,
     message: document.querySelector('#message').value,
+    status: status ? status : 'undefined',
   };
   try {
     await messageApis.postPublicMessage(newMessage);
@@ -249,11 +260,13 @@ async function sendPublicMessage() {
 
 async function sendPrivateMessage() {
   const peer = userStore.userGetters.chatPeer();
+  const status = userStore.userGetters.status();
 
   const newMessage = {
     senderName: userStore.userGetters.user().username,
     receiverName: peer,
     message: document.querySelector('#message').value,
+    status: status ? status : 'undefined',
   };
   try {
     const payload = {
@@ -314,6 +327,15 @@ async function getAllUserInfo() {
     const users = response['data']['users'];
     for (const index in users) {
       const user = users[index];
+      // display current user's status on the left side menu
+      // store current status in local storage
+      if (user['username'] === userStore.userGetters.user().username) {
+        const status = user['status'];
+        userStore.userActions.updateStatus(status ? status : 'undefined');
+        document.querySelector('#statusSelect').value = status
+          ? Object.keys(statusMap).find((key) => statusMap[key] === status)
+          : 'Choose Your Status';
+      }
       appendUserList(user);
     }
 
@@ -341,9 +363,8 @@ function cleanMessageBoard() {
 }
 
 function closeMenu() {
-  let closeMenuBtn = document.getElementsByClassName('close-canvas-menu');
-  if (closeMenuBtn.length === 0) return;
-  closeMenuBtn[0].click();
+  const closeMenuBtn = document.querySelector('.close-canvas-menu');
+  closeMenuBtn.click();
 }
 
 function updateMessageBoard(data) {
@@ -368,6 +389,15 @@ function updateMessageBoard(data) {
   messageAuthor.innerText = data['senderName'];
   messageAuthor.href = '#';
 
+  const messageStatus = document.createElement('span');
+  messageStatus.className = 'message-status';
+  messageStatus.innerText =
+    data['status'] === undefined ||
+    data['status'] === 'undefined' ||
+    !(data['status'] in emojiMap)
+      ? ''
+      : ' ' + emojiMap[data['status']];
+
   const messageDate = document.createElement('span');
   messageDate.className = 'message-date';
   // FIXME: Beautify the datetime.
@@ -378,6 +408,7 @@ function updateMessageBoard(data) {
   messageContent.innerText = data['content'];
 
   message.appendChild(messageAuthor);
+  message.appendChild(messageStatus);
   message.appendChild(messageDate);
   message.appendChild(messageContent);
   chatMessage.appendChild(message);
@@ -404,6 +435,18 @@ function appendUserList(data) {
   chatAvatar.alt = '';
   chatUser.appendChild(chatAvatar);
 
+  const statusIcon = document.createElement('span');
+  statusIcon.className = 'float-right status-icon';
+  statusIcon.innerText =
+    data['status'] in emojiMap ? emojiMap[data['status']] : emojiMap[undefined];
+  statusIcon.style.visibility =
+    data['status'] === undefined ||
+    data['status'] === 'undefined' ||
+    !(data['status'] in emojiMap)
+      ? 'hidden'
+      : 'visible';
+  chatUser.appendChild(statusIcon);
+
   const chatUserName = document.createElement('div');
   chatUserName.className = 'chat-user-name';
 
@@ -418,12 +461,6 @@ function appendUserList(data) {
     switchToPrivateChat(data['username']);
   });
 
-  const statusIcon = document.createElement('img');
-  statusIcon.className = 'float-right status-icon';
-  statusIcon.src = imgMap[data['status']];
-  statusIcon.style.visibility =
-    data['status'] === undefined ? 'hidden' : 'visible';
-  chatUserName.appendChild(statusIcon);
   chatUser.appendChild(chatUserName);
 
   const list = document.getElementById('users-list');
@@ -452,10 +489,9 @@ function updateChatUserStatus(username, status) {
     appendUserList({ username: username, isOnline: true, status: status });
     return;
   }
-  let statusIcon = chatUser.getElementsByClassName('status-icon');
-  if (statusIcon.length > 0) {
-    statusIcon = statusIcon[0];
-    statusIcon.src = imgMap[status];
+  const statusIcon = chatUser.querySelector('.status-icon');
+  if (statusIcon) {
+    statusIcon.innerText = emojiMap[status];
     statusIcon.style.visibility = status === undefined ? 'hidden' : 'visible';
   }
 }
@@ -479,5 +515,5 @@ function switchToPrivateChat(peer) {
   receivePrivateHistoryMessage();
 
   const channel = document.getElementById('chatroom-channel');
-  channel.innerText = 'Private Channel';
+  channel.innerText = 'Private Channel with ' + peer;
 }
