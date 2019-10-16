@@ -37,16 +37,44 @@ socket.on('PULL_NEW_MESSAGE', function(id) {
 });
 
 socket.on('PULL_NEW_PRIVATE_MESSAGE', function(payload) {
-  if (userStore.userGetters.chatMode() == 'private') {
-    const me = userStore.userGetters.user()['username'];
-    const peer = userStore.userGetters.chatPeer();
+  const me = userStore.userGetters.user()['username'];
+  const peer = userStore.userGetters.chatPeer();
 
+  if (userStore.userGetters.chatMode() == 'private') {
     if (
       (me === payload.receiverName && peer === payload.senderName) ||
       (peer === payload.receiverName && me === payload.senderName)
     ) {
       receivePrivateMessage(payload);
+      return;
     }
+  }
+
+  if (me === payload.receiverName) {
+    const option = {
+      closeButton: true,
+      debug: false,
+      progressBar: true,
+      preventDuplicates: false,
+      positionClass: 'toast-top-right',
+      showDuration: '400',
+      hideDuration: '1000',
+      timeOut: '7000',
+      extendedTimeOut: '1000',
+      showEasing: 'swing',
+      hideEasing: 'linear',
+      showMethod: 'fadeIn',
+      hideMethod: 'fadeOut',
+      onclick: function() {
+        switchToPrivateChat(payload.senderName);
+      },
+    };
+
+    toastr.success(
+      'Click to check it!',
+      `${payload.senderName} just drops a private message`,
+      option
+    );
   }
 });
 

@@ -76,7 +76,7 @@ describe('Test User Model', () => {
     await user.setStatus(status);
     expect(user.status).toBe('Help');
   });
-  
+
   test('getAllUsers() - Can get all users in the collection', async () => {
     const users: IUserDocument[] = await User.getAllUsers('username');
     const createdUsernames = ['123', '456', '789'];
