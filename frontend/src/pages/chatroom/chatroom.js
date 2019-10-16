@@ -392,7 +392,9 @@ function updateMessageBoard(data) {
   const messageStatus = document.createElement('span');
   messageStatus.className = 'message-status';
   messageStatus.innerText =
-    data['status'] === undefined || data['status'] === 'undefined'
+    data['status'] === undefined ||
+    data['status'] === 'undefined' ||
+    !(data['status'] in emojiMap)
       ? ''
       : ' ' + emojiMap[data['status']];
 
