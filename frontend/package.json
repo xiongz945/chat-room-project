@@ -1,6 +1,6 @@
 {
-  "name": "babel-typescript-sample",
-  "version": "0.7.1",
+  "name": "f19-esn-sa3-frontend",
+  "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "type-check": "tsc --noEmit",
