@@ -89,4 +89,7 @@ app.delete('*', cors(corsOptions));
 // Apply routes
 app.use(router);
 
+// Serve the static file
+app.use(express.static('frontend'));
+
 export default app;
