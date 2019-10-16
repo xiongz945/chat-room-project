@@ -435,9 +435,12 @@ function appendUserList(data) {
 
   const statusIcon = document.createElement('span');
   statusIcon.className = 'float-right status-icon';
-  statusIcon.innerText = emojiMap[data['status']];
+  statusIcon.innerText =
+    data['status'] in emojiMap ? emojiMap[data['status']] : emojiMap[undefined];
   statusIcon.style.visibility =
-    data['status'] === undefined || data['status'] === 'undefined' ? 'hidden' : 'visible';
+    data['status'] === undefined || data['status'] === 'undefined'
+      ? 'hidden'
+      : 'visible';
   chatUser.appendChild(statusIcon);
 
   const chatUserName = document.createElement('div');
