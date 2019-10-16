@@ -7,7 +7,6 @@
   "license": "MIT",
   "scripts": {
     "start": "npm run serve",
-    "heroku-postbuild": "cd frontend && npm install -g http-server && npm run serve",
     "build": "npm run build-ts && npm run tslint",
     "serve": "node dist/server.js",
     "watch-node": "nodemon dist/server.js",
