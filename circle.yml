@@ -10,7 +10,7 @@ jobs: # a collection of steps
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install-npm-tools
-          command: sudo npm install -g jest
+          command: sudo npm install -g jest && sudo npm install -g grunt 
       - run:
           name: install-new-modules
           command: sudo npm install
