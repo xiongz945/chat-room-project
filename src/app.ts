@@ -10,6 +10,7 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import bluebird from 'bluebird';
 import cors from 'cors';
+import serveStatic from 'serve-static';
 import { MONGODB_URI, SESSION_SECRET } from './config/secrets';
 
 import router from './routes';
@@ -68,14 +69,17 @@ const whitelist = [
   'http://localhost:4000',
   'http://localhost:3000',
   'http://localhost:4001',
+  'http://127.0.0.1:61199',
 ];
 const corsOptions = {
   origin: function(origin: any, callback: any) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(undefined, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+    callback(undefined, true);
+    // Disable CORS check for now 
+    // if (whitelist.indexOf(origin) !== -1 || !origin) {
+    //   callback(undefined, true);
+    // } else {
+    //   callback(new Error(`Not allowed by CORS ${origin}`));
+    // }
   },
 };
 
@@ -88,5 +92,8 @@ app.delete('*', cors(corsOptions));
 
 // Apply routes
 app.use(router);
+
+// Serve the static file
+app.use(serveStatic('frontend', { index: 'index.html' }));
 
 export default app;

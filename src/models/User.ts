@@ -14,6 +14,7 @@ export interface IUserDocument extends mongoose.Document {
     phone?: String;
     gender?: string;
     location?: string;
+    toObject?: () => any;
   };
 
   comparePassword: (candidatePassword: string) => Promise<boolean>;

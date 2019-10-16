@@ -1,6 +1,6 @@
 {
-  "name": "babel-typescript-sample",
-  "version": "0.7.1",
+  "name": "f19-esn-sa3-frontend",
+  "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "type-check": "tsc --noEmit",
@@ -8,9 +8,10 @@
     "build": "npm run build:types && npm run build:js",
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "babel src  --ignore src/assets --out-dir dist --source-maps inline",
-    "serve": "http-server ./src -p 4001",
+    "serve": "http-server ./src -p 4000",
     "lint": "prettier --write --config ./package.json \"**/*.{ts,js,json,css,scss,html,md,vue,less}\""
   },
+  "proxy": "http://localhost:3000",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.4.0",
@@ -25,7 +26,8 @@
   },
   "dependencies": {
     "axios": "^0.19.0",
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "tslint": "^5.20.0"
   },
   "prettier": {
     "trailingComma": "es5",
