@@ -181,6 +181,10 @@ document.querySelector('#shareStatusBtn').onclick = async () => {
   }
 };
 
+document.querySelector('#search-button').addEventListener('click', function(e) {
+  switchToSearchView();
+});
+
 // Function definations
 async function receivePublicHistoryMessage() {
   // FIXME: Decide the number of messages to be loaded.
@@ -497,6 +501,7 @@ function updateChatUserStatus(username, status) {
 }
 
 function switchToPublicChat() {
+  switchToChatView();
   userStore.userActions.switchChatMode('public');
 
   cleanMessageBoard();
@@ -507,6 +512,7 @@ function switchToPublicChat() {
 }
 
 function switchToPrivateChat(peer) {
+  switchToChatView();
   userStore.userActions.updateChatPeer(peer);
   userStore.userActions.updateRecentPeer(peer);
   userStore.userActions.switchChatMode('private');
@@ -516,4 +522,22 @@ function switchToPrivateChat(peer) {
 
   const channel = document.getElementById('chatroom-channel');
   channel.innerText = 'Private Channel with ' + peer;
+}
+
+function switchToSearchView() {
+  clearSearchResult();
+  document.querySelector('.chat-view').hidden = true;
+  document.querySelector('.search-view').hidden = false;
+  const channel = document.getElementById('chatroom-channel');
+  channel.innerText = 'Search Result';
+}
+
+function switchToChatView() {
+  document.querySelector('.chat-view').hidden = false;
+  document.querySelector('.search-view').hidden = true;
+}
+
+function clearSearchResult() {
+  document.querySelector('#search-result-heading').hidden = true;
+  document.querySelector('#search-result_list').innerHTML = ''
 }
