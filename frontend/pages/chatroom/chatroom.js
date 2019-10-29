@@ -162,6 +162,7 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
 });
 
 document.querySelector('#menu-chatroom').addEventListener('click', function(e) {
+  closeMenu();
   switchToPublicChat();
 });
 
