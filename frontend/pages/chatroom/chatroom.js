@@ -181,6 +181,31 @@ document.querySelector('#shareStatusBtn').onclick = async () => {
   }
 };
 
+document.querySelector('#announcement-button').onclick = () => {
+  swal(
+    {
+      title: 'Announcement',
+      text: 'Post something in the public channel:',
+      type: 'input',
+      showCancelButton: true,
+      closeOnConfirm: false,
+      animation: 'slide-from-top',
+      confirmButtonColor: '#1ab394',
+      inputPlaceholder: 'Post something',
+    },
+    function(text) {
+      if (text === false) return false;
+
+      if (text === '') {
+        swal.showInputError('You need to post something!');
+        return false;
+      }
+
+      swal('Nice!', 'You just announced: ' + text, 'success');
+    }
+  );
+};
+
 // Function definations
 async function receivePublicHistoryMessage() {
   // FIXME: Decide the number of messages to be loaded.

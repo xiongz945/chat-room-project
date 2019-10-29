@@ -12,6 +12,10 @@
     <link href="/assets/css/animate.css" rel="stylesheet" />
     <link href="/assets/css/style.css" rel="stylesheet" />
     <link
+      href="/assets/css/plugins/sweetalert/sweetalert.css"
+      rel="stylesheet"
+    />
+    <link
       href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"
       rel="stylesheet"
     />
@@ -127,6 +131,13 @@
               <div class="ibox ">
                 <div class="ibox-title">
                   <h5>Announcement</h5>
+                  <button
+                    id="announcement-button"
+                    type="button"
+                    class="btn btn-primary"
+                  >
+                    Post
+                  </button>
                   <div class="ibox-tools">
                     <a class="collapse-link">
                       <i class="fa fa-chevron-up"></i>
@@ -134,17 +145,38 @@
                   </div>
                 </div>
                 <div class="ibox-content">
-                  <div class="alert alert-success">
-                    announcement 1.
+                  <div class="alert alert-warning alert-dismissable">
+                    <button
+                      aria-hidden="true"
+                      data-dismiss="alert"
+                      class="close"
+                      type="button"
+                    >
+                      ×
+                    </button>
+                    Announcement 1
                   </div>
-                  <div class="alert alert-info">
-                    announcement 2.
+                  <div class="alert alert-warning alert-dismissable">
+                    <button
+                      aria-hidden="true"
+                      data-dismiss="alert"
+                      class="close"
+                      type="button"
+                    >
+                      ×
+                    </button>
+                    Announcement 2
                   </div>
-                  <div class="alert alert-warning">
-                    announcement 3.
-                  </div>
-                  <div class="alert alert-danger">
-                    announcement 4.
+                  <div class="alert alert-warning alert-dismissable">
+                    <button
+                      aria-hidden="true"
+                      data-dismiss="alert"
+                      class="close"
+                      type="button"
+                    >
+                      ×
+                    </button>
+                    Announcement 3
                   </div>
                 </div>
               </div>
@@ -218,6 +250,7 @@
     <script src="/assets/js/bootstrap.js"></script>
     <script src="/assets/js/plugins/metisMenu/jquery.metisMenu.js"></script>
     <script src="/assets/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="/assets/js/plugins/sweetalert/sweetalert.min.js"></script>
 
     <!-- Custom and plugin javascript -->
     <script src="/assets/js/inspinia.js"></script>
