@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Message, MessageDocument } from '../models/Message';
+import { Message, IMessageDocument } from '../models/Message';
 
 import socket from 'socket.io';
 import io from '../server';
@@ -25,7 +25,7 @@ export const getHistoryMessage = async (
   try {
     const receiverName: string = req.params.receiverName || 'public';
 
-    let messages: MessageDocument[] = [];
+    let messages: IMessageDocument[] = [];
     if (req.query.senderName === undefined) {
       messages = await Message.find({ receiverName: receiverName }).exec();
     } else {

@@ -1,13 +1,21 @@
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 
-export type MessageDocument = mongoose.Document & {
+export interface IMessageDocument extends mongoose.Document {
   senderName: String;
   receiverName: String;
   content: String;
   status: String;
   createdAt: Date;
   updatedAt: Date;
-};
+}
+
+export interface IMessageModel extends Model<IMessageDocument> {
+  searchMessages(
+    senderName: string,
+    receiverName: string,
+    keyword: string
+  ): IMessageDocument[];
+}
 
 const messageSchema = new mongoose.Schema(
   {
@@ -22,7 +30,7 @@ const messageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Message = mongoose.model<MessageDocument>(
-  'Message',
-  messageSchema
-);
+export const Message: IMessageModel = mongoose.model<
+  IMessageDocument,
+  IMessageModel
+>('Message', messageSchema);
