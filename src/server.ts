@@ -63,4 +63,8 @@ io.on('connection', function(socket) {
   socket.on('NOTIFY_STATUS_UPDATE', function(updateDetails) {
     io.emit('STATUS_UPDATE', updateDetails);
   });
+
+  socket.on('NOTIFY_NEW_ANNOUNCEMENT', function(announcment) {
+    io.emit('NEW_ANNOUNCEMENT', announcment);
+  });
 });
