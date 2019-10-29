@@ -182,8 +182,26 @@ document.querySelector('#shareStatusBtn').onclick = async () => {
   }
 };
 
+document
+  .querySelector('#magnifier-button')
+  .addEventListener('click', function(e) {
+    switchToSearchView();
+  });
+
 document.querySelector('#search-button').addEventListener('click', function(e) {
-  switchToSearchView();
+  const searchContext = document.querySelector('.search-context-select').value;
+  switch (searchContext) {
+    case 'username':
+      break;
+    case 'status':
+      break;
+    case 'announcement':
+      break;
+    case 'public_message':
+      break;
+    case 'private_message':
+      break;
+  }
 });
 
 // Function definations
