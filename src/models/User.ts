@@ -26,6 +26,8 @@ export interface IUserModel extends Model<IUserDocument> {
   findUserByName(username: string): IUserDocument;
   createNewUser(doc: any): IUserDocument;
   getAllUsers(projection?: string): IUserDocument[];
+  searchUsersByName(username: string): IUserDocument[];
+  searchUsersByStatus(status: string): IUserDocument[];
 }
 
 const userSchema = new mongoose.Schema(
@@ -110,6 +112,31 @@ userSchema.statics.getAllUsers = async function getAllUsers(
 ) {
   try {
     return await User.find({}, projection).exec();
+  } catch (err) {
+    throw err;
+  }
+};
+
+userSchema.statics.searchUsersByName = async function searchUsersByName(
+  keyword: string,
+  projection: string = undefined
+) {
+  try {
+    return await User.find(
+      { username: { $regex: keyword, $options: 'i' } },
+      projection
+    ).exec();
+  } catch (err) {
+    throw err;
+  }
+};
+
+userSchema.statics.searchUsersByStatus = async function searchUsersByStatus(
+  status: string,
+  projection: string = undefined
+) {
+  try {
+    return await User.find({ status: status }, projection).exec();
   } catch (err) {
     throw err;
   }

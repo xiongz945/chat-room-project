@@ -1,11 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
+import { User } from '../models/User';
 
 export const getSearchUsersByUsername = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  return res.status(200).json({});
+  try {
+    const users = await User.searchUsersByName(req.query.keyword);
+    return res.status(200).json({ users: users });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 export const getSearchUsersByStatus = async (
@@ -13,7 +19,12 @@ export const getSearchUsersByStatus = async (
   res: Response,
   next: NextFunction
 ) => {
-  return res.status(200).json({});
+  try {
+    const users = await User.searchUsersByStatus(req.query.keyword);
+    return res.status(200).json({ users: users });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 export const getSearchAnnouncements = async (

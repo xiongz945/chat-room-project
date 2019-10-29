@@ -15,6 +15,6 @@ export const getPublicUsers = async (
     const users = await User.getAllUsers('username isOnline status');
     return res.status(200).json({ users });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
