@@ -125,7 +125,9 @@ userSchema.statics.searchUsersByName = async function searchUsersByName(
     return await User.find(
       { username: { $regex: keyword, $options: 'i' } },
       projection
-    ).exec();
+    )
+      .sort({ isOnline: -1, username: 1 })
+      .exec();
   } catch (err) {
     throw err;
   }
@@ -136,7 +138,9 @@ userSchema.statics.searchUsersByStatus = async function searchUsersByStatus(
   projection: string = undefined
 ) {
   try {
-    return await User.find({ status: keyword }, projection).exec();
+    return await User.find({ status: keyword }, projection)
+      .sort({ isOnline: -1, username: 1 })
+      .exec();
   } catch (err) {
     throw err;
   }

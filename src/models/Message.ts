@@ -13,12 +13,12 @@ export interface IMessageDocument extends mongoose.Document {
 export interface IMessageModel extends Model<IMessageDocument> {
   searchPublicMessages(
     keyword: string,
-    projection?: string,
+    projection?: string
   ): IMessageDocument[];
   searchPrivateMessages(
     searcherName: string,
     keyword: string,
-    projection?: string,
+    projection?: string
   ): IMessageDocument[];
 }
 
@@ -48,7 +48,9 @@ messageSchema.statics.searchPublicMessages = async function searchPublicMessages
     receiverName: 'public',
   };
   try {
-    return await Message.find(conditions, projection).exec();
+    return await Message.find(conditions, projection)
+      .sort({ createdAt: -1 })
+      .exec();
   } catch (err) {
     throw err;
   }
@@ -70,7 +72,9 @@ messageSchema.statics.searchPrivateMessages = async function searchPrivateMessag
     ],
   };
   try {
-    return await Message.find(conditions, projection).exec();
+    return await Message.find(conditions, projection)
+      .sort({ createdAt: -1 })
+      .exec();
   } catch (err) {
     throw err;
   }

@@ -43,8 +43,8 @@ export const getSearchPublicMessages = async (
 ) => {
   try {
     const publicMsgs = await Message.searchPublicMessages(req.query.keyword);
-    return res.status(200).json({'messages': publicMsgs});
-  } catch(err) {
+    return res.status(200).json({ messages: publicMsgs });
+  } catch (err) {
     return next(err);
   }
 };
@@ -55,9 +55,12 @@ export const getSearchPrivateMessages = async (
   next: NextFunction
 ) => {
   try {
-    const privateMsgs = await Message.searchPrivateMessages(req.user.username, req.query.keyword);
-    return res.status(200).json({'messages': privateMsgs});
-  } catch(err) {
+    const privateMsgs = await Message.searchPrivateMessages(
+      req.user.username,
+      req.query.keyword
+    );
+    return res.status(200).json({ messages: privateMsgs });
+  } catch (err) {
     return next(err);
   }
 };
