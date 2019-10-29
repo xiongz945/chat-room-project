@@ -90,6 +90,11 @@ socket.on('STATUS_UPDATE', function(updateDetails) {
   updateChatUserStatus(updateDetails['username'], updateDetails['status']);
 });
 
+socket.on('NEW_ANNOUNCEMENT', function(announcement) {
+  updateAnnouncementBar(announcement);
+  console.log(announcement);
+});
+
 socket.on('disconnect', function() {
   console.log('Socket disconnected');
 });
@@ -181,7 +186,7 @@ document.querySelector('#shareStatusBtn').onclick = async () => {
   }
 };
 
-document.querySelector('#announcement-button').onclick = () => {
+document.querySelector('#announcement-button').onclick = async () => {
   swal(
     {
       title: 'Announcement',
@@ -202,6 +207,7 @@ document.querySelector('#announcement-button').onclick = () => {
       }
 
       swal('Nice!', 'You just announced: ' + text, 'success');
+      sendAnnouncement(text);
     }
   );
 };
@@ -346,6 +352,19 @@ async function receivePrivateMessage(payload) {
   }
 }
 
+async function sendAnnouncement(text) {
+  const announcement = {
+    senderName: userStore.userGetters.user().username,
+    message: text,
+  };
+  try {
+    await messageApis.postAnnouncement(announcement);
+    socket.emit('NOTIFY_NEW_ANNOUNCEMENT', announcement);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 async function getAllUserInfo() {
   try {
     const response = await chatroomApis.getPublicUsers();
@@ -441,6 +460,27 @@ function updateMessageBoard(data) {
   const board = document.getElementById('message-board');
   board.appendChild(chatMessage);
   board.scrollTop = board.scrollHeight;
+}
+
+function updateAnnouncementBar(announcement) {
+  const announcementBlock = document.createElement('div');
+  announcementBlock.className = 'alert alert-warning alert-dismissable';
+  announcementBlock.innerHTML =
+    announcement['message'] +
+    '<strong>  by ' +
+    announcement['senderName'] +
+    '</strong>';
+
+  const closeButton = document.createElement('button');
+  closeButton.className = 'close';
+  closeButton.type = 'button';
+  closeButton.setAttribute('aria-hidden', 'true');
+  closeButton.setAttribute('data-dismiss', 'alert');
+  closeButton.innerHTML = '×';
+  announcementBlock.append(closeButton);
+
+  const announcementBox = document.querySelector('.ibox-content');
+  announcementBox.appendChild(announcementBlock);
 }
 
 function appendUserList(data) {

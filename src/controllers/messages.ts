@@ -127,7 +127,7 @@ export const getAnnouncment = async (
         .json({ error: 'You are posting message to announcement channel' });
 
     const announcements: any = await Message.find({
-      senderName: 'announcement',
+      receiverName: 'announcement',
     })
       .sort({ createdAt: -1 })
       .limit(3)
