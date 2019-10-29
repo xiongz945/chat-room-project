@@ -539,5 +539,5 @@ function switchToChatView() {
 
 function clearSearchResult() {
   document.querySelector('#search-result-heading').hidden = true;
-  document.querySelector('#search-result_list').innerHTML = ''
+  document.querySelector('#search-result_list').innerHTML = '';
 }
