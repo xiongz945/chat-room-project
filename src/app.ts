@@ -74,7 +74,7 @@ const whitelist = [
 const corsOptions = {
   origin: function(origin: any, callback: any) {
     callback(undefined, true);
-    // Disable CORS check for now 
+    // Disable CORS check for now
     // if (whitelist.indexOf(origin) !== -1 || !origin) {
     //   callback(undefined, true);
     // } else {
