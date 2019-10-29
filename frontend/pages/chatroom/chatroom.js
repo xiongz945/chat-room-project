@@ -92,7 +92,6 @@ socket.on('STATUS_UPDATE', function(updateDetails) {
 
 socket.on('NEW_ANNOUNCEMENT', function(announcement) {
   updateAnnouncementBar(announcement);
-  console.log(announcement);
 });
 
 socket.on('disconnect', function() {
@@ -129,6 +128,9 @@ if (userStore.userGetters.chatMode() === 'public') {
 } else {
   receivePrivateHistoryMessage();
 }
+
+// Load latest announcements
+receiveHistoryAnnouncement();
 
 // Get all users
 getAllUserInfo();
@@ -269,6 +271,23 @@ async function receivePrivateHistoryMessage() {
     }
 
     clockStore.clockActions.updateClock(Date.now());
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function receiveHistoryAnnouncement() {
+  try {
+    const query = {
+      receiverName: 'announcement',
+    };
+
+    const response = await messageApis.getAnnouncement(query);
+    const announcements = response['data']['announcements'];
+
+    for (let i = announcements.length - 1; i >= 0; --i) {
+      updateAnnouncementBar(announcements[i]);
+    }
   } catch (e) {
     console.log(e);
   }
@@ -463,13 +482,17 @@ function updateMessageBoard(data) {
 }
 
 function updateAnnouncementBar(announcement) {
+  let content = '';
+  if ('content' in announcement) {
+    content = announcement['content'];
+  } else if ('message' in announcement) {
+    content = announcement['message'];
+  }
+
   const announcementBlock = document.createElement('div');
   announcementBlock.className = 'alert alert-warning alert-dismissable';
   announcementBlock.innerHTML =
-    announcement['message'] +
-    '<strong>  by ' +
-    announcement['senderName'] +
-    '</strong>';
+    content + '<strong>  by ' + announcement['senderName'] + '</strong>';
 
   const closeButton = document.createElement('button');
   closeButton.className = 'close';

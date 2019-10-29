@@ -121,7 +121,7 @@ export const getAnnouncment = async (
   try {
     const timestamp: Date = new Date(parseInt(req.query.timestamp));
 
-    if (req.params.receiverName !== 'announcement')
+    if (req.query.receiverName !== 'announcement')
       return res
         .status(400)
         .json({ error: 'You are posting message to announcement channel' });
