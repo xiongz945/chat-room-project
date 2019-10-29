@@ -8,6 +8,7 @@ import userStore from '../../store/user.js';
 import router from '../../router.js';
 import userApis from '../../apis/user-apis.js';
 import chatroomApis from '../../apis/chatroom-apis.js';
+import searchApis from '../../apis/search-apis.js'
 
 const statusMap = {
   1: 'OK',
@@ -188,18 +189,33 @@ document
     switchToSearchView();
   });
 
-document.querySelector('#search-button').addEventListener('click', function(e) {
+document.querySelector('#search-button').addEventListener('click', async function(e) {
   const searchContext = document.querySelector('.search-context-select').value;
+  const keyword = document.querySelector('#search-keyword-input').value;
+  const query = {
+    keyword: keyword
+  };
+  let response = null;
   switch (searchContext) {
     case 'username':
+      response = await searchApis.getSearchUsersByUsername(query);
+      showSearchUserResults(response['data']['users']);
       break;
     case 'status':
+      response = await searchApis.getSearchUsersByStatus(query);
+      showSearchUserResults(response['data']['users']);
       break;
     case 'announcement':
+      response = await searchApis.getSearchAnnouncements(query);
+      showSearchAnnouncementResults(response['data']['announcements']);
       break;
     case 'public_message':
+      response = await searchApis.getSearchPublicMessages(query);
+      showSearchMessageResults(response['data']['messages']);
       break;
     case 'private_message':
+      response = await searchApis.getSearchPrivateMessages(query);
+      showSearchMessageResults(response['data']['messages']);
       break;
   }
 });
@@ -560,3 +576,9 @@ function clearSearchResult() {
   document.querySelector('#search-result-heading').hidden = true;
   document.querySelector('#search-result_list').innerHTML = '';
 }
+
+function showSearchUserResults() {}
+
+function showSearchAnnouncementResults() {}
+
+function showSearchMessageResults() {}
