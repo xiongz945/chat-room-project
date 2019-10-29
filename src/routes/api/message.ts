@@ -4,12 +4,26 @@ import * as passportConfig from '../../config/passport';
 
 const router = express.Router();
 
-// User login
+// Announcments
+router.get(
+  '/announcements',
+  passportConfig.isAuthenticated,
+  messageController.getAnnouncement
+);
+router.post(
+  '/announcements',
+  passportConfig.isAuthenticated,
+  messageController.postAnnouncement
+);
+
+// Message history
 router.get(
   '/:receiverName/history',
   passportConfig.isAuthenticated,
   messageController.getHistoryMessage
 );
+
+// Post/Recive message
 router.post(
   '/:receiverName',
   passportConfig.isAuthenticated,

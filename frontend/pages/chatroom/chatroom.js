@@ -90,6 +90,10 @@ socket.on('STATUS_UPDATE', function(updateDetails) {
   updateChatUserStatus(updateDetails['username'], updateDetails['status']);
 });
 
+socket.on('NEW_ANNOUNCEMENT', function(announcement) {
+  updateAnnouncementBar(announcement);
+});
+
 socket.on('disconnect', function() {
   console.log('Socket disconnected');
 });
@@ -124,6 +128,9 @@ if (userStore.userGetters.chatMode() === 'public') {
 } else {
   receivePrivateHistoryMessage();
 }
+
+// Load latest announcements
+receiveHistoryAnnouncement();
 
 // Get all users
 getAllUserInfo();
@@ -179,6 +186,32 @@ document.querySelector('#shareStatusBtn').onclick = async () => {
     });
     userStore.userActions.updateStatus(status);
   }
+};
+
+document.querySelector('#announcement-button').onclick = async () => {
+  swal(
+    {
+      title: 'Announcement',
+      text: 'Post something in the public channel:',
+      type: 'input',
+      showCancelButton: true,
+      closeOnConfirm: false,
+      animation: 'slide-from-top',
+      confirmButtonColor: '#1ab394',
+      inputPlaceholder: 'Post something',
+    },
+    function(text) {
+      if (text === false) return false;
+
+      if (text === '') {
+        swal.showInputError('You need to post something!');
+        return false;
+      }
+
+      swal('Nice!', 'You just announced: ' + text, 'success');
+      sendAnnouncement(text);
+    }
+  );
 };
 
 // Function definations
@@ -238,6 +271,23 @@ async function receivePrivateHistoryMessage() {
     }
 
     clockStore.clockActions.updateClock(Date.now());
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function receiveHistoryAnnouncement() {
+  try {
+    const query = {
+      receiverName: 'announcement',
+    };
+
+    const response = await messageApis.getAnnouncement(query);
+    const announcements = response['data']['announcements'];
+
+    for (let i = announcements.length - 1; i >= 0; --i) {
+      updateAnnouncementBar(announcements[i]);
+    }
   } catch (e) {
     console.log(e);
   }
@@ -316,6 +366,19 @@ async function receivePrivateMessage(payload) {
     }
 
     clockStore.clockActions.updateClock(Date.now());
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function sendAnnouncement(text) {
+  const announcement = {
+    senderName: userStore.userGetters.user().username,
+    message: text,
+  };
+  try {
+    await messageApis.postAnnouncement(announcement);
+    socket.emit('NOTIFY_NEW_ANNOUNCEMENT', announcement);
   } catch (e) {
     console.log(e);
   }
@@ -416,6 +479,31 @@ function updateMessageBoard(data) {
   const board = document.getElementById('message-board');
   board.appendChild(chatMessage);
   board.scrollTop = board.scrollHeight;
+}
+
+function updateAnnouncementBar(announcement) {
+  let content = '';
+  if ('content' in announcement) {
+    content = announcement['content'];
+  } else if ('message' in announcement) {
+    content = announcement['message'];
+  }
+
+  const announcementBlock = document.createElement('div');
+  announcementBlock.className = 'alert alert-warning alert-dismissable';
+  announcementBlock.innerHTML =
+    content + '<strong>  by ' + announcement['senderName'] + '</strong>';
+
+  const closeButton = document.createElement('button');
+  closeButton.className = 'close';
+  closeButton.type = 'button';
+  closeButton.setAttribute('aria-hidden', 'true');
+  closeButton.setAttribute('data-dismiss', 'alert');
+  closeButton.innerHTML = '×';
+  announcementBlock.append(closeButton);
+
+  const announcementBox = document.querySelector('.ibox-content');
+  announcementBox.appendChild(announcementBlock);
 }
 
 function appendUserList(data) {
