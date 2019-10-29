@@ -92,3 +92,48 @@ export const getMessage = async (
     return next(err);
   }
 };
+
+export const postAnnouncment = async (
+  req: IPostMessageRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const announcement = new Message({
+      senderName: req.body.senderName,
+      senderId: req.body.senderId,
+      receiverName: 'announcement',
+      content: req.body.message,
+      status: '',
+    });
+    await announcement.save();
+    return res.status(200).json('{}');
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getAnnouncment = async (
+  req: IGetMessageRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const timestamp: Date = new Date(parseInt(req.query.timestamp));
+
+    if (req.params.receiverName !== 'announcement')
+      return res
+        .status(400)
+        .json({ error: 'You are posting message to announcement channel' });
+
+    const announcements: any = await Message.find({
+      senderName: 'announcement',
+    })
+      .sort({ createdAt: -1 })
+      .limit(3)
+      .exec();
+    return res.status(200).json({ announcements });
+  } catch (err) {
+    return next(err);
+  }
+};
