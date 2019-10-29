@@ -137,4 +137,61 @@ describe('Test Message Controller', () => {
       ],
     });
   });
+
+  test('postAnnouncement() - post a new announcement', async () => {
+    const req: any = {
+      body: {
+        senderName: 'admin',
+        senderId: '1',
+        receiverName: 'announcement',
+        message: 'Test Announcement',
+      },
+      params: {
+        // receiverName: 'public'
+      },
+    };
+    const res: any = {
+      status: jest.fn((code) => {
+        return res;
+      }),
+      json: jest.fn((resp: any) => {
+        return res;
+      }),
+    };
+    const next = jest.fn();
+    await msgController.postAnnouncement(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith('{}');
+  });
+
+  test('getAnnouncement() - post a new announcement', async () => {
+    const announcement = new Message({
+      senderName: 'admin',
+      senderId: '1',
+      receiverName: 'announcement',
+      content: 'Test Announcement',
+      status: '',
+    });
+    await announcement.save();
+
+    const req: any = {
+      params: {
+        // receiverName: 'public'
+      },
+    };
+    const res: any = {
+      status: jest.fn((code) => {
+        return res;
+      }),
+      json: jest.fn((resp: any) => {
+        resp.announcements[0] = resp.announcements[0].toObject();
+        return res;
+      }),
+    };
+    const next = jest.fn();
+    await msgController.getAnnouncement(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(expect.anything());
+  });
 });
