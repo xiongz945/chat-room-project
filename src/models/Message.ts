@@ -1,4 +1,5 @@
 import mongoose, { Model } from 'mongoose';
+import stopWords from '../config/stopWords.json';
 
 export interface IMessageDocument extends mongoose.Document {
   senderName: String;
@@ -10,10 +11,14 @@ export interface IMessageDocument extends mongoose.Document {
 }
 
 export interface IMessageModel extends Model<IMessageDocument> {
-  searchMessages(
-    senderName: string,
-    receiverName: string,
-    keyword: string
+  searchPublicMessages(
+    keyword: string,
+    projection?: string,
+  ): IMessageDocument[];
+  searchPrivateMessages(
+    searcherName: string,
+    keyword: string,
+    projection?: string,
   ): IMessageDocument[];
 }
 
@@ -29,6 +34,47 @@ const messageSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+messageSchema.index({
+  content: 'text',
+});
+
+messageSchema.statics.searchPublicMessages = async function searchPublicMessages(
+  keyword: string,
+  projection: string = undefined
+) {
+  const conditions: any = {
+    $text: { $search: keyword },
+    receiverName: 'public',
+  };
+  try {
+    return await Message.find(conditions, projection).exec();
+  } catch (err) {
+    throw err;
+  }
+};
+
+messageSchema.statics.searchPrivateMessages = async function searchPrivateMessages(
+  searcherName: string,
+  keyword: string,
+  projection: string = undefined
+) {
+  const conditions: any = {
+    $text: { $search: keyword },
+    $or: [
+      {
+        senderName: searcherName,
+        receiverName: { $not: { $eq: 'public' } },
+      },
+      { receiverName: searcherName },
+    ],
+  };
+  try {
+    return await Message.find(conditions, projection).exec();
+  } catch (err) {
+    throw err;
+  }
+};
 
 export const Message: IMessageModel = mongoose.model<
   IMessageDocument,

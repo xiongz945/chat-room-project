@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../models/User';
+import { Message } from '../models/Message';
 
 export const getSearchUsersByUsername = async (
   req: Request,
@@ -40,7 +41,12 @@ export const getSearchPublicMessages = async (
   res: Response,
   next: NextFunction
 ) => {
-  return res.status(200).json({});
+  try {
+    const publicMsgs = await Message.searchPublicMessages(req.query.keyword);
+    return res.status(200).json({'messages': publicMsgs});
+  } catch(err) {
+    return next(err);
+  }
 };
 
 export const getSearchPrivateMessages = async (
@@ -48,5 +54,10 @@ export const getSearchPrivateMessages = async (
   res: Response,
   next: NextFunction
 ) => {
-  return res.status(200).json({});
+  try {
+    const privateMsgs = await Message.searchPrivateMessages(req.user.username, req.query.keyword);
+    return res.status(200).json({'messages': privateMsgs});
+  } catch(err) {
+    return next(err);
+  }
 };

@@ -26,8 +26,8 @@ export interface IUserModel extends Model<IUserDocument> {
   findUserByName(username: string): IUserDocument;
   createNewUser(doc: any): IUserDocument;
   getAllUsers(projection?: string): IUserDocument[];
-  searchUsersByName(keyword: string): IUserDocument[];
-  searchUsersByStatus(keyword: string): IUserDocument[];
+  searchUsersByName(keyword: string, projection?: string): IUserDocument[];
+  searchUsersByStatus(keyword: string, projection?: string): IUserDocument[];
 }
 
 const userSchema = new mongoose.Schema(
