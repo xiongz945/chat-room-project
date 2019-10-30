@@ -1,5 +1,6 @@
 import mongoose, { Model } from 'mongoose';
 import stopWords from '../config/stopWords.json';
+import { EEXIST } from 'constants';
 
 export interface IMessageDocument extends mongoose.Document {
   senderName: String;
@@ -18,6 +19,11 @@ export interface IMessageModel extends Model<IMessageDocument> {
   searchPrivateMessages(
     searcherName: string,
     keyword: string,
+    projection?: string
+  ): IMessageDocument[];
+  searchAnnouncements(
+    keyword: string,
+    numOfResults: number,
     projection?: string
   ): IMessageDocument[];
 }
@@ -79,6 +85,23 @@ messageSchema.statics.searchPrivateMessages = async function searchPrivateMessag
     throw err;
   }
 };
+
+messageSchema.statics.searchAnnouncements = async function searchAnnouncements(
+  keyword: string,
+  numOfResults: number,
+  projection: string = undefined
+) {
+  const conditions: any = {
+    $text: {$search: keyword},
+    receiverName: 'announcement'
+  };
+  try {
+    return await Message.find(conditions, projection).sort({createdAt: -1}).exec();
+  } catch (err) {
+    throw err;
+  }
+
+}
 
 export const Message: IMessageModel = mongoose.model<
   IMessageDocument,

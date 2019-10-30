@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../models/User';
 import { Message } from '../models/Message';
+import { cat } from 'shelljs';
 
 export const getSearchUsersByUsername = async (
   req: Request,
@@ -39,7 +40,17 @@ export const getSearchAnnouncements = async (
   res: Response,
   next: NextFunction
 ) => {
-  return res.status(200).json({});
+  try {
+    const announcements = await Message.searchAnnouncements(
+      req.query.keyword,
+      10,
+      'senderName content createdAt'
+    );
+  return res.status(200).json({announcement: announcements} );
+  } catch (err)
+  {
+    return next(err);
+  }
 };
 
 export const getSearchPublicMessages = async (

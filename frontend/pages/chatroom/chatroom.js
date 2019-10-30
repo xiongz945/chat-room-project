@@ -208,6 +208,7 @@ document
     let response = null;
     let users = null;
     let messages = null;
+    let announcements = null;
     switch (searchContext) {
       case 'username':
       case 'status':
@@ -223,10 +224,9 @@ document
       case 'announcement':
         clearSearchResult();
         response = await searchApis.getSearchAnnouncements(query);
-        showSearchAnnouncementResults(
-          keyword,
-          response['data']['announcements']
-        );
+        announcements = response['data']['announcement'];
+        showSearchResultHeading(announcements.length, 'Announcement', keyword);
+        showSearchAnnouncementResults(announcements);
         break;
       case 'public_message':
       case 'private_message':
@@ -752,7 +752,34 @@ function showSearchUserResults(users) {
   });
 }
 
-function showSearchAnnouncementResults(announcements) {}
+function showSearchAnnouncementResults(announcements) {
+  const searchResultList = document.querySelector('#search-result-list');
+
+  announcements.forEach((message) => {
+    const messageBlock = document.createElement('div');
+    messageBlock.className = 'message';
+
+    const messageAuthor = document.createElement('a');
+    messageAuthor.className = 'message-author';
+    messageAuthor.innerText = message['senderName'];
+    messageAuthor.href = '#';
+    messageBlock.appendChild(messageAuthor);
+
+    const messageDate = document.createElement('span');
+    messageDate.className = 'message-date';
+    messageDate.style['float'] = 'right';
+    // FIXME: Beautify the datetime.
+    messageDate.innerText = 'sent at ' + message['createdAt'];
+    messageBlock.appendChild(messageDate);
+
+    const messageContent = document.createElement('span');
+    messageContent.className = 'message-content';
+    messageContent.innerText = message['content'];
+    messageBlock.appendChild(messageContent);
+
+    searchResultList.appendChild(messageBlock);
+  });
+}
 
 function showSearchMessageResults(messages) {
   const searchResultList = document.querySelector('#search-result-list');
