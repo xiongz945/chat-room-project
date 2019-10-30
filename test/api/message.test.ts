@@ -68,6 +68,7 @@ describe('Message API', () => {
       });
 
     expect(res.status).toEqual(200);
+    expect(res.body.messages[0]['content']).toEqual('message');
   });
 
   test('POST /messages/public', async () => {
@@ -84,6 +85,14 @@ describe('Message API', () => {
   });
 
   test('GET /messages/123', async () => {
+    const message = new Message({
+      senderName: 'abc',
+      content: 'message',
+      receiverName: '123',
+      createdAt: '2019-09-30T19:37:46.495Z',
+    });
+    await message.save();
+
     const res = await mock
       .get('/messages/123')
       .set('Authorization', `Bearer ${token}`)
@@ -92,6 +101,9 @@ describe('Message API', () => {
       });
 
     expect(res.status).toEqual(200);
+    expect(res.body.messages[0]['senderName']).toEqual('abc');
+    expect(res.body.messages[0]['receiverName']).toEqual('123');
+    expect(res.body.messages[0]['content']).toEqual('message');
   });
 
   test('POST /messages/123', async () => {
