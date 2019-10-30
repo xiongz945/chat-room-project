@@ -92,3 +92,42 @@ export const getMessage = async (
     return next(err);
   }
 };
+
+export const postAnnouncement = async (
+  req: IPostMessageRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const announcement = new Message({
+      senderName: req.body.senderName,
+      senderId: req.body.senderId,
+      receiverName: 'announcement',
+      content: req.body.message,
+      status: '',
+    });
+    await announcement.save();
+    return res.status(200).json('{}');
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getAnnouncement = async (
+  req: IGetMessageRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const announcements: any = await Message.find({
+      receiverName: 'announcement',
+    })
+      .sort({ createdAt: -1 })
+      .limit(3)
+      .exec();
+
+    return res.status(200).json({ announcements });
+  } catch (err) {
+    return next(err);
+  }
+};

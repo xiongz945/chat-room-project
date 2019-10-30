@@ -35,4 +35,14 @@ export default {
     const res = await get('/messages/' + receiverName + '/history', data);
     return res;
   },
+
+  async postAnnouncement(data) {
+    const res = await post('/messages/announcements', data);
+    return res;
+  },
+
+  async getAnnouncement(data) {
+    const res = await get('/messages/announcements', data);
+    return res;
+  },
 };
