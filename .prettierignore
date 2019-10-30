@@ -3,3 +3,4 @@ dist/*
 coverage/*
 frontend/*
 documents/*
+backend/coverage/*

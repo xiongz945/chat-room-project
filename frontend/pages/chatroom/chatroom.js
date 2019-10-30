@@ -8,6 +8,7 @@ import userStore from '../../store/user.js';
 import router from '../../router.js';
 import userApis from '../../apis/user-apis.js';
 import chatroomApis from '../../apis/chatroom-apis.js';
+import searchApis from '../../apis/search-apis.js';
 
 const statusMap = {
   1: 'OK',
@@ -169,6 +170,7 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
 });
 
 document.querySelector('#menu-chatroom').addEventListener('click', function(e) {
+  closeMenu();
   switchToPublicChat();
 });
 
@@ -187,6 +189,64 @@ document.querySelector('#shareStatusBtn').onclick = async () => {
     userStore.userActions.updateStatus(status);
   }
 };
+
+document
+  .querySelector('#magnifier-button')
+  .addEventListener('click', function(e) {
+    switchToSearchView();
+  });
+
+document
+  .querySelector('#search-button')
+  .addEventListener('click', async function(e) {
+    const searchContext = document.querySelector('.search-context-select')
+      .value;
+    const keyword = document.querySelector('#search-keyword-input').value;
+    const query = {
+      keyword: keyword,
+    };
+    let response = null;
+    let users = null;
+    let messages = null;
+    switch (searchContext) {
+      case 'username':
+      case 'status':
+        clearSearchResult();
+        response =
+          searchContext === 'username'
+            ? await searchApis.getSearchUsersByUsername(query)
+            : await searchApis.getSearchUsersByStatus(query);
+        users = response['data']['users'];
+        showSearchResultHeading(users.length, 'User', keyword);
+        showSearchUserResults(users);
+        break;
+      case 'announcement':
+        clearSearchResult();
+        response = await searchApis.getSearchAnnouncements(query);
+        showSearchAnnouncementResults(
+          keyword,
+          response['data']['announcements']
+        );
+        break;
+      case 'public_message':
+      case 'private_message':
+        clearSearchResult();
+        response =
+          searchContext === 'public_message'
+            ? await searchApis.getSearchPublicMessages(query)
+            : await searchApis.getSearchPrivateMessages(query);
+        messages = response['data']['messages'];
+        showSearchResultHeading(
+          messages.length,
+          searchContext === 'public_message'
+            ? 'Public Messages'
+            : 'Private Messages',
+          keyword
+        );
+        showSearchMessageResults(messages);
+        break;
+    }
+  });
 
 document.querySelector('#announcement-button').onclick = async () => {
   swal(
@@ -585,6 +645,7 @@ function updateChatUserStatus(username, status) {
 }
 
 function switchToPublicChat() {
+  switchToChatView();
   userStore.userActions.switchChatMode('public');
 
   cleanMessageBoard();
@@ -595,6 +656,7 @@ function switchToPublicChat() {
 }
 
 function switchToPrivateChat(peer) {
+  switchToChatView();
   userStore.userActions.updateChatPeer(peer);
   userStore.userActions.updateRecentPeer(peer);
   userStore.userActions.switchChatMode('private');
@@ -604,4 +666,136 @@ function switchToPrivateChat(peer) {
 
   const channel = document.getElementById('chatroom-channel');
   channel.innerText = 'Private Channel with ' + peer;
+}
+
+function switchToSearchView() {
+  clearSearchResult();
+  document.querySelector('.chat-view').hidden = true;
+  document.querySelector('.search-view').hidden = false;
+  const channel = document.getElementById('chatroom-channel');
+  channel.innerText = 'Search Result';
+}
+
+function switchToChatView() {
+  document.querySelector('.chat-view').hidden = false;
+  document.querySelector('.search-view').hidden = true;
+}
+
+function clearSearchResult() {
+  document.querySelector('#search-result-heading').hidden = true;
+  document.querySelector('#search-result-list').innerHTML = '';
+}
+
+function showSearchResultHeading(
+  searchResultNum,
+  searchContext,
+  searchKeyword
+) {
+  document.querySelector('#search-result-num').innerText = searchResultNum;
+  document.querySelector('#search-result-plural').innerText =
+    searchResultNum > 1 ? 's' : '';
+  document.querySelector('#search-context').innerText = searchContext;
+  document.querySelector('#search-title').innerText = searchKeyword;
+  document.querySelector('#search-result-heading').hidden = false;
+}
+
+function showSearchUserResults(users) {
+  const searchResultList = document.querySelector('#search-result-list');
+
+  users.forEach((user) => {
+    const chatUser = document.createElement('div');
+    chatUser.className = 'chat-user';
+
+    const onlineDot = document.createElement('span');
+    onlineDot.className = 'float-left online-dot';
+    onlineDot.id = 'online-dot';
+    onlineDot.style.visibility =
+      user['isOnline'] === true ? 'visible' : 'hidden';
+    chatUser.appendChild(onlineDot);
+
+    const chatAvatar = document.createElement('img');
+    chatAvatar.className = 'chat-avatar';
+    chatAvatar.src = '/assets/img/avatar-default-icon.png';
+    chatAvatar.alt = '';
+    chatUser.appendChild(chatAvatar);
+
+    const statusIcon = document.createElement('span');
+    statusIcon.className = 'float-right status-icon';
+    statusIcon.innerText =
+      user['status'] in emojiMap
+        ? emojiMap[user['status']]
+        : emojiMap[undefined];
+    statusIcon.style.visibility =
+      user['status'] === undefined ||
+      user['status'] === 'undefined' ||
+      !(user['status'] in emojiMap)
+        ? 'hidden'
+        : 'visible';
+    chatUser.appendChild(statusIcon);
+
+    const chatUserName = document.createElement('div');
+    chatUserName.className = 'chat-user-name';
+
+    const username = document.createElement('a');
+    username.className = 'chat-user-name';
+    username.innerText = user['username'];
+    username.href = '#';
+    chatUserName.appendChild(username);
+
+    // Add event listener
+    username.addEventListener('click', function(e) {
+      switchToPrivateChat(user['username']);
+    });
+
+    chatUser.appendChild(chatUserName);
+    searchResultList.appendChild(chatUser);
+  });
+}
+
+function showSearchAnnouncementResults(announcements) {}
+
+function showSearchMessageResults(messages) {
+  const searchResultList = document.querySelector('#search-result-list');
+
+  messages.forEach((message) => {
+    const messageBlock = document.createElement('div');
+    messageBlock.className = 'message';
+
+    const messageAuthor = document.createElement('a');
+    messageAuthor.className = 'message-author';
+    messageAuthor.innerText = message['senderName'];
+    messageAuthor.href = '#';
+    messageBlock.appendChild(messageAuthor);
+
+    const messageStatus = document.createElement('span');
+    messageStatus.className = 'message-status';
+    messageStatus.innerText =
+      message['status'] === undefined ||
+      message['status'] === 'undefined' ||
+      !(message['status'] in emojiMap)
+        ? ''
+        : ' ' + emojiMap[message['status']];
+    messageBlock.appendChild(messageStatus);
+
+    if ('receiverName' in message) {
+      const messageReceiver = document.createElement('span');
+      messageReceiver.className = 'message-receiver';
+      messageReceiver.innerText = 'to ' + message['receiverName'];
+      messageBlock.appendChild(messageReceiver);
+    }
+
+    const messageDate = document.createElement('span');
+    messageDate.className = 'message-date';
+    messageDate.style['float'] = 'right';
+    // FIXME: Beautify the datetime.
+    messageDate.innerText = 'sent at ' + message['createdAt'];
+    messageBlock.appendChild(messageDate);
+
+    const messageContent = document.createElement('span');
+    messageContent.className = 'message-content';
+    messageContent.innerText = message['content'];
+    messageBlock.appendChild(messageContent);
+
+    searchResultList.appendChild(messageBlock);
+  });
 }

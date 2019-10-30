@@ -3,7 +3,7 @@ import socket from 'socket.io';
 
 import app from './app';
 
-import { Message, MessageDocument } from './models/Message';
+import { Message, IMessageDocument } from './models/Message';
 
 /**
  * Error Handler. Provides full stack - remove for production
