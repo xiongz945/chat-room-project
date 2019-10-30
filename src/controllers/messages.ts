@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Message, MessageDocument } from '../models/Message';
+import { Message, IMessageDocument } from '../models/Message';
 
 import socket from 'socket.io';
 import io from '../server';
@@ -25,7 +25,7 @@ export const getHistoryMessage = async (
   try {
     const receiverName: string = req.params.receiverName || 'public';
 
-    let messages: MessageDocument[] = [];
+    let messages: IMessageDocument[] = [];
     if (req.query.senderName === undefined) {
       messages = await Message.find({ receiverName: receiverName }).exec();
     } else {
@@ -93,7 +93,7 @@ export const getMessage = async (
   }
 };
 
-export const postAnnouncment = async (
+export const postAnnouncement = async (
   req: IPostMessageRequest,
   res: Response,
   next: NextFunction
@@ -113,25 +113,19 @@ export const postAnnouncment = async (
   }
 };
 
-export const getAnnouncment = async (
+export const getAnnouncement = async (
   req: IGetMessageRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const timestamp: Date = new Date(parseInt(req.query.timestamp));
-
-    if (req.query.receiverName !== 'announcement')
-      return res
-        .status(400)
-        .json({ error: 'You are posting message to announcement channel' });
-
     const announcements: any = await Message.find({
       receiverName: 'announcement',
     })
       .sort({ createdAt: -1 })
       .limit(3)
       .exec();
+
     return res.status(200).json({ announcements });
   } catch (err) {
     return next(err);

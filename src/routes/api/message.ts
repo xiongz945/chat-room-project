@@ -8,12 +8,12 @@ const router = express.Router();
 router.get(
   '/announcements',
   passportConfig.isAuthenticated,
-  messageController.getAnnouncment
+  messageController.getAnnouncement
 );
 router.post(
   '/announcements',
   passportConfig.isAuthenticated,
-  messageController.postAnnouncment
+  messageController.postAnnouncement
 );
 
 // Message history

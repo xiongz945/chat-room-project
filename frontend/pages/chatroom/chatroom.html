@@ -103,6 +103,7 @@
               class="nav navbar-top-links navbar-right"
               style="padding-right: 15px"
             >
+              <li><a id="magnifier-button">🔍</a></li>
               <li id="welcome-message" style="padding-right: 15px">
                 Welcome!
               </li>
@@ -198,6 +199,47 @@
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+              <div class="ibox search-view" hidden>
+                <div class="ibox-content">
+                  <h2 id="search-result-heading" hidden>
+                    <span id="search-result-num" class="text-success"></span>
+                    result<span id="search-result-plural">s</span> found for
+                    <span id="search-title" class="text-navy"></span>
+                    in <span id="search-context">Users</span>
+                  </h2>
+                  <!--                  <small>Request time (0.23 seconds)</small>-->
+
+                  <div class="search-form">
+                    <div class="input-group search-bar">
+                      <input
+                        id="search-keyword-input"
+                        type="text"
+                        placeholder="Search Keyword"
+                        name="search"
+                        class="form-control form-control-lg"
+                      />
+                      <select class="search-context-select">
+                        <option value="username">Citizen Username</option>
+                        <option value="status">Citizen Status</option>
+                        <option value="announcement">Announcement</option>
+                        <option value="public_message">Public Chat</option>
+                        <option value="private_message">Private Chat</option>
+                      </select>
+                      <div class="input-group-btn">
+                        <button
+                          id="search-button"
+                          class="btn btn-lg btn-primary"
+                          type="submit"
+                        >
+                          Search
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="hr-line-dashed"></div>
+                  <div id="search-result-list"></div>
                 </div>
               </div>
             </div>
