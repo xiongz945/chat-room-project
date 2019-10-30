@@ -64,6 +64,22 @@ describe('Search API', () => {
       createdAt: '2019-09-30T19:37:46.495Z',
     });
     await privateMessage_3.save();
+
+    const announcement_1 = new Message({
+      senderName: 'alice',
+      content: 'Live long and prosper.',
+      receiverName: 'announcement',
+      createdAt: '2019-09-30T19:37:46.495Z',
+    });
+    await announcement_1.save();
+
+    const announcement_2 = new Message({
+      senderName: 'bob',
+      content: 'May the force be with you, always.',
+      receiverName: 'announcement',
+      createdAt: '2019-09-30T19:40:46.495Z',
+    });
+    await announcement_2.save();
   }, 10000);
 
   afterAll(async () => {
@@ -119,6 +135,18 @@ describe('Search API', () => {
     expect(searchPrivateMessageRes.status).toEqual(200);
     expect(searchPrivateMessageRes.body['messages']).toHaveLength(2);
     expect(searchPrivateMessageRes.body['messages'][0]['senderName']).toEqual(
+      'bob'
+    );
+  });
+
+  test('GET /search/announcements', async () => {
+    const searchAnnouncementRes = await mock
+      .get('/search/announcements')
+      .set('Authorization', `Bearer ${token}`)
+      .query({ keyword: 'prosper force' });
+    expect(searchAnnouncementRes.status).toEqual(200);
+    expect(searchAnnouncementRes.body['announcement']).toHaveLength(2);
+    expect(searchAnnouncementRes.body['announcement'][0]['senderName']).toEqual(
       'bob'
     );
   });

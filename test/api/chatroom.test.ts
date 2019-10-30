@@ -17,6 +17,7 @@ describe('Chatroom API', () => {
 
   afterAll(async () => {
     await mongoose.connection.db.dropDatabase();
+    server.close();
   });
 
   beforeEach(async () => {

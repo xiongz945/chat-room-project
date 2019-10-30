@@ -46,9 +46,8 @@ export const getSearchAnnouncements = async (
       10,
       'senderName content createdAt'
     );
-  return res.status(200).json({announcement: announcements} );
-  } catch (err)
-  {
+    return res.status(200).json({ announcement: announcements });
+  } catch (err) {
     return next(err);
   }
 };
