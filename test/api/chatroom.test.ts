@@ -26,6 +26,7 @@ describe('Chatroom API', () => {
       password: '1234',
     });
 
+
     token = res.body.token;
   });
 
