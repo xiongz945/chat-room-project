@@ -22,7 +22,7 @@ describe('Message API', () => {
 
     const user = new User({ username: '123', password: '1234' });
     await user.save();
-  });
+  }, 10000);
 
   afterAll(async () => {
     await mongoose.connection.db.dropDatabase();
