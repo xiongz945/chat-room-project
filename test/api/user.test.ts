@@ -65,7 +65,7 @@ describe('Message API', () => {
 
   test('PATCH /user/me/password', async () => {
     const res = await mock
-      .get('/user/me/password')
+      .patch('/user/me/password')
       .set('Authorization', `Bearer ${token}`)
       .send({ password: '123', confirmPassword: '123' });
     expect(res.status).toEqual(200);
