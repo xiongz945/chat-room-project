@@ -11,9 +11,13 @@ const prod = ENVIRONMENT === 'production'; // Anything else is treated as 'dev'
 export const SESSION_SECRET: string = process.env['SESSION_SECRET'];
 export const JWT_SECRET: string = process.env['JWT_SECRET'];
 
-export const MONGODB_URI = prod
+export let MONGODB_URI: string = prod
   ? process.env['MONGODB_URI']
   : process.env['MONGODB_URI_LOCAL'];
+
+export function setMongoDbUri(uri: string) {
+  MONGODB_URI = uri;
+}
 
 if (!SESSION_SECRET) {
   logger.error('No client secret. Set SESSION_SECRET environment variable.');

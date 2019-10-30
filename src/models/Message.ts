@@ -72,7 +72,7 @@ messageSchema.statics.searchPrivateMessages = async function searchPrivateMessag
     $or: [
       {
         senderName: searcherName,
-        receiverName: { $not: { $eq: 'public' } },
+        receiverName: { $nin: ['public', 'announcement'] },
       },
       { receiverName: searcherName },
     ],
@@ -92,16 +92,17 @@ messageSchema.statics.searchAnnouncements = async function searchAnnouncements(
   projection: string = undefined
 ) {
   const conditions: any = {
-    $text: {$search: keyword},
-    receiverName: 'announcement'
+    $text: { $search: keyword },
+    receiverName: 'announcement',
   };
   try {
-    return await Message.find(conditions, projection).sort({createdAt: -1}).exec();
+    return await Message.find(conditions, projection)
+      .sort({ createdAt: -1 })
+      .exec();
   } catch (err) {
     throw err;
   }
-
-}
+};
 
 export const Message: IMessageModel = mongoose.model<
   IMessageDocument,
