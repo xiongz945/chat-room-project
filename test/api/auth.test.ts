@@ -1,22 +1,23 @@
-import superagent from 'superagent';
 import supertest from 'supertest';
 import mongoose, { mongo } from 'mongoose';
 import server from '../../src/server';
-import { MONGODB_URI } from '../../src/config/secrets';
+import { MONGODB_URI, setMongoDbUri } from '../../src/config/secrets';
 import { User } from '../../src/models/User';
+
+
+setMongoDbUri(MONGODB_URI + '_auth');
+const mock = supertest(server);
 
 
 describe('Auth API', () => {
 
-  const mock = supertest(server);
-  const user = new User({ username: '123', password: '1234' });
-
   beforeAll(async () => {
+    const user = new User({ username: '123', password: '1234' });
     await user.save();
   });
 
   afterAll(async () => {
-    await user.remove();
+    await mongoose.connection.db.dropDatabase();
   });
 
   test('POST /auth/login ', async () => {
