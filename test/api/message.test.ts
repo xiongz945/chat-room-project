@@ -1,11 +1,11 @@
 import supertest from 'supertest';
 import mongoose, { mongo } from 'mongoose';
-import server from '../../src/server';
 import { MONGODB_URI, setMongoDbUri } from '../../src/config/secrets';
 import { Message } from '../../src/models/Message';
 import { User } from '../../src/models/User';
 
 setMongoDbUri(MONGODB_URI + '_message');
+import server from '../../src/server';
 const mock = supertest(server);
 
 describe('Message API', () => {
@@ -25,6 +25,7 @@ describe('Message API', () => {
   }, 10000);
 
   afterAll(async () => {
+    console.log(mongoose.connection.db.databaseName + ' deleted');
     await mongoose.connection.db.dropDatabase();
     server.close();
   });
