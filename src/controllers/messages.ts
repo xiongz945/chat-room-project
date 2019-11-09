@@ -29,6 +29,13 @@ export const getHistoryMessage = async (
     if (req.query.senderName === undefined) {
       messages = await Message.find({ receiverName: receiverName }).exec();
     } else {
+      const requestSenderName = req.user.username;
+      if (
+        requestSenderName != req.query.senderName &&
+        requestSenderName != receiverName
+      ) {
+        return res.status(401).json({ err: 'Unauthorized' });
+      }
       messages = await Message.find({
         senderName: req.query.senderName,
         receiverName: receiverName,
