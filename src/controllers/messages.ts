@@ -24,16 +24,12 @@ export const getHistoryMessage = async (
 ) => {
   try {
     const receiverName: string = req.params.receiverName || 'public';
-
     let messages: IMessageDocument[] = [];
     if (req.query.senderName === undefined) {
       messages = await Message.find({ receiverName: receiverName }).exec();
     } else {
-      const requestSenderName = req.user.username;
-      if (
-        requestSenderName != req.query.senderName &&
-        requestSenderName != receiverName
-      ) {
+      const requesterName = req.user.username;
+      if (![receiverName, req.query.senderName].includes(requesterName)) {
         return res.status(401).json({ err: 'Unauthorized' });
       }
       messages = await Message.find({
