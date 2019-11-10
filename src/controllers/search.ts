@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../models/User';
 import { Message } from '../models/Message';
-import { cat } from 'shelljs';
 
 export const getSearchUsersByUsername = async (
   req: Request,

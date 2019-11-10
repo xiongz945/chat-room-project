@@ -6,6 +6,7 @@ import user from './api/user';
 import message from './api/message';
 import chatroom from './api/chatroom';
 import search from './api/search';
+import earthquake from './api/earthquake';
 
 const router = express.Router();
 
@@ -18,4 +19,9 @@ router.use(
 );
 router.use('/chat', passport.authenticate('jwt', { session: false }), chatroom);
 router.use('/search', passport.authenticate('jwt', { session: false }), search);
+router.use(
+  '/earthquake',
+  passport.authenticate('jwt', { session: false }),
+  earthquake
+);
 export default router;

@@ -117,7 +117,12 @@
                   </div>
                 </div>
                 <div class="ibox-content">
-                  <form id="earthquake-report-form">
+                  <form
+                    id="earthquake-report-form"
+                    ,
+                    role="form"
+                    action="javascript:void(0);"
+                  >
                     <div class="form-group  row">
                       <label class="col-sm-2 col-form-label"
                         >Time of Occurrence</label
@@ -128,12 +133,14 @@
                           name="date"
                           value=""
                           required="required"
+                          id="date-input"
                         />
                         <input
                           type="time"
                           name="time"
                           value=""
                           required="required"
+                          id="time-input"
                         />
                       </div>
                     </div>
@@ -147,6 +154,7 @@
                           class="form-control"
                           placeholder="No more than 25 words"
                           required="required"
+                          id="description-input"
                         />
                       </div>
                     </div>
@@ -161,6 +169,7 @@
                           step="0.1"
                           value="2.0"
                           required="required"
+                          id="magnitude-input"
                         />
                       </div>
                     </div>
@@ -189,6 +198,7 @@
                             min="0"
                             value="0"
                             required="required"
+                            id="killed-input"
                           />
                         </div>
                         <div class="input-group m-b">
@@ -201,6 +211,7 @@
                             min="0"
                             value="0"
                             required="required"
+                            id="injured-input"
                           />
                         </div>
                         <div class="input-group m-b">
@@ -213,6 +224,7 @@
                             min="0"
                             value="0"
                             required="required"
+                            id="missing-input"
                           />
                         </div>
                       </div>
@@ -221,7 +233,11 @@
 
                     <div class="form-group row">
                       <div class="col-sm-4 col-sm-offset-2">
-                        <button class="btn btn-primary btn-sm" type="submit">
+                        <button
+                          id="report-btn"
+                          class="btn btn-primary btn-sm"
+                          type="submit"
+                        >
                           Report
                         </button>
                       </div>
