@@ -19,6 +19,14 @@
       href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"
       rel="stylesheet"
     />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
   </head>
 
   <body class="canvas-menu">
@@ -160,6 +168,9 @@
 
                     <div class="form-group  row">
                       <label class="col-sm-2 col-form-label">Location</label>
+                      <div id="map" style="width: 400px; height: 300px;">
+                        <pre id="coordinates" class="coordinates"></pre>
+                      </div>
                     </div>
                     <div class="hr-line-dashed"></div>
                     <div class="form-group row">
@@ -247,6 +258,8 @@
 
     <!-- Socket.io -->
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js"></script>
 
     <script type="module" src="./earthquake_report.js"></script>
   </body>
