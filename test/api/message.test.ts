@@ -72,6 +72,54 @@ describe('Message API', () => {
     expect(res.body.messages[0]['content']).toEqual('message');
   });
 
+  test('GET /messages/def/history', async () => {
+    const message = new Message({
+      senderName: '123',
+      content: 'message',
+      receiverName: 'def',
+      createdAt: '2019-09-30T19:37:46.495Z',
+    });
+    await message.save();
+    const res = await mock
+      .get('/messages/def/history')
+      .set('Authorization', `Bearer ${token}`)
+      .query({
+        start: 0,
+        end: 10,
+        receiverName: 'def',
+        senderName: '123',
+      });
+
+    expect(res.status).toEqual(200);
+    expect(res.body.messages).toHaveLength(1);
+    expect(res.body.messages[0]['senderName']).toEqual('123');
+    expect(res.body.messages[0]['receiverName']).toEqual('def');
+    expect(res.body.messages[0]['content']).toEqual('message');
+  });
+
+  test('GET /messages/abc/history', async () => {
+    const message = new Message({
+      senderName: 'def',
+      content: 'message',
+      receiverName: 'abc',
+      createdAt: '2019-09-30T19:37:46.495Z',
+    });
+    await message.save();
+
+    const res = await mock
+      .get('/messages/abc/history')
+      .set('Authorization', `Bearer ${token}`)
+      .query({
+        start: 0,
+        end: 10,
+        receiverName: 'abc',
+        senderName: 'def',
+      });
+
+    expect(res.status).toEqual(401);
+    expect(res.body.err).toEqual('Unauthorized');
+  });
+
   test('POST /messages/public', async () => {
     const res = await mock
       .post('/messages/public')
