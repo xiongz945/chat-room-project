@@ -17,7 +17,9 @@ export interface IEarthquakeReportDocument extends mongoose.Document {
 }
 
 export interface IEarthquakeReportModel
-  extends Model<IEarthquakeReportDocument> {}
+  extends Model<IEarthquakeReportDocument> {
+  getAllReports(): IEarthquakeReportDocument[];
+}
 
 const earthquakeReportSchema = new mongoose.Schema(
   {
@@ -35,6 +37,14 @@ const earthquakeReportSchema = new mongoose.Schema(
   },
   { collection: 'earthquake_reports' }
 );
+
+earthquakeReportSchema.statics.getAllReports = async function getAllReports() {
+  try {
+    return await EarthquakeReport.find({}).exec();
+  } catch (err) {
+    throw err;
+  }
+};
 
 export const EarthquakeReport: IEarthquakeReportModel = mongoose.model<
   IEarthquakeReportDocument,

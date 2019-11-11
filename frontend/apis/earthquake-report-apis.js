@@ -5,4 +5,7 @@ export default {
   async postEarthquakeReport(data) {
     return await post('/earthquake/report', data);
   },
+  async getEarthquakeReport() {
+    return await get('/earthquake/report');
+  },
 };

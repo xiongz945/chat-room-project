@@ -9,6 +9,13 @@ router.post(
   passportConfig.isAuthenticated,
   earthquakeController.postEarthquakeReport
 );
+
+router.get(
+  '/report',
+  passportConfig.isAuthenticated,
+  earthquakeController.getEarthquakeReport
+);
+
 router.post(
   '/prediction',
   passportConfig.isAuthenticated,
