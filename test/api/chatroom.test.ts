@@ -1,10 +1,10 @@
 import supertest from 'supertest';
 import mongoose, { mongo } from 'mongoose';
-import server from '../../src/server';
 import { MONGODB_URI, setMongoDbUri } from '../../src/config/secrets';
 import { User } from '../../src/models/User';
 
-setMongoDbUri(MONGODB_URI + '_auth');
+setMongoDbUri(MONGODB_URI + '_chatroom');
+import server from '../../src/server';
 const mock = supertest(server);
 
 describe('Chatroom API', () => {
@@ -16,6 +16,7 @@ describe('Chatroom API', () => {
   });
 
   afterAll(async () => {
+    console.log(mongoose.connection.db.databaseName + ' deleted');
     await mongoose.connection.db.dropDatabase();
     server.close();
   });
@@ -25,7 +26,6 @@ describe('Chatroom API', () => {
       username: '123',
       password: '1234',
     });
-
 
     token = res.body.token;
   });

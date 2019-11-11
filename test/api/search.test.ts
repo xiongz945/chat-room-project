@@ -1,11 +1,11 @@
 import supertest from 'supertest';
 import mongoose, { mongo } from 'mongoose';
-import server from '../../src/server';
 import { MONGODB_URI, setMongoDbUri } from '../../src/config/secrets';
 import { User } from '../../src/models/User';
 import { Message } from '../../src/models/Message';
 
 setMongoDbUri(MONGODB_URI + '_search');
+import server from '../../src/server';
 const mock = supertest(server);
 
 describe('Search API', () => {
@@ -83,6 +83,7 @@ describe('Search API', () => {
   }, 10000);
 
   afterAll(async () => {
+    console.log(mongoose.connection.db.databaseName + ' deleted');
     await mongoose.connection.db.dropDatabase();
     server.close();
   });
