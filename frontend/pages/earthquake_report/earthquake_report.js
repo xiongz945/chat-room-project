@@ -95,7 +95,7 @@ document.querySelector('#earthquake-report-form').addEventListener(
           document.querySelector('#time-input').value
       ),
       description: document.querySelector('#description-input').value,
-      magnitude: document.querySelector('#magnitude-input').value,
+      magnitude: Number(document.querySelector('#magnitude-input').value),
       location: { longitude: lngLat.lng, latitude: lngLat.lat },
       killed: Number(document.querySelector('#killed-input').value),
       injured: Number(document.querySelector('#injured-input').value),
