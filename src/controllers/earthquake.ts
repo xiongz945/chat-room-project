@@ -4,6 +4,8 @@ import {
   IEarthquakeReportDocument,
 } from '../models/EarthquakeReport';
 
+import { EarthquakePrediction } from '../models/EarthquakePrediction';
+
 export const postEarthquakeReport = async (
   req: Request,
   res: Response,
@@ -55,8 +57,21 @@ export const patchEarthquakeReport = async (
   }
 };
 
-export const postEarthquakePrediction = (
+export const postEarthquakePrediction = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  try {
+    if (req.body.role !== 'coordinator') {
+      return res.status(401).json({ err: 'Unauthorized' });
+    }
+    const payload = req.body;
+    payload['predictorName'] = req.user.username;
+    const earthquakePrediction = new EarthquakePrediction(payload);
+    await earthquakePrediction.save();
+    return res.status(200).json({});
+  } catch (err) {
+    next(err);
+  }
+};
