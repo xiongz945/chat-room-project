@@ -8,4 +8,7 @@ export default {
   async getEarthquakeReport() {
     return await get('/earthquake/report');
   },
+  async patchEarthquakeReport(data) {
+    return await patch('/earthquake/report', data);
+  },
 };

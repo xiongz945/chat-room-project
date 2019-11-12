@@ -16,6 +16,12 @@ router.get(
   earthquakeController.getEarthquakeReport
 );
 
+router.patch(
+  '/report',
+  passportConfig.isAuthenticated,
+  earthquakeController.patchEarthquakeReport
+);
+
 router.post(
   '/prediction',
   passportConfig.isAuthenticated,

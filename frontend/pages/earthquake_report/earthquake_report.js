@@ -70,9 +70,34 @@ document.querySelector('#earthquake-report-form').addEventListener(
   true
 );
 
-document.querySelector('#update-report-form').addEventListener('submit', (e)=>{
-
-});
+document
+  .querySelector('#update-report-form')
+  .addEventListener('submit', async (e) => {
+    let updatedReport = {
+      occurred_datetime: new Date(
+        document.querySelector('#update-date-input').value +
+          'T' +
+          document.querySelector('#update-time-input').value
+      ),
+      description: document.querySelector('#update-description-input').value,
+      magnitude: Number(
+        document.querySelector('#update-magnitude-input').value
+      ),
+      location: locationDict['update-map'],
+      killed: Number(document.querySelector('#update-killed-input').value),
+      injured: Number(document.querySelector('#update-injured-input').value),
+      missing: Number(document.querySelector('#update-missing-input').value),
+    };
+    if (updatedReport.description.split(' ').length > 25) {
+      alert('Description max 25 words!');
+      return;
+    }
+    await earthquakeReportApis.patchEarthquakeReport({
+      report_id: document.querySelector('#update-report-form')['report-id'],
+      report: updatedReport,
+    });
+    location.reload();
+  });
 
 function mapLoadedListener(event) {
   let map = event.target;
@@ -176,31 +201,39 @@ function updateReportTable(reports) {
   });
 }
 
-function fillUpdateForm(report){
+function fillUpdateForm(report) {
+  document.querySelector('#update-report-form')['report-id'] = report['_id'];
   const occurredDatetime = new Date(report['occurred_datetime']);
-  document.querySelector('#update-date-input').value = date2Str(occurredDatetime);
-  document.querySelector('#update-time-input').value = time2Str(occurredDatetime);
-  document.querySelector('#update-description-input').value = report['description'];
+  document.querySelector('#update-date-input').value = date2Str(
+    occurredDatetime
+  );
+  document.querySelector('#update-time-input').value = time2Str(
+    occurredDatetime
+  );
+  document.querySelector('#update-description-input').value =
+    report['description'];
   document.querySelector('#update-magnitude-input').value = report['magnitude'];
   document.querySelector('#update-killed-input').value = report['killed'];
   document.querySelector('#update-injured-input').value = report['injured'];
   document.querySelector('#update-missing-input').value = report['missing'];
   const updateMarker = markerDict['update-map'];
-  const lngLat = [report['location']['longitude'], report['location']['latitude']];
+  const lngLat = [
+    report['location']['longitude'],
+    report['location']['latitude'],
+  ];
   updateMarker.setLngLat(lngLat);
   locationDict['update-map'] = report['location'];
-  document.querySelector('#update-coordinates').innerHTML = 'Longitude: ' + lngLat[0] + '<br />Latitude: ' + lngLat[1];
+  document.querySelector('#update-coordinates').innerHTML =
+    'Longitude: ' + lngLat[0] + '<br />Latitude: ' + lngLat[1];
   console.log(locationDict);
   updateMap.flyTo({
     center: lngLat,
-    zoom: 14
+    zoom: 14,
   });
-
-
 }
 
 function prefixInteger(num, length) {
-  return ( '0000000000000000' + num ).substr( -length );
+  return ('0000000000000000' + num).substr(-length);
 }
 
 function date2Str(date) {
