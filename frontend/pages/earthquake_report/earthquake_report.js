@@ -26,25 +26,8 @@ let markerDict = {};
 
 // Set current datetime to input
 const currentDate = new Date();
-const yyyy = String(currentDate.getFullYear());
-const mm =
-  currentDate.getMonth() + 1 < 10
-    ? '0' + String(currentDate.getMonth() + 1)
-    : String(currentDate.getMonth() + 1);
-const dd =
-  currentDate.getDate() < 10
-    ? '0' + String(currentDate.getDate())
-    : String(currentDate.getDate());
-document.querySelector('#date-input').value = yyyy + '-' + mm + '-' + dd;
-const HH =
-  currentDate.getHours() < 10
-    ? '0' + String(currentDate.getHours())
-    : String(currentDate.getHours());
-const MM =
-  currentDate.getMinutes() < 10
-    ? '0' + String(currentDate.getMinutes())
-    : String(currentDate.getMinutes());
-document.querySelector('#time-input').value = HH + ':' + MM;
+document.querySelector('#date-input').value = date2Str(currentDate);
+document.querySelector('#time-input').value = time2Str(currentDate);
 
 // Get all reports
 let reports;
@@ -55,17 +38,15 @@ receiveEarthquakeReports();
 async function updateBtnClickListener(event) {
   const updateReportBtn = event.srcElement;
   const reportId = updateReportBtn.parentElement.parentElement.id;
+  const report = reportDict[reportId];
+  fillUpdateForm(report);
+  console.log(report);
   $('#myModal').modal('show');
 }
 
 document.querySelector('#earthquake-report-form').addEventListener(
   'submit',
-  (e) => {
-    const mapID = e.srcElement.id.split('-')[1] + '-map';
-    let lngLat = {
-      lng: locationDict[mapID]['longitude'],
-      lat: locationDict[mapID]['latitude'],
-    };
+  async (e) => {
     let report = {
       occurred_datetime: new Date(
         document.querySelector('#date-input').value +
@@ -74,7 +55,7 @@ document.querySelector('#earthquake-report-form').addEventListener(
       ),
       description: document.querySelector('#description-input').value,
       magnitude: Number(document.querySelector('#magnitude-input').value),
-      location: { longitude: lngLat.lng, latitude: lngLat.lat },
+      location: locationDict['report-map'],
       killed: Number(document.querySelector('#killed-input').value),
       injured: Number(document.querySelector('#injured-input').value),
       missing: Number(document.querySelector('#missing-input').value),
@@ -83,10 +64,15 @@ document.querySelector('#earthquake-report-form').addEventListener(
       alert('Description max 25 words!');
       return;
     }
-    earthquakeReportApis.postEarthquakeReport(report);
+    await earthquakeReportApis.postEarthquakeReport(report);
+    location.reload();
   },
   true
 );
+
+document.querySelector('#update-report-form').addEventListener('submit', (e)=>{
+
+});
 
 function mapLoadedListener(event) {
   let map = event.target;
@@ -188,4 +174,44 @@ function updateReportTable(reports) {
     reportTable.appendChild(row);
     ++i;
   });
+}
+
+function fillUpdateForm(report){
+  const occurredDatetime = new Date(report['occurred_datetime']);
+  document.querySelector('#update-date-input').value = date2Str(occurredDatetime);
+  document.querySelector('#update-time-input').value = time2Str(occurredDatetime);
+  document.querySelector('#update-description-input').value = report['description'];
+  document.querySelector('#update-magnitude-input').value = report['magnitude'];
+  document.querySelector('#update-killed-input').value = report['killed'];
+  document.querySelector('#update-injured-input').value = report['injured'];
+  document.querySelector('#update-missing-input').value = report['missing'];
+  const updateMarker = markerDict['update-map'];
+  const lngLat = [report['location']['longitude'], report['location']['latitude']];
+  updateMarker.setLngLat(lngLat);
+  locationDict['update-map'] = report['location'];
+  document.querySelector('#update-coordinates').innerHTML = 'Longitude: ' + lngLat[0] + '<br />Latitude: ' + lngLat[1];
+  console.log(locationDict);
+  updateMap.flyTo({
+    center: lngLat,
+    zoom: 14
+  });
+
+
+}
+
+function prefixInteger(num, length) {
+  return ( '0000000000000000' + num ).substr( -length );
+}
+
+function date2Str(date) {
+  const yyyy = prefixInteger(date.getFullYear(), 4);
+  const MM = prefixInteger(date.getMonth() + 1, 2);
+  const dd = prefixInteger(date.getDate(), 2);
+  return yyyy + '-' + MM + '-' + dd;
+}
+
+function time2Str(time) {
+  const HH = prefixInteger(time.getHours(), 2);
+  const mm = prefixInteger(time.getMinutes(), 2);
+  return HH + ':' + mm;
 }
