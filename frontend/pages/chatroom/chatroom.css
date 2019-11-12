@@ -25,3 +25,11 @@
 .message-receiver {
   margin-left: 5px;
 }
+
+.alert {
+  word-break: break-word;
+}
+
+.message-content {
+  word-break: break-word;
+}
