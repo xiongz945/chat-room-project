@@ -1,5 +1,5 @@
 import userStore from '../../store/user.js';
-import earthquakeReportApis from '../../apis/earthquake-report-apis.js';
+import earthquakeApis from '../../apis/earthquake-apis.js';
 
 if (userStore.userGetters.isLogin) {
   document.querySelector('#join-community-button').style.display = 'none';
@@ -64,7 +64,7 @@ document.querySelector('#earthquake-report-form').addEventListener(
       alert('Description max 25 words!');
       return;
     }
-    await earthquakeReportApis.postEarthquakeReport(report);
+    await earthquakeApis.postEarthquakeReport(report);
     location.reload();
   },
   true
@@ -92,7 +92,7 @@ document
       alert('Description max 25 words!');
       return;
     }
-    await earthquakeReportApis.patchEarthquakeReport({
+    await earthquakeApis.patchEarthquakeReport({
       report_id: document.querySelector('#update-report-form')['report-id'],
       report: updatedReport,
     });
@@ -160,7 +160,7 @@ updateMap.on('load', mapLoadedListener);
 // functions
 
 async function receiveEarthquakeReports() {
-  const resp = await earthquakeReportApis.getEarthquakeReport();
+  const resp = await earthquakeApis.getEarthquakeReport();
   reports = resp['data']['reports'];
   reports.forEach((report) => {
     reportDict[report['_id']] = report;

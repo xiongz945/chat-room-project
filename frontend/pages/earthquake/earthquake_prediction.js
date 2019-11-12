@@ -1,5 +1,5 @@
 import userStore from '../../store/user.js';
-import earthquakeReportApis from '../../apis/earthquake-report-apis.js';
+import earthquakeApis from '../../apis/earthquake-apis.js';
 
 if (userStore.userGetters.isLogin) {
   document.querySelector('#join-community-button').style.display = 'none';
