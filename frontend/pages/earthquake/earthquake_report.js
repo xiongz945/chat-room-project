@@ -127,7 +127,7 @@ function mapLoadedListener(event) {
       type: 'circle',
     });
 
-    map.flyTo({
+    map.jumpTo({
       center: userCoordinates,
       zoom: 14,
     });
@@ -226,7 +226,7 @@ function fillUpdateForm(report) {
   document.querySelector('#update-coordinates').innerHTML =
     'Longitude: ' + lngLat[0] + '<br />Latitude: ' + lngLat[1];
   console.log(locationDict);
-  updateMap.flyTo({
+  updateMap.jumpTo({
     center: lngLat,
     zoom: 14,
   });
