@@ -447,7 +447,9 @@ async function sendAnnouncement(text) {
 async function getAllUserInfo() {
   try {
     const response = await chatroomApis.getPublicUsers();
-    const users = response['data']['users'];
+    let users = response['data']['users'];
+    users = users.sort((a, b) => b.isOnline - a.isOnline)
+
     for (const index in users) {
       const user = users[index];
       // display current user's status on the left side menu
