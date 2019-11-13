@@ -8,7 +8,6 @@
 
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
     <link href="/assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
-    <link href="earthquake_report.css" rel="stylesheet" />
     <link href="/assets/css/animate.css" rel="stylesheet" />
     <link href="/assets/css/style.css" rel="stylesheet" />
     <link
@@ -60,16 +59,16 @@
                 >
               </a>
             </li>
-            <li>
-              <a href="/pages/earthquake/earthquake_statistics.html"
+            <li class="active">
+              <a href="#"
                 ><i class="fa fa-comments"></i>
                 <span class="nav-label" id="menu-statistics"
                   >Earthquake Statistics</span
                 >
               </a>
             </li>
-            <li class="active">
-              <a href="#"
+            <li hidden>
+              <a href="/pages/earthquake/earthquake_prediction.html"
                 ><i class="fa fa-comments"></i>
                 <span class="nav-label" id="menu-prediction"
                   >Earthquake Prediction</span
@@ -116,7 +115,7 @@
               href="/pages/login/login.html"
               >Join Community</a
             >
-            <h2>Earthquake Prediction</h2>
+            <h2>Earthquake Statistics</h2>
           </div>
         </div>
 
@@ -126,7 +125,7 @@
               <div class="ibox ">
                 <div class="ibox-title">
                   <h5>
-                    Post an Earthquake Prediction
+                    Earthquake Statistics
                   </h5>
                   <div class="ibox-tools">
                     <a class="collapse-link">
@@ -135,91 +134,82 @@
                   </div>
                 </div>
                 <div class="ibox-content">
-                  <form
-                    id="earthquake-prediction-form"
-                    ,
-                    role="form"
-                    action="javascript:void(0);"
-                  >
-                    <div class="form-group  row">
-                      <label class="col-sm-2 col-form-label"
-                        >Time of Occurrence</label
+                  <div class="row">
+                    <label class="col-sm-2 col-form-label">Time Range</label>
+                    <form
+                      id="statistics-range-form"
+                      ,
+                      role="form"
+                      ,
+                      action="javascript:void(0)"
+                    >
+                      <label class="col-form-label">From</label>
+                      <input
+                        type="date"
+                        name="date"
+                        value=""
+                        required="required"
+                        id="date-from"
+                      />
+                      <label class="col-form-label">To</label>
+                      <input
+                        type="date"
+                        name="date"
+                        value=""
+                        required="required"
+                        id="date-to"
+                      />
+                      <button
+                        id="statistics-range-btn"
+                        class="btn btn-primary btn-sm"
+                        type="submit"
                       >
-                      <div class="col-sm-10">
-                        <input
-                          type="date"
-                          name="date"
-                          value=""
-                          required="required"
-                          id="date-input"
-                        />
-                        <input
-                          type="time"
-                          name="time"
-                          value=""
-                          required="required"
-                          id="time-input"
-                        />
-                      </div>
-                    </div>
-                    <div class="hr-line-dashed"></div>
-                    <div class="form-group  row">
-                      <label class="col-sm-2 col-form-label">Description</label>
-                      <div class="col-sm-10">
-                        <input
-                          type="text"
-                          name="description"
-                          class="form-control"
-                          placeholder="No more than 25 words"
-                          required="required"
-                          id="description-input"
-                        />
-                      </div>
-                    </div>
-                    <div class="hr-line-dashed"></div>
-                    <div class="form-group  row">
-                      <label class="col-sm-2 col-form-label">Magnitude</label>
-                      <div class="col-sm-10">
-                        <input
-                          type="number"
-                          name="magnitude"
-                          min="2.0"
-                          max="10.0"
-                          step="0.1"
-                          value="2.0"
-                          required="required"
-                          id="magnitude-input"
-                        />
-                      </div>
-                    </div>
-                    <div class="hr-line-dashed"></div>
-
-                    <div class="form-group  row">
-                      <label class="col-sm-2 col-form-label">Location</label>
+                        Set Range
+                      </button>
+                    </form>
+                  </div>
+                  <div class="hr-line-dashed"></div>
+                  <div class="row">
+                    <label class="col-sm-2 col-form-label"
+                      >Earthquake Count</label
+                    >
+                    <h1 class="col-sm-10 no-margins" id="earthquake-count"></h1>
+                  </div>
+                  <div class="hr-line-dashed"></div>
+                  <div class="row">
+                    <label class="col-sm-2 col-form-label"
+                      >Magnitude Distribution</label
+                    >
+                    <div class="flot-chart col-sm-10">
                       <div
-                        id="prediction-map"
-                        style="width: 400px; height: 300px;"
-                      >
-                        <pre
-                          id="prediction-coordinates"
-                          class="coordinates"
-                        ></pre>
-                      </div>
+                        class="flot-chart-content"
+                        id="magnitude-bar-chart"
+                        style="max-width: 500px"
+                      ></div>
                     </div>
-                    <div class="hr-line-dashed"></div>
-
-                    <div class="form-group row">
-                      <div class="col-sm-4 col-sm-offset-2">
-                        <button
-                          id="prediction-btn"
-                          class="btn btn-primary btn-sm"
-                          type="submit"
-                        >
-                          Post
-                        </button>
-                      </div>
+                  </div>
+                  <div class="hr-line-dashed"></div>
+                  <div class="row">
+                    <label class="col-sm-2 col-form-label"
+                      >Casualty Distribution</label
+                    >
+                    <div class="flot-chart col-sm-10">
+                      <div
+                        class="flot-chart-pie-content"
+                        id="casualty-pie-chart"
+                      ></div>
                     </div>
-                  </form>
+                  </div>
+                  <div class="row">
+                    <label class="col-sm-2 col-form-label"
+                      >Geographical Distribution</label
+                    >
+                    <div
+                      id="statistics-map"
+                      style="width: 400px; height: 300px;"
+                    ></div>
+                  </div>
+                  <div class="hr-line-dashed"></div>
                 </div>
               </div>
             </div>
@@ -240,6 +230,11 @@
     <script src="/assets/js/plugins/metisMenu/jquery.metisMenu.js"></script>
     <script src="/assets/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
     <script src="/assets/js/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="/assets/js/plugins/flot/jquery.flot.js"></script>
+    <script src="/assets/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+    <script src="/assets/js/plugins/flot/jquery.flot.resize.js"></script>
+    <script src="/assets/js/plugins/flot/jquery.flot.pie.js"></script>
+    <script src="/assets/js/plugins/flot/jquery.flot.time.js"></script>
 
     <!-- Custom and plugin javascript -->
     <script src="/assets/js/inspinia.js"></script>
@@ -255,6 +250,6 @@
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js"></script>
 
-    <script type="module" src="./earthquake_prediction.js"></script>
+    <script type="module" src="./earthquake_statistics.js"></script>
   </body>
 </html>
