@@ -6,6 +6,7 @@ import user from './api/user';
 import message from './api/message';
 import chatroom from './api/chatroom';
 import search from './api/search';
+import smartAssistant from './api/smart-assistant';
 
 const router = express.Router();
 
@@ -18,4 +19,9 @@ router.use(
 );
 router.use('/chat', passport.authenticate('jwt', { session: false }), chatroom);
 router.use('/search', passport.authenticate('jwt', { session: false }), search);
+router.use(
+  '/smart-assistant',
+  //passport.authenticate('jwt', { session: false }),
+  smartAssistant
+);
 export default router;
