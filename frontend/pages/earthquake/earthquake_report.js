@@ -29,6 +29,13 @@ const currentDate = new Date();
 document.querySelector('#date-input').value = date2Str(currentDate);
 document.querySelector('#time-input').value = time2Str(currentDate);
 
+// Display earthquake prediction menu when the user is coordinator
+if (userStore.userGetters.user().role === 'coordinator') {
+  document.querySelector(
+    '#menu-prediction'
+  ).parentElement.parentElement.hidden = false;
+}
+
 // Get all reports
 let reports;
 let reportDict = {};

@@ -115,6 +115,13 @@ window.onbeforeunload = async (e) => {
 };
 */
 
+// Display earthquake prediction menu when the user is coordinator
+if (userStore.userGetters.user().role === 'coordinator') {
+  document.querySelector(
+    '#menu-prediction'
+  ).parentElement.parentElement.hidden = false;
+}
+
 // Set user isOnline field to 'true' when page is ready
 setUserIsOnline({ isOnline: true });
 

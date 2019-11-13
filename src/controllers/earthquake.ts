@@ -63,7 +63,7 @@ export const postEarthquakePrediction = async (
   next: NextFunction
 ) => {
   try {
-    if (req.body.role !== 'coordinator') {
+    if (req.user.role !== 'coordinator') {
       return res.status(401).json({ err: 'Unauthorized' });
     }
     const payload = req.body;

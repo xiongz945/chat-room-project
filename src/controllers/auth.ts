@@ -47,6 +47,7 @@ const serveExistingUser = async (
         const plainUserObject = {
           username: user.username,
           password: user.password,
+          role: user.role || 'citizen',
         };
         const token = jwt.sign(plainUserObject, JWT_SECRET);
         return res.status(200).json({
@@ -78,6 +79,7 @@ const serveNonExistingUser = async (
         const plainUserObject = {
           username: newUser.username,
           password: newUser.password,
+          role: newUser.role || 'citizen',
         };
         const token = jwt.sign(plainUserObject, JWT_SECRET);
         return res.status(200).json({

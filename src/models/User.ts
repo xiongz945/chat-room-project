@@ -8,6 +8,7 @@ export interface IUserDocument extends mongoose.Document {
   passwordResetExpires: Date;
   isOnline: boolean;
   status: string;
+  role: string;
 
   profile: {
     name?: string;
@@ -39,6 +40,7 @@ const userSchema = new mongoose.Schema(
 
     isOnline: { type: Boolean, default: false },
     status: String,
+    role: String,
 
     profile: {
       name: String,
