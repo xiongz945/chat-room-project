@@ -11,4 +11,7 @@ export default {
   async patchEarthquakeReport(data) {
     return await patch('/earthquake/report', data);
   },
+  async postEarthquakePrediction(data) {
+    return await post('/earthquake/prediction', data);
+  },
 };
