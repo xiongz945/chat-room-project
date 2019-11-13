@@ -79,12 +79,14 @@ socket.on('PULL_NEW_PRIVATE_MESSAGE', function(payload) {
   }
 });
 
-socket.on('USER_LOGIN', function(username) {
+socket.on('USER_LOGIN', async function(username) {
   updateChatUserIsOnline(username, true);
+  sortUser();
 });
 
-socket.on('USER_LOGOUT', function(username) {
+socket.on('USER_LOGOUT', async function(username) {
   updateChatUserIsOnline(username, false);
+  sortUser();
 });
 
 socket.on('STATUS_UPDATE', function(updateDetails) {
@@ -566,6 +568,15 @@ function updateAnnouncementBar(announcement) {
 
   const announcementBox = document.querySelector('.ibox-content');
   announcementBox.appendChild(announcementBlock);
+}
+
+function sortUser(){
+  // const userListElement = document.getElementById('users-list')
+
+  // const usersList = Array.from(userListElement.childNodes);
+  // usersList.sort((a, b) => b.firstElementChild.style.visibility === 'visible' - a.firstElementChild.style.visibility === 'visible')
+  
+  // userListElement.innerText = NodeList.from(usersList);
 }
 
 function appendUserList(data) {

@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Message, IMessageDocument } from '../models/Message';
-
-import socket from 'socket.io';
-import io from '../server';
-import request from 'request';
+import { User, IUserDocument } from '../models/User';
 
 // Interface Definations
 export interface IPostMessageRequest extends Request {
@@ -13,12 +10,16 @@ export interface IPostMessageRequest extends Request {
   status: string;
 }
 
+export interface IGetHistoryRequest extends Request {
+  user: IUserDocument;
+}
+
 export interface IGetMessageRequest extends Request {
   timestamp: number;
 }
 
 export const getHistoryMessage = async (
-  req: Request,
+  req: IGetHistoryRequest,
   res: Response,
   next: NextFunction
 ) => {

@@ -1,6 +1,4 @@
 import mongoose, { Model } from 'mongoose';
-import stopWords from '../config/stopWords.json';
-import { EEXIST } from 'constants';
 
 export interface IMessageDocument extends mongoose.Document {
   senderName: String;
