@@ -1,6 +1,8 @@
 import userStore from '../../store/user.js';
 import earthquakeApis from '../../apis/earthquake-apis.js';
+import { API_ROOT } from '../../config.js';
 
+// Show welcome message
 if (userStore.userGetters.isLogin) {
   document.querySelector('#join-community-button').style.display = 'none';
   document.querySelector('#welcome-message').innerText = `Welcome, ${
@@ -8,14 +10,20 @@ if (userStore.userGetters.isLogin) {
   }!`;
 }
 
+//Set up socket
+const socket = io(API_ROOT);
+
+// Set Mapbox token
 mapboxgl.accessToken =
   'pk.eyJ1IjoiY2FueCIsImEiOiJjazJzbTZ2eGMwbXMyM2JsN3VwZzlpOTIyIn0.M0NE8kywhhrC1pDQ9j_kww';
 
+// Load map
 let predictionMap = new mapboxgl.Map({
   container: 'prediction-map',
   style: 'mapbox://styles/mapbox/streets-v11',
 });
 
+// Add marker in map
 let marker = new mapboxgl.Marker({
   draggable: true,
 });
@@ -93,6 +101,10 @@ document.querySelector('#earthquake-prediction-form').addEventListener(
     const resp = await earthquakeApis.postEarthquakePrediction(prediction);
     if (resp.status === 401) {
       alert("You don't have the authorization!");
+    }
+    if (resp.status === 200) {
+      prediction['predictorName'] = userStore.userGetters.user().username;
+      socket.emit('NOTIFY_NEW_PREDICTION', prediction);
     }
     location.reload();
   },

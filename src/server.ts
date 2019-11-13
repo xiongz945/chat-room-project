@@ -67,4 +67,9 @@ io.on('connection', function(socket) {
   socket.on('NOTIFY_NEW_ANNOUNCEMENT', function(announcment) {
     io.emit('NEW_ANNOUNCEMENT', announcment);
   });
+
+  socket.on('NOTIFY_NEW_PREDICTION', function(prediction) {
+    console.log(prediction);
+    io.emit('NEW_PREDICTION', prediction);
+  });
 });

@@ -95,6 +95,52 @@ socket.on('NEW_ANNOUNCEMENT', function(announcement) {
   updateAnnouncementBar(announcement);
 });
 
+socket.on('NEW_PREDICTION', function(prediction) {
+  document.querySelector('#prediction-time').innerText =
+    'Time of Occurrence: ' +
+    new Date(prediction['occurred_datetime']).toLocaleString();
+  document.querySelector('#prediction-description').innerText =
+    'Description: ' + prediction['description'];
+  document.querySelector('#prediction-magnitude').innerText =
+    'Magnitude: ' + prediction['magnitude'];
+  mapboxgl.accessToken =
+    'pk.eyJ1IjoiY2FueCIsImEiOiJjazJzbTZ2eGMwbXMyM2JsN3VwZzlpOTIyIn0.M0NE8kywhhrC1pDQ9j_kww';
+  const predictionMap = new mapboxgl.Map({
+    container: 'prediction-map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+  });
+  predictionMap.on('load', () => {
+    const coordinates = [
+      prediction['location']['longitude'],
+      prediction['location']['latitude'],
+    ];
+    console.log(coordinates);
+    predictionMap.addSource('prediction-coordinates', {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: coordinates,
+        },
+      },
+    });
+    predictionMap.addLayer({
+      id: 'prediction-coordinates',
+      source: 'prediction-coordinates',
+      type: 'circle',
+      paint: {
+        'circle-color': 'red',
+      },
+    });
+    predictionMap.jumpTo({
+      center: coordinates,
+      zoom: 14,
+    });
+  });
+  $('#prediction-modal').modal('show');
+});
+
 socket.on('disconnect', function() {
   console.log('Socket disconnected');
 });
