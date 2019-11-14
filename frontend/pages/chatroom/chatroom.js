@@ -450,7 +450,7 @@ async function getAllUserInfo() {
   try {
     const response = await chatroomApis.getPublicUsers();
     let users = response['data']['users'];
-    users = users.sort((a, b) => b.isOnline - a.isOnline)
+    users = users.sort((a, b) => b.isOnline - a.isOnline);
 
     for (const index in users) {
       const user = users[index];
@@ -570,12 +570,10 @@ function updateAnnouncementBar(announcement) {
   announcementBox.appendChild(announcementBlock);
 }
 
-function sortUser(){
+function sortUser() {
   // const userListElement = document.getElementById('users-list')
-
   // const usersList = Array.from(userListElement.childNodes);
   // usersList.sort((a, b) => b.firstElementChild.style.visibility === 'visible' - a.firstElementChild.style.visibility === 'visible')
-  
   // userListElement.innerText = NodeList.from(usersList);
 }
 

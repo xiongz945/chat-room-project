@@ -1,10 +1,12 @@
 import mongoose, { Model } from 'mongoose';
 
 export interface IStatusCheckDocument extends mongoose.Document {
-  userResponses: {
-    username: String;
-    status: String;
-  };
+  userResponses: [
+    {
+      username: String;
+      status: String;
+    }
+  ];
 }
 
 export interface IStatusCheckModel extends Model<IStatusCheckDocument> {
@@ -13,11 +15,12 @@ export interface IStatusCheckModel extends Model<IStatusCheckDocument> {
 
 const statusCheckSchema = new mongoose.Schema(
   {
-    timestamp: Date,
-    userResponses: {
-      username: String,
-      status: String,
-    },
+    userResponses: [
+      {
+        username: String,
+        status: String,
+      },
+    ],
   },
   { timestamps: true }
 );

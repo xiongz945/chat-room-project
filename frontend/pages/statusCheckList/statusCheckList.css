@@ -1,0 +1,35 @@
+.online-dot {
+  display: inline-block;
+  border-radius: 50%;
+  background-color: #449d44;
+  height: 8px;
+  width: 8px;
+  margin: 12px 2px;
+}
+
+.user-card {
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+.status-icon {
+  margin-top: 12px;
+}
+
+.search-context-select {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.message-receiver {
+  margin-left: 5px;
+}
+
+.alert {
+  word-break: break-word;
+}
+
+.message-content {
+  word-break: break-word;
+}
