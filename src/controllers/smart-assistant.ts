@@ -1,10 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { Message } from '../models/Message';
 import { HospitalInfo } from '../models/HospitalInfo';
-
-import socket from 'socket.io';
-import io from '../server';
-import request from 'request';
+import apiKey from '../config/mapBoxApiKey.json';
+import axios from 'axios';
 
 // Interface Definations
 export interface IPostMessageRequest extends Request {
@@ -18,20 +16,37 @@ export interface IGetMessageRequest extends Request {
   timestamp: number;
 }
 
-const crawlHospitalList = async (
-  location: String
-) => {
-  /*
-const request = require('request');
+const crawlHospitalList = async (location: string) => {
+  const cache = await HospitalInfo.searchHospitals(location);
+  if (cache !== undefined && cache.length > 0) {
+    return;
+  }
 
-request('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY', { json: true }, (err, res, body) => {
-  if (err) { return console.log(err); }
-  console.log(body.url);
-  console.log(body.explanation);
-});
-  */
+  const base =
+    'https://api.mapbox.com/geocoding/v5/mapbox.places/hospital.json';
+  const url = `${base}?access_token=${apiKey['key']}&proximity=${location}`;
+
+  const resp = await axios.get(url);
+  const features = resp['data']['features'];
+
+  for (let i = 0; i < features.length; ++i) {
+    const feature = features[i];
+
+    const name = feature['text'];
+    const address = feature['place_name'];
+    const longlat = feature['center'][0] + ',' + feature['center'][1];
+    const category = feature['properties']['category'];
+
+    const hospital = new HospitalInfo({
+      center: location,
+      longlat: longlat,
+      address: address,
+      category: category,
+      name: name,
+    });
+    await hospital.save();
+  }
 };
-
 
 export const postRequest = async (
   req: IPostMessageRequest,
@@ -48,15 +63,7 @@ export const postRequest = async (
     await request.save();
 
     const location = req.body.location;
-
-    // Call smart assistant core.
-    const hospital = new HospitalInfo({
-      lonlat: '1,2',
-      address: 'abc',
-      category: 'abc',
-      name: 'abc',
-    });
-    await hospital.save();
+    await crawlHospitalList(location);
 
     const response = new Message({
       senderName: 'smart-assistant',
@@ -86,6 +93,21 @@ export const getResponse = async (
       .exec();
 
     return res.status(200).json({ messages });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getHospitalInfo = async (
+  req: IGetMessageRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const hospitals: any = await HospitalInfo.searchHospitals(
+      req.query.location
+    );
+    return res.status(200).json({ hospitals });
   } catch (err) {
     return next(err);
   }

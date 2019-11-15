@@ -2,7 +2,8 @@ import mongoose, { Model } from 'mongoose';
 import { EEXIST } from 'constants';
 
 export interface IHospitalInfoDocument extends mongoose.Document {
-  lonlat: String;
+  center: String;
+  longlat: String;
   name: String;
   category: String;
   address: String;
@@ -11,15 +12,13 @@ export interface IHospitalInfoDocument extends mongoose.Document {
 }
 
 export interface IHospitalInfoModel extends Model<IHospitalInfoDocument> {
-  searchHospitals(
-    keyword: string,
-    projection?: string
-  ): IHospitalInfoDocument[];
+  searchHospitals(center: string): IHospitalInfoDocument[];
 }
 
 const hospitalInfoSchema = new mongoose.Schema(
   {
-    lonlat: String,
+    center: String,
+    longlat: String,
     name: String,
     category: String,
     address: String,
@@ -28,22 +27,20 @@ const hospitalInfoSchema = new mongoose.Schema(
 );
 
 hospitalInfoSchema.index({
-  lonlat: 'text',
+  center: 'text',
 });
 
 hospitalInfoSchema.statics.searchHospitals = async function searchHospitals(
-  longlat: string,
-  projection: string = undefined
+  center: string
 ) {
-  const conditions: any = {
-    $text: { $search: longlat },
-  };
   try {
-    return await HospitalInfo.find(conditions, projection)
+    return await HospitalInfo.find({ center: center })
       .sort({ createdAt: -1 })
       .exec();
   } catch (err) {
-    throw err;
+    // throw err
+    console.log(err);
+    return undefined;
   }
 };
 
