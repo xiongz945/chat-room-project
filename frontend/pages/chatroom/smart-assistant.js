@@ -1,14 +1,5 @@
-import { API_ROOT } from '../../config.js';
-
 import smartAssistantApis from '../../apis/smart-assistant-apis.js';
-import messageStore from '../../store/message.js';
-import clockStore from '../../store/clock.js';
-
 import userStore from '../../store/user.js';
-import router from '../../router.js';
-import userApis from '../../apis/user-apis.js';
-import chatroomApis from '../../apis/chatroom-apis.js';
-import searchApis from '../../apis/search-apis.js';
 
 // Resolve the current geolocation.
 navigator.geolocation.getCurrentPosition(function(position) {
@@ -72,8 +63,81 @@ function switchToSmartAssistantChat() {
   channel.innerText = 'Smart Assistant Consultation Service';
 }
 
-function showSuggestionDetail() {
-  console.log('Show Detail');
+async function fetchHospitalInfo() {
+  const resp = await smartAssistantApis.getHospitalInfo({
+    location:
+      userStore.userGetters.longtitude() +
+      ',' +
+      userStore.userGetters.latitude(),
+  });
+
+  let points = [];
+  document.getElementById('hospital-table').innerHTML = '';
+
+  const hospitals = resp['data']['hospitals'];
+  for (let i = 0; i < hospitals.length; ++i) {
+    const hospital = hospitals[i];
+    updateHospitalTable(i, hospital);
+
+    const parts = hospital['longlat'].split(',');
+    const point = [parseFloat(parts[1]), parseFloat(parts[0])];
+    points.push(point);
+  }
+
+  updateLocationMap(points);
+}
+
+function updateHospitalTable(index, data) {
+  const line = document.createElement('tr');
+
+  const id = document.createElement('td');
+  id.innerText = index;
+  line.appendChild(id);
+
+  const name = document.createElement('td');
+  name.innerText = data['name'];
+  line.appendChild(name);
+
+  const category = document.createElement('td');
+  category.innerText = data['category'];
+  line.appendChild(category);
+
+  const address = document.createElement('td');
+  address.innerText = data['address'];
+  line.appendChild(address);
+
+  const table = document.getElementById('hospital-table');
+  table.appendChild(line);
+}
+
+function updateLocationMap(points) {
+  const mapView = document.createElement('div');
+  mapView.id = 'location-map-view';
+  mapView.setAttribute('style', 'width: 600px; height: 400px;');
+
+  const frame = document.getElementById('location-map-frame');
+  frame.innerHTML = '';
+  frame.appendChild(mapView);
+
+  const key =
+    'pk.eyJ1IjoienNzaGVuIiwiYSI6ImNrMHNndTQ5YzAyaWIzanA3N3B1d2J3cmgifQ.FNYu5HYvUcqWaSgBjyim3g';
+
+  const map = L.map('location-map-view').setView(
+    [userStore.userGetters.latitude(), userStore.userGetters.longtitude()],
+    13
+  );
+  L.tileLayer(
+    'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}',
+    {
+      maxZoom: 18,
+      id: 'mapbox.streets',
+      accessToken: key,
+    }
+  ).addTo(map);
+
+  for (let i = 0; i < points.length; ++i) {
+    L.marker(points[i]).addTo(map);
+  }
 }
 
 function updateMessageBoard(data) {
@@ -116,11 +180,15 @@ function updateMessageBoard(data) {
     const suggestionDetail = document.createElement('a');
     suggestionDetail.className = 'suggestion-detail';
     suggestionDetail.innerText = '    Check Hospitals';
+
+    suggestionDetail.setAttribute('data-toggle', 'modal');
+    suggestionDetail.setAttribute('data-target', '#hospital-dashboard');
+
     suggestionDetail.href = '#';
     messageContent.appendChild(suggestionDetail);
 
     suggestionDetail.addEventListener('click', function(e) {
-      showSuggestionDetail();
+      fetchHospitalInfo();
     });
   }
 

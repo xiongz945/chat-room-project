@@ -33,7 +33,7 @@ const crawlHospitalList = async (location: string) => {
     const feature = features[i];
 
     const name = feature['text'];
-    const address = feature['place_name'];
+    const address = feature['properties']['address'];
     const longlat = feature['center'][0] + ',' + feature['center'][1];
     const category = feature['properties']['category'];
 

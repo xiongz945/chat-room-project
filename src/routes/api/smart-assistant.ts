@@ -15,5 +15,10 @@ router.get(
   //passportConfig.isAuthenticated,
   smartAssistantController.getResponse
 );
+router.get(
+  '/hospital-info',
+  //passportConfig.isAuthenticated,
+  smartAssistantController.getHospitalInfo
+);
 
 export default router;
