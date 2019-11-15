@@ -2,7 +2,7 @@
   "name": "f19-esn-sa3-backend",
   "version": "1.0.0",
   "engines": {
-    "node": "8.13.0"
+    "node": "12.13.0"
   },
   "license": "MIT",
   "scripts": {

@@ -9,7 +9,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Message, IMessageDocument } from '../models/Message';
 import { User, IUserDocument } from '../models/User';
 
-import { speeh2text } from '../util/speeh2text';
+import { speeh2text } from './speeh2text';
 
 // Interface Definations
 export interface IPostMessageRequest extends Request {
