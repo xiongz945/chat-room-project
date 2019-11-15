@@ -21,7 +21,7 @@ router.use('/chat', passport.authenticate('jwt', { session: false }), chatroom);
 router.use('/search', passport.authenticate('jwt', { session: false }), search);
 router.use(
   '/smart-assistant',
-  //passport.authenticate('jwt', { session: false }),
+  passport.authenticate('jwt', { session: false }),
   smartAssistant
 );
 export default router;

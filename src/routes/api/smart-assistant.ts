@@ -7,17 +7,17 @@ const router = express.Router();
 // Request and response messages
 router.post(
   '',
-  //passportConfig.isAuthenticated,
+  passportConfig.isAuthenticated,
   smartAssistantController.postRequest
 );
 router.get(
   '',
-  //passportConfig.isAuthenticated,
+  passportConfig.isAuthenticated,
   smartAssistantController.getResponse
 );
 router.get(
   '/hospital-info',
-  //passportConfig.isAuthenticated,
+  passportConfig.isAuthenticated,
   smartAssistantController.getHospitalInfo
 );
 

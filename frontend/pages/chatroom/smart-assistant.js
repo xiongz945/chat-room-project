@@ -176,8 +176,10 @@ function updateMessageBoard(data) {
   messageContent.className = 'message-content';
   messageContent.innerText = data['content'];
 
-  if (data['senderName'] === 'smart-assistant' &&
-      data['content'] !== 'Sorry! I don\'t get you...') {
+  if (
+    data['senderName'] === 'smart-assistant' &&
+    data['content'] !== "Sorry! I don't get you..."
+  ) {
     const suggestionDetail = document.createElement('a');
     suggestionDetail.className = 'suggestion-detail';
     suggestionDetail.innerText = '    Check Hospitals';

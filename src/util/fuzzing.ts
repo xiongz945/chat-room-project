@@ -1,4 +1,4 @@
-import {findBestMatch} from 'string-similarity';
+import { findBestMatch } from 'string-similarity';
 
 export const matchQuestion = (content: string, dict: any) => {
   let list = [];
