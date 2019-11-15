@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { Message } from '../models/Message';
 import { HospitalInfo } from '../models/HospitalInfo';
+import { matchQuestion } from '../util/fuzzing';
 import apiKey from '../config/mapBoxApiKey.json';
+import chatData from '../config/chatData.json';
 import axios from 'axios';
 
 // Interface Definations
@@ -62,13 +64,17 @@ export const postRequest = async (
     });
     await request.save();
 
-    const location = req.body.location;
-    await crawlHospitalList(location);
+    let match = matchQuestion(req.body.message, chatData);
+    if (match === '') {
+      match = "Sorry! I don't get you...";
+    } else {
+      await crawlHospitalList(req.body.location);
+    }
 
     const response = new Message({
       senderName: 'smart-assistant',
       receiverName: req.body.senderName,
-      content: req.body.message,
+      content: match,
     });
     await response.save();
 
