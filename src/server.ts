@@ -67,4 +67,8 @@ io.on('connection', function(socket) {
   socket.on('NOTIFY_NEW_ANNOUNCEMENT', function(announcment) {
     io.emit('NEW_ANNOUNCEMENT', announcment);
   });
+
+  socket.on('NOTIFY_NEW_LOCATION', function(location) {
+    io.emit('NEW_LOCATION', location);
+  })
 });

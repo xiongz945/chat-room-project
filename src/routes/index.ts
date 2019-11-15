@@ -6,6 +6,7 @@ import user from './api/user';
 import message from './api/message';
 import chatroom from './api/chatroom';
 import search from './api/search';
+import location from './api/location';
 
 const router = express.Router();
 
@@ -18,4 +19,6 @@ router.use(
 );
 router.use('/chat', passport.authenticate('jwt', { session: false }), chatroom);
 router.use('/search', passport.authenticate('jwt', { session: false }), search);
+router.use('/location', passport.authenticate('jwt', {session: false}), location);
+
 export default router;

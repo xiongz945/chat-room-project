@@ -4,6 +4,7 @@ const router = (routeName) => {
     login: '/pages/login/login.html',
     chatroom: '/pages/chatroom/chatroom.html',
     settings: '/pages/settings/settings.html',
+    statusmap: '/pages/statusmap/statusmap.html',
     '404': '/pages/errors/404.html',
   };
 
