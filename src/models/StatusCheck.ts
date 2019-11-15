@@ -25,15 +25,7 @@ const statusCheckSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-statusCheckSchema.statics.latestStatusCheck = async function latestStatusCheck() {
-  try {
-    return await StatusCheck.findOne()
-      .sort({ created_at: -1 })
-      .exec();
-  } catch (err) {
-    throw err;
-  }
-};
+statusCheckSchema.statics.latestStatusCheck = async function latestStatusCheck() {};
 
 export const StatusCheck: IStatusCheckModel = mongoose.model<
   IStatusCheckDocument,

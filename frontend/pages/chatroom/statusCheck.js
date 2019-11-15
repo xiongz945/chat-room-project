@@ -14,7 +14,10 @@ document
 
 document
   .querySelector('#status-check-confirm-button')
-  .addEventListener('click', () => confirmSubmit());
+  .addEventListener('click', () => {
+    confirmSubmit();
+    $('#status-check-modal').modal('hide');
+  });
 
 // UI modifications
 function confirmBroadcast() {
@@ -54,5 +57,12 @@ async function confirmSubmit() {
   const status = document.querySelector('input[name="optionsRadios"]:checked')
     .value;
 
+  console.log(status);
   await statusCheckApis.patchStatusCheck({ status });
+  $('#status-check-modal').modal('hide');
+  socket.emit('NOTIFY_STATUS_UPDATE', {
+    username: userStore.userGetters.user().username,
+    status: status,
+  });
+  userStore.userActions.updateStatus(status);
 }

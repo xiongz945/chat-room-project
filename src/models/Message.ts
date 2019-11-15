@@ -4,6 +4,7 @@ export interface IMessageDocument extends mongoose.Document {
   senderName: String;
   receiverName: String;
   content: String;
+  voice: String;
   status: String;
   createdAt: Date;
   updatedAt: Date;
@@ -34,6 +35,7 @@ const messageSchema = new mongoose.Schema(
       default: 'public',
     },
     content: String,
+    voice: String,
     status: String,
   },
   { timestamps: true }

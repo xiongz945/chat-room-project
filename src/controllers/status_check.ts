@@ -72,19 +72,3 @@ export const getStatusCheck = async (
     return next(err);
   }
 };
-
-export const getStatusChecks = async (
-  req: IGetMessageRequest,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const statusChecks: any = await StatusCheck.find({})
-      .sort({ createdAt: -1 })
-      .exec();
-
-    return res.status(200).json({ statusChecks });
-  } catch (err) {
-    return next(err);
-  }
-};

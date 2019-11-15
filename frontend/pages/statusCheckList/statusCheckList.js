@@ -149,13 +149,11 @@ function closeMenu() {
 async function fetchStatusCheckData() {
   const statusChecks = (await statusCheckApis.getStatusCheck()).data
     .statusCheck;
-  console.log(statusChecks);
 
   renderStatusCheckList(statusChecks);
 }
 
 function showDetailModal(data) {
-  console.log(data);
   renderStatusCheckDetailList(data);
   $('#status-check-modal').modal('show');
 }

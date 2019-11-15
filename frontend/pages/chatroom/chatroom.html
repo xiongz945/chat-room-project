@@ -210,9 +210,12 @@
                             class="form-control message-input"
                             name="message"
                             id="message"
-                            placeholder="Enter message text"
+                            placeholder="Please Enter Message Here or Record Voice"
                           ></textarea>
                         </div>
+                        <button class="btn btn-block btn-primary" id="record">
+                          Record Voice
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -226,8 +229,6 @@
                     <span id="search-title" class="text-navy"></span>
                     in <span id="search-context">Users</span>
                   </h2>
-                  <!--                  <small>Request time (0.23 seconds)</small>-->
-
                   <div class="search-form">
                     <div class="input-group search-bar">
                       <input
@@ -298,8 +299,8 @@
                       <label>
                         <input
                           type="radio"
-                          value="Help"
-                          id="2"
+                          value="2"
+                          id="optionsRadios2"
                           name="optionsRadios"
                         />
                         ⚠️ I need help
@@ -309,8 +310,8 @@
                       <label>
                         <input
                           type="radio"
-                          value="Emergency"
-                          id="3"
+                          value="3"
+                          id="optionsRadios3"
                           name="optionsRadios"
                         />
                         🆘 I'm in emergency
@@ -362,5 +363,6 @@
 
     <script type="module" src="./chatroom.js"></script>
     <script type="module" src="./statusCheck.js"></script>
+    <script type="module" src="./voiceChat.js"></script>
   </body>
 </html>

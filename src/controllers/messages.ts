@@ -1,13 +1,19 @@
+import path from 'path';
+import formidable from 'formidable';
+import fs from 'fs';
+
+import mongoose from 'mongoose';
+import { MONGODB_URI } from '../config/secrets';
+
 import { Request, Response, NextFunction } from 'express';
 import { Message, IMessageDocument } from '../models/Message';
 import { User, IUserDocument } from '../models/User';
 
+import { speeh2text } from '../util/speeh2text';
+
 // Interface Definations
 export interface IPostMessageRequest extends Request {
-  message: string;
-  senderName: string;
-  senderId: string;
-  status: string;
+  files: any;
 }
 
 export interface IGetHistoryRequest extends Request {
@@ -55,19 +61,45 @@ export const postMessage = async (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    const message = new Message({
-      senderName: req.body.senderName,
-      senderId: req.body.senderId,
-      receiverName: req.params.receiverName || 'public',
-      content: req.body.message,
-      status: req.body.status,
-    });
-    await message.save();
-    return res.status(200).json('{}');
-  } catch (err) {
-    next(err);
-  }
+  const form = new formidable.IncomingForm();
+  form.uploadDir = path.join(__dirname, '../tmp');
+  form.parse(req, async function(err, fields, files) {
+    try {
+      let filename = null;
+      let content = fields.message;
+
+      if (files.voice) {
+        console.log(files.voice);
+        filename =
+          files.voice.path.split('/')[files.voice.path.split('/').length - 1] +
+          '.wav';
+
+        fs.rename(
+          files.voice.path,
+          path.join(form.uploadDir, filename),
+          (e) => {}
+        );
+        const text = await speeh2text(path.join(form.uploadDir, filename));
+        content = text;
+      }
+      const message = new Message({
+        senderName: fields.senderName,
+        senderId: fields.senderId,
+        receiverName: fields.receiverName || 'public',
+        content: content,
+        voice: filename || null,
+        status: fields.status,
+      });
+
+      await message.save();
+      return res.status(200).json({ files });
+
+      // return res.status(200).json('{}');
+    } catch (err) {
+      next(err);
+    }
+    // res.end(util.inspect({fields: fields, files: files}));
+  });
 };
 
 export const getMessage = async (
