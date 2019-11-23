@@ -1,7 +1,7 @@
 import { sendPrivateMessage, sendPublicMessage } from './chatroom.js';
 import userStore from '../../store/user.js';
 
-let recoding = false;
+let recording = false;
 let recorder = null;
 
 const recordAudio = () => {
@@ -50,24 +50,21 @@ document
   .addEventListener('click', () => recordAudioMessage());
 
 async function recordAudioMessage() {
-  if (recoding === false) recorder = await recordAudio();
+  if (recorder === null) recorder = await recordAudio();
 
-  if (recoding === false) {
+  if (recording === false) {
     recorder.start();
     document.querySelector('#record').innerText = 'Recording...';
-    recoding = true;
+    recording = true;
   } else {
     const audio = await recorder.stop();
-    console.log(audio, audio.audioBlob);
-    // audio.play();
 
-    if (userStore.userGetters.chatMode() == 'public') {
+    if (userStore.userGetters.chatMode() == 'public') 
       sendPublicMessage(audio.audioBlob);
-    } else {
+    else 
       sendPrivateMessage(audio.audioBlob);
-    }
 
     document.querySelector('#record').innerText = 'Press to record voice';
-    recoding = false;
+    recording = false;
   }
 }
