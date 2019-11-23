@@ -6,6 +6,7 @@ import user from './api/user';
 import message from './api/message';
 import chatroom from './api/chatroom';
 import search from './api/search';
+import statusCheck from './api/status_check';
 
 const router = express.Router();
 
@@ -18,4 +19,9 @@ router.use(
 );
 router.use('/chat', passport.authenticate('jwt', { session: false }), chatroom);
 router.use('/search', passport.authenticate('jwt', { session: false }), search);
+router.use(
+  '/statusCheck',
+  passport.authenticate('jwt', { session: false }),
+  statusCheck
+);
 export default router;

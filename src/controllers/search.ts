@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { User } from '../models/User';
+import { User, IUserDocument } from '../models/User';
 import { Message } from '../models/Message';
-import { cat } from 'shelljs';
+
+export interface IGetSearchRequest extends Request {
+  user: IUserDocument;
+}
 
 export const getSearchUsersByUsername = async (
   req: Request,
@@ -69,7 +72,7 @@ export const getSearchPublicMessages = async (
 };
 
 export const getSearchPrivateMessages = async (
-  req: Request,
+  req: IGetSearchRequest,
   res: Response,
   next: NextFunction
 ) => {

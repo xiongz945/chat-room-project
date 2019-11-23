@@ -32,7 +32,7 @@
             <li class="nav-header">
               <div class="dropdown profile-element">
                 <h2 class="text-white">
-                  CHATROOM
+                  ESN
                 </h2>
               </div>
             </li>
@@ -42,7 +42,7 @@
                   class="custom-select custom-select-sm"
                   id="statusSelect"
                 >
-                  <option selected>Choose Your Status</option>
+                  <option selected value="">Choose Your Status</option>
                   <option value="1">✅ OK</option>
                   <option value="2">⚠️ Help</option>
                   <option value="3">🆘 Emergency</option>
@@ -64,6 +64,14 @@
               <a href="#"
                 ><i class="fa fa-comments"></i>
                 <span class="nav-label" id="menu-chatroom">Chatroom</span>
+              </a>
+            </li>
+            <li>
+              <a href="../statusCheckList/statusCheckList.html"
+                ><i class="fa fa-list"></i>
+                <span class="nav-label" id="menu-chatroom"
+                  >Status Check Report</span
+                >
               </a>
             </li>
           </ul>
@@ -131,14 +139,26 @@
             <div class="col-lg-12">
               <div class="ibox ">
                 <div class="ibox-title">
-                  <h5>Announcement</h5>
+                  <h5><b>Announcements</b></h5>
+
+                  <button
+                    id="status-check-button"
+                    type="button"
+                    style="margin-right: 105px; margin-top: -5px;"
+                    class="btn btn-warning btn-sm pull-right"
+                  >
+                    Broadcast Status Check
+                  </button>
+
                   <button
                     id="announcement-button"
                     type="button"
-                    class="btn btn-primary"
+                    style="margin-right: 20px; margin-top: -5px;"
+                    class="btn btn-primary btn-sm pull-right"
                   >
-                    Post
+                    Post New
                   </button>
+
                   <div class="ibox-tools">
                     <a class="collapse-link">
                       <i class="fa fa-chevron-up"></i>
@@ -153,27 +173,24 @@
             <div class="col-lg-12">
               <div class="ibox chat-view">
                 <div class="ibox-title">
-                  <small class="float-right text-muted"
-                    >Last message: Mon Jan 26 2015 - 18:39:23</small
-                  >
                   Chat room panel
+                  <button
+                    class="btn-sm btn-primary btn-outline pull-right"
+                    id="hideDirBtn"
+                    data-toggle="collapse"
+                    data-target="#chat-users"
+                    aria-expanded="false"
+                    aria-controls="chat-users"
+                    style="margin-top:-5px"
+                  >
+                    Hide Directory
+                  </button>
                 </div>
 
                 <div class="ibox-content">
                   <div class="row">
                     <div class="col-md-3">
-                      <div class="d-md-none text-center">
-                        <button
-                          class="btn-xs btn-primary btn-outline"
-                          id="hideDirBtn"
-                          data-toggle="collapse"
-                          data-target="#chat-users"
-                          aria-expanded="false"
-                          aria-controls="chat-users"
-                        >
-                          Hide Directory
-                        </button>
-                      </div>
+                      <div class="d-md-none text-center"></div>
                       <div
                         class="chat-users collapse show card card-body user-card"
                         id="chat-users"
@@ -193,9 +210,12 @@
                             class="form-control message-input"
                             name="message"
                             id="message"
-                            placeholder="Enter message text"
+                            placeholder="Please Enter Message Here or Record Voice"
                           ></textarea>
                         </div>
+                        <button class="btn btn-block btn-primary" id="record">
+                          Record Voice
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -209,8 +229,6 @@
                     <span id="search-title" class="text-navy"></span>
                     in <span id="search-context">Users</span>
                   </h2>
-                  <!--                  <small>Request time (0.23 seconds)</small>-->
-
                   <div class="search-form">
                     <div class="input-group search-bar">
                       <input
@@ -245,6 +263,77 @@
             </div>
           </div>
         </div>
+
+        <div
+          class="modal inmodal fade"
+          id="status-check-modal"
+          tabindex="-1"
+          role="dialog"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Status Check</h4>
+                <h5 class="font-bold">Admin has broadcasted a status check.</h5>
+              </div>
+              <div class="modal-body">
+                <p>
+                  Please your status or speak out.
+                </p>
+                <form class="form-horizontal">
+                  <div class="col-sm-10">
+                    <div>
+                      <label>
+                        <input
+                          type="radio"
+                          checked=""
+                          value="1"
+                          id="optionsRadios1"
+                          name="optionsRadios"
+                        />
+                        ✅ I'm Ok
+                      </label>
+                    </div>
+                    <div>
+                      <label>
+                        <input
+                          type="radio"
+                          value="2"
+                          id="optionsRadios2"
+                          name="optionsRadios"
+                        />
+                        ⚠️ I need help
+                      </label>
+                    </div>
+                    <div>
+                      <label>
+                        <input
+                          type="radio"
+                          value="3"
+                          id="optionsRadios3"
+                          name="optionsRadios"
+                        />
+                        🆘 I'm in emergency
+                      </label>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <!-- <button type="button" class="btn btn-white" data-dismiss="modal">Close</button> -->
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="status-check-confirm-button"
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="footer">
           <div class="float-right">FSE @ <strong>CMU-SV</strong></div>
           <div><strong>Copyright</strong> Team SA3 &copy; 2019</div>
@@ -273,5 +362,7 @@
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
 
     <script type="module" src="./chatroom.js"></script>
+    <script type="module" src="./statusCheck.js"></script>
+    <script type="module" src="./voiceChat.js"></script>
   </body>
 </html>
