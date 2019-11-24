@@ -7,6 +7,7 @@ import message from './api/message';
 import chatroom from './api/chatroom';
 import search from './api/search';
 import earthquake from './api/earthquake';
+import statusCheck from './api/status_check';
 
 const router = express.Router();
 
@@ -23,5 +24,10 @@ router.use(
   '/earthquake',
   passport.authenticate('jwt', { session: false }),
   earthquake
+);
+router.use(
+  '/statusCheck',
+  passport.authenticate('jwt', { session: false }),
+  statusCheck
 );
 export default router;
