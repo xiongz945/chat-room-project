@@ -59,10 +59,9 @@ async function recordAudioMessage() {
   } else {
     const audio = await recorder.stop();
 
-    if (userStore.userGetters.chatMode() == 'public') 
+    if (userStore.userGetters.chatMode() == 'public')
       sendPublicMessage(audio.audioBlob);
-    else 
-      sendPrivateMessage(audio.audioBlob);
+    else sendPrivateMessage(audio.audioBlob);
 
     document.querySelector('#record').innerText = 'Press to record voice';
     recording = false;

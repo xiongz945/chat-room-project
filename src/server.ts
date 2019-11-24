@@ -75,6 +75,10 @@ io.on('connection', function(socket: any) {
     io.emit('NEW_ANNOUNCEMENT', announcment);
   });
 
+  socket.on('NOTIFY_NEW_PREDICTION', function(prediction: any) {
+    console.log(prediction);
+    io.emit('NEW_PREDICTION', prediction);
+  });
   socket.on('disconnect', async function() {
     const username = socketIDtoName[socket.id];
     delete socketIDtoName[socket.id];
