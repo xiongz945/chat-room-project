@@ -6,6 +6,7 @@ import user from './api/user';
 import message from './api/message';
 import chatroom from './api/chatroom';
 import search from './api/search';
+import smartAssistant from './api/smart-assistant';
 import earthquake from './api/earthquake';
 import statusCheck from './api/status_check';
 
@@ -20,6 +21,11 @@ router.use(
 );
 router.use('/chat', passport.authenticate('jwt', { session: false }), chatroom);
 router.use('/search', passport.authenticate('jwt', { session: false }), search);
+router.use(
+  '/smart-assistant',
+  passport.authenticate('jwt', { session: false }),
+  smartAssistant
+);
 router.use(
   '/earthquake',
   passport.authenticate('jwt', { session: false }),
