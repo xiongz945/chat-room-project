@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>ESN | Earthquake Report</title>
+
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <link href="earthquake_report.css" rel="stylesheet" />
+    <link href="/assets/css/animate.css" rel="stylesheet" />
+    <link href="/assets/css/style.css" rel="stylesheet" />
+    <link
+      href="/assets/css/plugins/sweetalert/sweetalert.css"
+      rel="stylesheet"
+    />
+    <link
+      href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css"
+      rel="stylesheet"
+    />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="canvas-menu">
+    <div id="wrapper">
+      <nav class="navbar-default navbar-static-side" role="navigation">
+        <div class="sidebar-collapse">
+          <a class="close-canvas-menu text-white"
+            ><i class="fa fa-times"></i> Close</a
+          >
+          <ul class="nav metismenu" id="side-menu">
+            <li class="nav-header">
+              <div class="dropdown profile-element">
+                <h2 class="text-white">
+                  CHATROOM
+                </h2>
+              </div>
+            </li>
+            <div><br /></div>
+            <div></div>
+            <li>
+              <a href="/pages/chatroom/chatroom.html"
+                ><i class="fa fa-comments"></i>
+                <span class="nav-label" id="menu-chatroom">Chatroom</span>
+              </a>
+            </li>
+            <li class="active">
+              <a href="#"
+                ><i class="fa fa-comments"></i>
+                <span class="nav-label" id="menu-earthquake"
+                  >Earthquake Report</span
+                >
+              </a>
+            </li>
+            <li>
+              <a href="/pages/earthquake/earthquake_statistics.html"
+                ><i class="fa fa-comments"></i>
+                <span class="nav-label" id="menu-statistics"
+                  >Earthquake Statistics</span
+                >
+              </a>
+            </li>
+            <li hidden>
+              <a href="/pages/earthquake/earthquake_prediction.html"
+                ><i class="fa fa-comments"></i>
+                <span class="nav-label" id="menu-prediction"
+                  >Earthquake Prediction</span
+                >
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom">
+          <nav
+            class="navbar navbar-static-top"
+            role="navigation"
+            style="margin-bottom: 0"
+          >
+            <div class="navbar-header">
+              <a
+                class="navbar-minimalize minimalize-styl-2 btn btn-primary "
+                href="#"
+                ><i class="fa fa-bars"></i> MENU</a
+              >
+            </div>
+            <ul
+              class="nav navbar-top-links navbar-right"
+              style="padding-right: 15px"
+            >
+              <li id="welcome-message" style="padding-right: 15px">
+                Welcome!
+              </li>
+              <li id="logout-button" style="display:none">
+                <a> <i class="fa fa-sign-out"></i> Log out </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div class="row wrapper white-bg page-heading">
+          <div class="col-lg-12">
+            <a
+              id="join-community-button"
+              style="margin-top: 20px; display: block"
+              class="pull-right btn btn-primary"
+              href="/pages/login/login.html"
+              >Join Community</a
+            >
+            <h2>Earthquake Report</h2>
+          </div>
+        </div>
+
+        <div class="wrapper wrapper-content animated fadeInRight">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="ibox ">
+                <div class="ibox-title">
+                  <h5>
+                    Report an Earthquake
+                  </h5>
+                  <div class="ibox-tools">
+                    <a class="collapse-link">
+                      <i class="fa fa-chevron-up"></i>
+                    </a>
+                  </div>
+                </div>
+                <div class="ibox-content">
+                  <form
+                    id="earthquake-report-form"
+                    ,
+                    role="form"
+                    action="javascript:void(0);"
+                  >
+                    <div class="form-group  row">
+                      <label class="col-sm-2 col-form-label"
+                        >Time of Occurrence</label
+                      >
+                      <div class="col-sm-10">
+                        <input
+                          type="date"
+                          name="date"
+                          value=""
+                          required="required"
+                          id="date-input"
+                        />
+                        <input
+                          type="time"
+                          name="time"
+                          value=""
+                          required="required"
+                          id="time-input"
+                        />
+                      </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group  row">
+                      <label class="col-sm-2 col-form-label">Description</label>
+                      <div class="col-sm-10">
+                        <input
+                          type="text"
+                          name="description"
+                          class="form-control"
+                          placeholder="No more than 25 words"
+                          required="required"
+                          id="description-input"
+                        />
+                      </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group  row">
+                      <label class="col-sm-2 col-form-label">Magnitude</label>
+                      <div class="col-sm-10">
+                        <input
+                          type="number"
+                          name="magnitude"
+                          min="2.0"
+                          max="10.0"
+                          step="0.1"
+                          value="2.0"
+                          required="required"
+                          id="magnitude-input"
+                        />
+                      </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group  row">
+                      <label class="col-sm-2 col-form-label">Location</label>
+                      <div id="report-map" style="width: 400px; height: 300px;">
+                        <pre id="report-coordinates" class="coordinates"></pre>
+                      </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group row">
+                      <label class="col-sm-2 col-form-label">Casualty</label>
+
+                      <div class="col-sm-10">
+                        <div class="input-group m-b">
+                          <div class="input-group-prepend">
+                            <span class="input-group-addon">Killed</span>
+                          </div>
+                          <input
+                            type="number"
+                            name="killed"
+                            min="0"
+                            value="0"
+                            required="required"
+                            id="killed-input"
+                          />
+                        </div>
+                        <div class="input-group m-b">
+                          <div class="input-group-prepend">
+                            <span class="input-group-addon">Injured</span>
+                          </div>
+                          <input
+                            type="number"
+                            name="injured"
+                            min="0"
+                            value="0"
+                            required="required"
+                            id="injured-input"
+                          />
+                        </div>
+                        <div class="input-group m-b">
+                          <div class="input-group-prepend">
+                            <span class="input-group-addon">Missing</span>
+                          </div>
+                          <input
+                            type="number"
+                            name="missing"
+                            min="0"
+                            value="0"
+                            required="required"
+                            id="missing-input"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="form-group row">
+                      <div class="col-sm-4 col-sm-offset-2">
+                        <button
+                          id="report-btn"
+                          class="btn btn-primary btn-sm"
+                          type="submit"
+                        >
+                          Report
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="ibox ">
+                <div class="ibox-title">
+                  <h5>
+                    Earthquake Reports
+                  </h5>
+                  <div class="ibox-tools">
+                    <a class="collapse-link">
+                      <i class="fa fa-chevron-up"></i>
+                    </a>
+                  </div>
+                </div>
+                <div class="ibox-content">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Occurred Time</th>
+                        <th>Description</th>
+                        <th>Update</th>
+                      </tr>
+                    </thead>
+                    <tbody id="report-table"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="modal inmodal fade"
+          id="myModal"
+          tabindex="-1"
+          role="dialog"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Update Earthquake Report</h4>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-lg-12">
+                    <div class="ibox ">
+                      <div class="ibox-title">
+                        <h5>
+                          Update Earthquake Report
+                        </h5>
+                        <div class="ibox-tools">
+                          <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                          </a>
+                        </div>
+                      </div>
+                      <div class="ibox-content">
+                        <form
+                          id="update-report-form"
+                          ,
+                          role="form"
+                          action="javascript:void(0);"
+                        >
+                          <div class="form-group  row">
+                            <label class="col-sm-2 col-form-label"
+                              >Time of Occurrence</label
+                            >
+                            <div class="col-sm-10">
+                              <input
+                                type="date"
+                                name="date"
+                                value=""
+                                required="required"
+                                id="update-date-input"
+                              />
+                              <input
+                                type="time"
+                                name="time"
+                                value=""
+                                required="required"
+                                id="update-time-input"
+                              />
+                            </div>
+                          </div>
+                          <div class="hr-line-dashed"></div>
+                          <div class="form-group  row">
+                            <label class="col-sm-2 col-form-label"
+                              >Description</label
+                            >
+                            <div class="col-sm-10">
+                              <input
+                                type="text"
+                                name="description"
+                                class="form-control"
+                                placeholder="No more than 25 words"
+                                required="required"
+                                id="update-description-input"
+                              />
+                            </div>
+                          </div>
+                          <div class="hr-line-dashed"></div>
+                          <div class="form-group  row">
+                            <label class="col-sm-2 col-form-label"
+                              >Magnitude</label
+                            >
+                            <div class="col-sm-10">
+                              <input
+                                type="number"
+                                name="magnitude"
+                                min="2.0"
+                                max="10.0"
+                                step="0.1"
+                                value="2.0"
+                                required="required"
+                                id="update-magnitude-input"
+                              />
+                            </div>
+                          </div>
+                          <div class="hr-line-dashed"></div>
+
+                          <div class="form-group  row">
+                            <label class="col-sm-2 col-form-label"
+                              >Location</label
+                            >
+                            <div
+                              id="update-map"
+                              style="width: 400px; height: 300px;"
+                            >
+                              <pre
+                                id="update-coordinates"
+                                class="coordinates"
+                              ></pre>
+                            </div>
+                          </div>
+                          <div class="hr-line-dashed"></div>
+                          <div class="form-group row">
+                            <label class="col-sm-2 col-form-label"
+                              >Casualty</label
+                            >
+
+                            <div class="col-sm-10">
+                              <div class="input-group m-b">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-addon">Killed</span>
+                                </div>
+                                <input
+                                  type="number"
+                                  name="killed"
+                                  min="0"
+                                  value="0"
+                                  required="required"
+                                  id="update-killed-input"
+                                />
+                              </div>
+                              <div class="input-group m-b">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-addon">Injured</span>
+                                </div>
+                                <input
+                                  type="number"
+                                  name="injured"
+                                  min="0"
+                                  value="0"
+                                  required="required"
+                                  id="update-injured-input"
+                                />
+                              </div>
+                              <div class="input-group m-b">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-addon">Missing</span>
+                                </div>
+                                <input
+                                  type="number"
+                                  name="missing"
+                                  min="0"
+                                  value="0"
+                                  required="required"
+                                  id="update-missing-input"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div class="hr-line-dashed"></div>
+
+                          <div class="form-group row">
+                            <div class="col-sm-4 col-sm-offset-2">
+                              <button
+                                id="update-report-btn"
+                                class="btn btn-primary btn-sm"
+                                type="submit"
+                              >
+                                Update
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <div class="float-right">FSE @ <strong>CMU-SV</strong></div>
+          <div><strong>Copyright</strong> Team SA3 &copy; 2019</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mainly scripts -->
+    <script src="/assets/js/jquery-3.1.1.min.js"></script>
+    <script src="/assets/js/popper.min.js"></script>
+    <script src="/assets/js/bootstrap.js"></script>
+    <script src="/assets/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="/assets/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="/assets/js/plugins/sweetalert/sweetalert.min.js"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="/assets/js/inspinia.js"></script>
+    <script src="/assets/js/plugins/pace/pace.min.js"></script>
+
+    <script src="/assets/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+    <!-- Socket.io -->
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js"></script>
+
+    <script type="module" src="./earthquake_report.js"></script>
+  </body>
+</html>
