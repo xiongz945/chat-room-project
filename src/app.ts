@@ -95,5 +95,6 @@ app.use(router);
 
 // Serve the static file
 app.use(serveStatic('frontend', { index: 'index.html' }));
+app.use(serveStatic(path.join(__dirname, 'tmp')));
 
 export default app;
