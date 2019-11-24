@@ -24,7 +24,8 @@ router.use('/search', passport.authenticate('jwt', { session: false }), search);
 router.use(
   '/smart-assistant',
   passport.authenticate('jwt', { session: false }),
-  smartAssistant);
+  smartAssistant
+);
 router.use(
   '/earthquake',
   passport.authenticate('jwt', { session: false }),

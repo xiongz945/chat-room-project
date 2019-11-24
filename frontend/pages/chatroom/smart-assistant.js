@@ -179,7 +179,7 @@ function updateMessageBoard(data) {
   if (
     data['senderName'] === 'smart-assistant' &&
     data['content'] !== "Sorry! I don't get you..." &&
-    data['content'] !== "Hi! How can I help you?"
+    data['content'] !== 'Hi! How can I help you?'
   ) {
     const suggestionDetail = document.createElement('a');
     suggestionDetail.className = 'suggestion-detail';

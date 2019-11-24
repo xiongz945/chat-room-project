@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import * as smartAssistantController from '../../src/controllers/smart-assistant';
 
 import { Message } from '../../src/models/Message';
-import {HospitalInfo} from '../../src/models/HospitalInfo';
+import { HospitalInfo } from '../../src/models/HospitalInfo';
 import { MONGODB_URI } from '../../src/config/secrets';
 
 describe('Test Smart Assistant Controller', () => {
@@ -18,7 +18,7 @@ describe('Test Smart Assistant Controller', () => {
     const message = new Message({
       senderName: '456',
       receiverName: 'smart-assistant',
-      content: 'Hello'
+      content: 'Hello',
     });
     await message.save();
 
@@ -63,7 +63,7 @@ describe('Test Smart Assistant Controller', () => {
       body: {
         senderName: '123',
         message: 'I am Injured...',
-        location: '1,2'
+        location: '1,2',
       },
     };
     const res: any = {
@@ -85,8 +85,8 @@ describe('Test Smart Assistant Controller', () => {
     const req: any = {
       query: {
         senderName: '456',
-        receiverName: 'smart-assistant'
-      }
+        receiverName: 'smart-assistant',
+      },
     };
     const res: any = {
       status: jest.fn((code) => {
@@ -100,7 +100,7 @@ describe('Test Smart Assistant Controller', () => {
         delete resp.messages[0].senderId;
         delete resp.messages[0].updatedAt;
         return res;
-      })
+      }),
     };
     const next = jest.fn();
 
@@ -120,8 +120,8 @@ describe('Test Smart Assistant Controller', () => {
   test('getHospitalInfo() - fetch a list of nearby hospitals', async () => {
     const req: any = {
       query: {
-        location: '1,2'
-      }
+        location: '1,2',
+      },
     };
     const res: any = {
       status: jest.fn((code) => {
@@ -135,7 +135,7 @@ describe('Test Smart Assistant Controller', () => {
         delete resp.hospitals[0].senderId;
         delete resp.hospitals[0].updatedAt;
         return res;
-      })
+      }),
     };
     const next = jest.fn();
 
@@ -148,7 +148,7 @@ describe('Test Smart Assistant Controller', () => {
           address: 'abc',
           category: '0',
           name: 'abc',
-          center: '1,2'
+          center: '1,2',
         },
       ],
     });
