@@ -215,14 +215,17 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
   if (key === 13) {
     // 13 is enter
 
-    if (userStore.userGetters.chatMode() == 'public') {
+    const mode = userStore.userGetters.chatMode();
+    if (mode === 'public') {
       sendPublicMessage();
-    } else {
+    } else if (mode === 'private') {
       sendPrivateMessage();
     }
 
-    e.preventDefault();
-    this.value = '';
+    if (mode === 'public' || mode == 'private') {
+      e.preventDefault();
+      this.value = '';
+    }
   }
 });
 

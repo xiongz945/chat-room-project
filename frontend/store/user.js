@@ -36,6 +36,12 @@ const userActions = {
   updateStatus(status) {
     storage.setItem('status', status);
   },
+  setLatitude(lat) {
+    storage.setItem('lat', lat);
+  },
+  setLongtitude(lon) {
+    storage.setItem('lon', lon);
+  },
 };
 
 const userGetters = {
@@ -46,6 +52,8 @@ const userGetters = {
   chatMode: () => storage.getItem('chatMode'),
   chatPeer: () => storage.getItem('chatPeer'),
   status: () => storage.getItem('status'),
+  latitude: () => storage.getItem('lat'),
+  longtitude: () => storage.getItem('lon'),
 };
 
 export default {
