@@ -8,19 +8,19 @@ function handleError(error) {
   // Error 😨
   if (error.response) {
     /*
-      * The request was made and the server responded with a
-      * status code that falls out of the range of 2xx
-      */
+     * The request was made and the server responded with a
+     * status code that falls out of the range of 2xx
+     */
     console.log(error.response.data);
     console.log(error.response.status);
     console.log(error.response.headers);
     return error.response;
   } else if (error.request) {
     /*
-      * The request was made but no response was received, `error.request`
-      * is an instance of XMLHttpRequest in the browser and an instance
-      * of http.ClientRequest in Node.js
-      */
+     * The request was made but no response was received, `error.request`
+     * is an instance of XMLHttpRequest in the browser and an instance
+     * of http.ClientRequest in Node.js
+     */
     console.log(error.request);
     return error.request;
   } else {
@@ -56,42 +56,25 @@ async function send(how, required, headers, options) {
 
 // Send a GET request to URL and return the json from the server.
 export async function get(url, params = {}, headers = {}, options = {}) {
-  const required = {
-    url: url,
-    params: params,
-    data: {},
-  }
-  return send('get', required, headers, options);
+  return send('get', { url: url, params: params, data: {} }, headers, options);
 }
 
 // Send a POST request to URL with json DATA and return the json from the
 // server.
 export async function post(url, data = {}, headers = {}, options = {}) {
-  const required = {
-    url: url,
-    params: {},
-    data: data,
-  }
-  return send('post', required, headers, options);
+  return send('post', { url: url, params: {}, data: data }, headers, options);
 }
 
 // Send a PUT request to URL with json DATA and return the json from the
 // server.
 export async function patch(url, data = {}, headers = {}, options = {}) {
-  const required = {
-    url: url,
-    params: {},
-    data: data,
-  }
-  return send('patch', required, headers, options);
+  return send('patch', { url: url, params: {}, data: data }, headers, options);
 }
 
 // Send a DELETE request to URL and return the json from the server.
 export async function del(url, headers = {}, options = {}) {
-  const required = {
-    url: url,
-    params: {},
-    data: {},
-  }
-  return delete('delete', required, headers, options);
+  return delete ('delete',
+  { url: url, params: {}, data: {} },
+  headers,
+  options);
 }
