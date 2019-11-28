@@ -25,6 +25,29 @@ export const passwordRule = check(
   min: 4,
 });
 
+const loginHandler = (
+  err: any,
+  res: Response,
+  next: NextFunction,
+  user: IUserDocument,
+  status: string
+) => {
+  if (err) {
+    return next(err);
+  }
+  const plainUserObject = {
+    username: user.username,
+    password: user.password,
+    role: user.role || 'citizen',
+  };
+  const token = jwt.sign(plainUserObject, JWT_SECRET);
+  return res.status(200).json({
+    user: plainUserObject,
+    token,
+    message: [status],
+  });
+};
+
 const serveExistingUser = async (
   req: Request,
   res: Response,
@@ -41,20 +64,7 @@ const serveExistingUser = async (
         return res.status(400).json({ message: ['invalid password'] });
       }
       req.logIn(user, { session: false }, (err) => {
-        if (err) {
-          return next(err);
-        }
-        const plainUserObject = {
-          username: user.username,
-          password: user.password,
-          role: user.role || 'citizen',
-        };
-        const token = jwt.sign(plainUserObject, JWT_SECRET);
-        return res.status(200).json({
-          user: plainUserObject,
-          token,
-          message: ['authenticated'],
-        });
+        return loginHandler(err, res, next, user, 'authenticated');
       });
     }
   )(req, res, next);
@@ -73,20 +83,7 @@ const serveNonExistingUser = async (
       });
 
       req.logIn(newUser, { session: false }, (err) => {
-        if (err) {
-          return next(err);
-        }
-        const plainUserObject = {
-          username: newUser.username,
-          password: newUser.password,
-          role: newUser.role || 'citizen',
-        };
-        const token = jwt.sign(plainUserObject, JWT_SECRET);
-        return res.status(200).json({
-          user: plainUserObject,
-          token,
-          message: ['registered'],
-        });
+        return loginHandler(err, res, next, newUser, 'registered');
       });
     } catch (err) {
       return next(err);
