@@ -1,5 +1,6 @@
 import smartAssistantApis from '../../apis/smart-assistant-apis.js';
 import userStore from '../../store/user.js';
+import { switchToChatView } from './utils/view-switchers.js';
 
 // Resolve the current geolocation.
 navigator.geolocation.getCurrentPosition(function(position) {
@@ -46,11 +47,6 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
 function cleanMessageBoard() {
   const board = document.getElementById('message-board');
   board.innerHTML = '';
-}
-
-function switchToChatView() {
-  document.querySelector('.chat-view').hidden = false;
-  document.querySelector('.search-view').hidden = true;
 }
 
 function switchToSmartAssistantChat() {
