@@ -45,13 +45,14 @@ messageSchema.index({
   content: 'text',
 });
 
-messageSchema.statics.searchPublicMessages = async function searchPublicMessages(
+const searchPublicItems = async (
   keyword: string,
-  projection: string = undefined
-) {
+  projection: string = undefined,
+  receiver: string
+) => {
   const conditions: any = {
     $text: { $search: keyword },
-    receiverName: 'public',
+    receiverName: receiver,
   };
   try {
     return await Message.find(conditions, projection)
@@ -60,6 +61,13 @@ messageSchema.statics.searchPublicMessages = async function searchPublicMessages
   } catch (err) {
     throw err;
   }
+};
+
+messageSchema.statics.searchPublicMessages = async function searchPublicMessages(
+  keyword: string,
+  projection: string = undefined
+) {
+  return searchPublicItems(keyword, projection, 'public');
 };
 
 messageSchema.statics.searchPrivateMessages = async function searchPrivateMessages(
@@ -91,17 +99,7 @@ messageSchema.statics.searchAnnouncements = async function searchAnnouncements(
   numOfResults: number,
   projection: string = undefined
 ) {
-  const conditions: any = {
-    $text: { $search: keyword },
-    receiverName: 'announcement',
-  };
-  try {
-    return await Message.find(conditions, projection)
-      .sort({ createdAt: -1 })
-      .exec();
-  } catch (err) {
-    throw err;
-  }
+  return searchPublicItems(keyword, projection, 'announcement');
 };
 
 export const Message: IMessageModel = mongoose.model<
