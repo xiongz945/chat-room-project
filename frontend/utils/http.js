@@ -8,19 +8,19 @@ function handleError(error) {
   // Error 😨
   if (error.response) {
     /*
-      * The request was made and the server responded with a
-      * status code that falls out of the range of 2xx
-      */
+     * The request was made and the server responded with a
+     * status code that falls out of the range of 2xx
+     */
     console.log(error.response.data);
     console.log(error.response.status);
     console.log(error.response.headers);
     return error.response;
   } else if (error.request) {
     /*
-      * The request was made but no response was received, `error.request`
-      * is an instance of XMLHttpRequest in the browser and an instance
-      * of http.ClientRequest in Node.js
-      */
+     * The request was made but no response was received, `error.request`
+     * is an instance of XMLHttpRequest in the browser and an instance
+     * of http.ClientRequest in Node.js
+     */
     console.log(error.request);
     return error.request;
   } else {
@@ -30,13 +30,17 @@ function handleError(error) {
   }
 }
 
-// Send a GET request to URL and return the json from the server.
-export async function get(url, params = {}, headers = {}, options = {}) {
+async function send(how, required, headers, options) {
+  const url = required['url'];
+  const params = required['params'];
+  const data = required['data'];
+
   try {
     const response = await axios({
-      method: 'get',
+      method: how,
       url: `${API_ROOT}${url}`,
       params,
+      data,
       headers: {
         Authorization: `Bearer ${userStore.userGetters.userJWT()}`,
         ...headers,
@@ -48,65 +52,29 @@ export async function get(url, params = {}, headers = {}, options = {}) {
   } catch (error) {
     return handleError(error);
   }
+}
+
+// Send a GET request to URL and return the json from the server.
+export async function get(url, params = {}, headers = {}, options = {}) {
+  return send('get', { url: url, params: params, data: {} }, headers, options);
 }
 
 // Send a POST request to URL with json DATA and return the json from the
 // server.
 export async function post(url, data = {}, headers = {}, options = {}) {
-  try {
-    const response = await axios({
-      method: 'post',
-      url: `${API_ROOT}${url}`,
-      data,
-      headers: {
-        Authorization: `Bearer ${userStore.userGetters.userJWT()}`,
-        ...headers,
-      },
-      ...options,
-    });
-    // Success 🎉
-    return response;
-  } catch (error) {
-    return handleError(error);
-  }
+  return send('post', { url: url, params: {}, data: data }, headers, options);
 }
 
 // Send a PUT request to URL with json DATA and return the json from the
 // server.
 export async function patch(url, data = {}, headers = {}, options = {}) {
-  try {
-    const response = await axios({
-      method: 'patch',
-      url: `${API_ROOT}${url}`,
-      data,
-      headers: {
-        Authorization: `Bearer ${userStore.userGetters.userJWT()}`,
-        ...headers,
-      },
-      ...options,
-    });
-    // Success 🎉
-    return response;
-  } catch (error) {
-    return handleError(error);
-  }
+  return send('patch', { url: url, params: {}, data: data }, headers, options);
 }
 
 // Send a DELETE request to URL and return the json from the server.
 export async function del(url, headers = {}, options = {}) {
-  try {
-    const response = await axios({
-      method: 'delete',
-      url: `${API_ROOT}${url}`,
-      headers: {
-        Authorization: `Bearer ${userStore.userGetters.userJWT()}`,
-        ...headers,
-      },
-      ...options,
-    });
-    // Success 🎉
-    return response;
-  } catch (error) {
-    return handleError(error);
-  }
+  return delete ('delete',
+  { url: url, params: {}, data: {} },
+  headers,
+  options);
 }
