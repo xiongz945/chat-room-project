@@ -54,4 +54,4 @@ export const pie_chart_options = {
     },
     defaultTheme: false,
   },
-}
+};
