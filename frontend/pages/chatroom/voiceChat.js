@@ -1,4 +1,7 @@
-import { sendPrivateMessage, sendPublicMessage } from './chatroom.js';
+import {
+  sendPrivateMessage,
+  sendPublicMessage,
+} from './utils/message-senders.js';
 import userStore from '../../store/user.js';
 
 let recording = false;
