@@ -54,21 +54,30 @@
                         </div>
                         <div hidden class="form-group">
                           <label>Place ID</label>
-                          <input id="placeID" type="text" class="form-control" />
+                          <input
+                            id="placeID"
+                            type="text"
+                            class="form-control"
+                          />
                         </div>
                         <div class="form-group">
                           <label for="descTextArea">Description</label>
                           <textarea
                             id="descTextArea"
                             rows="3"
-                            class="form-control"></textarea>  
+                            class="form-control"
+                          ></textarea>
                         </div>
                       </form>
                     </div>
                     <div class="col-sm-6">
-                      <a class="btn btn-sm btn-default" onclick="self.close()">Cancel</a>
-                      <button id="shareBtn"
-                        class="btn btn-sm btn-primary float-right m-t-n-xs">
+                      <a class="btn btn-sm btn-default" onclick="self.close()"
+                        >Cancel</a
+                      >
+                      <button
+                        id="shareBtn"
+                        class="btn btn-sm btn-primary float-right m-t-n-xs"
+                      >
                         <strong>Share</strong>
                       </button>
                     </div>
@@ -90,7 +99,8 @@
 
     <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBE8OOSSAGQdQ1kkoPTvg2hPsAVaSyPrf4&libraries=places&callback=initAutocomplete"
-      async defer
+      async
+      defer
     ></script>
   </body>
 </html>
