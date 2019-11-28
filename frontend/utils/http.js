@@ -30,7 +30,11 @@ function handleError(error) {
   }
 }
 
-async function send(how, url, params, data, headers, options) {
+async function send(how, required, headers, options) {
+  const url = required['url'];
+  const params = required['params'];
+  const data = required['data'];
+
   try {
     const response = await axios({
       method: how,
@@ -52,22 +56,42 @@ async function send(how, url, params, data, headers, options) {
 
 // Send a GET request to URL and return the json from the server.
 export async function get(url, params = {}, headers = {}, options = {}) {
-  return send('get', url, params, {}, headers, options);
+  const required = {
+    url: url,
+    params: params,
+    data: {},
+  }
+  return send('get', required, headers, options);
 }
 
 // Send a POST request to URL with json DATA and return the json from the
 // server.
 export async function post(url, data = {}, headers = {}, options = {}) {
-  return send('post', url, {}, data, headers, options);
+  const required = {
+    url: url,
+    params: {},
+    data: data,
+  }
+  return send('post', required, headers, options);
 }
 
 // Send a PUT request to URL with json DATA and return the json from the
 // server.
 export async function patch(url, data = {}, headers = {}, options = {}) {
-  return send('patch', url, {}, data, headers, options);
+  const required = {
+    url: url,
+    params: {},
+    data: data,
+  }
+  return send('patch', required, headers, options);
 }
 
 // Send a DELETE request to URL and return the json from the server.
 export async function del(url, headers = {}, options = {}) {
-  return delete('delete', url, {}, {}, headers, options);
+  const required = {
+    url: url,
+    params: {},
+    data: {},
+  }
+  return delete('delete', required, headers, options);
 }
