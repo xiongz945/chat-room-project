@@ -1,11 +1,12 @@
 import { API_ROOT } from '../../config.js';
 
-import messageApis from '../../apis/message-apis.js';
+import router from '../../router.js';
+
 import messageStore from '../../store/message.js';
 import clockStore from '../../store/clock.js';
-
 import userStore from '../../store/user.js';
-import router from '../../router.js';
+
+import messageApis from '../../apis/message-apis.js';
 import userApis from '../../apis/user-apis.js';
 import chatroomApis from '../../apis/chatroom-apis.js';
 import searchApis from '../../apis/search-apis.js';
@@ -25,7 +26,8 @@ const emojiMap = {
 
 // Set up Socket
 const socket = io(API_ROOT);
-socket.emit('REGISTER', userStore.userGetters.user().username);
+if (userStore.userGetters.user())
+  socket.emit('REGISTER', userStore.userGetters.user().username);
 
 socket.on('connect', function() {
   console.log('Socket connected');
@@ -79,12 +81,14 @@ socket.on('PULL_NEW_PRIVATE_MESSAGE', function(payload) {
   }
 });
 
-socket.on('USER_LOGIN', function(username) {
+socket.on('USER_LOGIN', async function(username) {
   updateChatUserIsOnline(username, true);
+  sortUser();
 });
 
-socket.on('USER_LOGOUT', function(username) {
+socket.on('USER_LOGOUT', async function(username) {
   updateChatUserIsOnline(username, false);
+  sortUser();
 });
 
 socket.on('STATUS_UPDATE', function(updateDetails) {
@@ -95,12 +99,58 @@ socket.on('NEW_ANNOUNCEMENT', function(announcement) {
   updateAnnouncementBar(announcement);
 });
 
+socket.on('NEW_PREDICTION', function(prediction) {
+  document.querySelector('#prediction-time').innerText =
+    'Time of Occurrence: ' +
+    new Date(prediction['occurred_datetime']).toLocaleString();
+  document.querySelector('#prediction-description').innerText =
+    'Description: ' + prediction['description'];
+  document.querySelector('#prediction-magnitude').innerText =
+    'Magnitude: ' + prediction['magnitude'];
+  mapboxgl.accessToken =
+    'pk.eyJ1IjoiY2FueCIsImEiOiJjazJzbTZ2eGMwbXMyM2JsN3VwZzlpOTIyIn0.M0NE8kywhhrC1pDQ9j_kww';
+  const predictionMap = new mapboxgl.Map({
+    container: 'prediction-map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+  });
+  predictionMap.on('load', () => {
+    const coordinates = [
+      prediction['location']['longitude'],
+      prediction['location']['latitude'],
+    ];
+    console.log(coordinates);
+    predictionMap.addSource('prediction-coordinates', {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: coordinates,
+        },
+      },
+    });
+    predictionMap.addLayer({
+      id: 'prediction-coordinates',
+      source: 'prediction-coordinates',
+      type: 'circle',
+      paint: {
+        'circle-color': 'red',
+      },
+    });
+    predictionMap.jumpTo({
+      center: coordinates,
+      zoom: 14,
+    });
+  });
+  $('#prediction-modal').modal('show');
+});
+
 socket.on('disconnect', function() {
   console.log('Socket disconnected');
 });
 
 // UI change based on user login status
-if (userStore.userGetters.isLogin) {
+if (userStore.userGetters.isLogin()) {
   document.getElementById('join-community-button').style.display = 'none';
   document.getElementById('welcome-message').innerText = `Welcome, ${
     userStore.userGetters.user().username
@@ -114,6 +164,13 @@ window.onbeforeunload = async (e) => {
   await logout();
 };
 */
+
+// Display earthquake prediction menu when the user is coordinator
+if (userStore.userGetters.user().role === 'coordinator') {
+  document.querySelector(
+    '#menu-prediction'
+  ).parentElement.parentElement.hidden = false;
+}
 
 // Set user isOnline field to 'true' when page is ready
 setUserIsOnline({ isOnline: true });
@@ -158,14 +215,17 @@ document.querySelector('#message').addEventListener('keypress', function(e) {
   if (key === 13) {
     // 13 is enter
 
-    if (userStore.userGetters.chatMode() == 'public') {
+    const mode = userStore.userGetters.chatMode();
+    if (mode === 'public') {
       sendPublicMessage();
-    } else {
+    } else if (mode === 'private') {
       sendPrivateMessage();
     }
 
-    e.preventDefault();
-    this.value = '';
+    if (mode === 'public' || mode == 'private') {
+      e.preventDefault();
+      this.value = '';
+    }
   }
 });
 
@@ -353,22 +413,30 @@ async function receiveHistoryAnnouncement() {
   }
 }
 
-async function sendPublicMessage() {
+export async function sendPublicMessage(voice) {
   const status = userStore.userGetters.status();
   const newMessage = {
     senderName: userStore.userGetters.user().username,
     message: document.querySelector('#message').value,
+    voice: voice ? voice : null,
     status: status ? status : 'undefined',
   };
+
+  const newMessageFromData = new FormData();
+
+  for (let key in newMessage) {
+    newMessageFromData.append(key, newMessage[key]);
+  }
+
   try {
-    await messageApis.postPublicMessage(newMessage);
+    await messageApis.postPublicMessage(newMessageFromData);
     socket.emit('PUSH_NEW_MESSAGE');
   } catch (e) {
     console.log(e);
   }
 }
 
-async function sendPrivateMessage() {
+export async function sendPrivateMessage(voice) {
   const peer = userStore.userGetters.chatPeer();
   const status = userStore.userGetters.status();
 
@@ -376,15 +444,23 @@ async function sendPrivateMessage() {
     senderName: userStore.userGetters.user().username,
     receiverName: peer,
     message: document.querySelector('#message').value,
+    voice: voice ? voice : null,
     status: status ? status : 'undefined',
   };
+
+  const newMessageFromData = new FormData();
+
+  for (let key in newMessage) {
+    newMessageFromData.append(key, newMessage[key]);
+  }
+
   try {
     const payload = {
       senderName: userStore.userGetters.user().username,
       receiverName: peer,
       timestamp: Date.now(),
     };
-    await messageApis.postPrivateMessage(peer, newMessage);
+    await messageApis.postPrivateMessage(peer, newMessageFromData);
     socket.emit('PUSH_NEW_PRIVATE_MESSAGE', payload);
   } catch (e) {
     console.log(e);
@@ -447,7 +523,9 @@ async function sendAnnouncement(text) {
 async function getAllUserInfo() {
   try {
     const response = await chatroomApis.getPublicUsers();
-    const users = response['data']['users'];
+    let users = response['data']['users'];
+    users = users.sort((a, b) => b.isOnline - a.isOnline);
+
     for (const index in users) {
       const user = users[index];
       // display current user's status on the left side menu
@@ -530,6 +608,12 @@ function updateMessageBoard(data) {
   messageContent.className = 'message-content';
   messageContent.innerText = data['content'];
 
+  if (data['voice']) {
+    messageContent.innerHTML = `<audio controls src="/${
+      data['voice']
+    }"></audio><br> <b>Converted</b>: ${data['content']}`;
+  }
+
   message.appendChild(messageAuthor);
   message.appendChild(messageStatus);
   message.appendChild(messageDate);
@@ -564,6 +648,13 @@ function updateAnnouncementBar(announcement) {
 
   const announcementBox = document.querySelector('.ibox-content');
   announcementBox.appendChild(announcementBlock);
+}
+
+function sortUser() {
+  // const userListElement = document.getElementById('users-list')
+  // const usersList = Array.from(userListElement.childNodes);
+  // usersList.sort((a, b) => b.firstElementChild.style.visibility === 'visible' - a.firstElementChild.style.visibility === 'visible')
+  // userListElement.innerText = NodeList.from(usersList);
 }
 
 function appendUserList(data) {

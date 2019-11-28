@@ -1,0 +1,220 @@
+{
+  "type": "FeatureCollection",
+  "query": ["hospital"],
+  "features": [
+    {
+      "id": "poi.2946347574376",
+      "type": "Feature",
+      "place_type": ["poi"],
+      "relevance": 1,
+      "properties": {
+        "address": "2500 Grant Rd",
+        "category": "hospital, clinic, medical center",
+        "wikidata": "Q5350885",
+        "landmark": true,
+        "maki": "hospital"
+      },
+      "text": "El Camino Hospital",
+      "place_name": "El Camino Hospital, 2500 Grant Rd, Mountain View, California 94040, United States",
+      "center": [-122.0798095, 37.369089],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.0798095, 37.369089]
+      },
+      "context": [
+        {
+          "id": "postcode.6434926912343470",
+          "text": "94040"
+        },
+        {
+          "id": "place.15154547807111820",
+          "wikidata": "Q486860",
+          "text": "Mountain View"
+        },
+        {
+          "id": "region.11319063928738010",
+          "short_code": "US-CA",
+          "wikidata": "Q99",
+          "text": "California"
+        },
+        {
+          "id": "country.9053006287256050",
+          "short_code": "us",
+          "wikidata": "Q30",
+          "text": "United States"
+        }
+      ]
+    },
+    {
+      "id": "poi.2594160255046",
+      "type": "Feature",
+      "place_type": ["poi"],
+      "relevance": 1,
+      "properties": {
+        "landmark": true,
+        "address": "515 South Dr Ste 20",
+        "category": "hospital, clinic, medical center",
+        "maki": "hospital"
+      },
+      "text": "Stanford Blood Center",
+      "place_name": "Stanford Blood Center, 515 South Dr Ste 20, Mountain View, California 94040, United States",
+      "center": [-122.083634, 37.366846],
+      "geometry": {
+        "coordinates": [-122.083634, 37.366846],
+        "type": "Point"
+      },
+      "context": [
+        {
+          "id": "postcode.6434926912343470",
+          "text": "94040"
+        },
+        {
+          "id": "place.15154547807111820",
+          "wikidata": "Q486860",
+          "text": "Mountain View"
+        },
+        {
+          "id": "region.11319063928738010",
+          "short_code": "US-CA",
+          "wikidata": "Q99",
+          "text": "California"
+        },
+        {
+          "id": "country.9053006287256050",
+          "short_code": "us",
+          "wikidata": "Q30",
+          "text": "United States"
+        }
+      ]
+    },
+    {
+      "id": "poi.2937757678153",
+      "type": "Feature",
+      "place_type": ["poi"],
+      "relevance": 1,
+      "properties": {
+        "landmark": true,
+        "category": "hospital, clinic, medical center",
+        "maki": "hospital"
+      },
+      "text": "PAMF Surgical Center",
+      "place_name": "PAMF Surgical Center, Mountain View, California 94040, United States",
+      "center": [-122.065318, 37.376423],
+      "geometry": {
+        "coordinates": [-122.065318, 37.376423],
+        "type": "Point"
+      },
+      "context": [
+        {
+          "id": "postcode.6434926912343470",
+          "text": "94040"
+        },
+        {
+          "id": "place.15154547807111820",
+          "wikidata": "Q486860",
+          "text": "Mountain View"
+        },
+        {
+          "id": "region.11319063928738010",
+          "short_code": "US-CA",
+          "wikidata": "Q99",
+          "text": "California"
+        },
+        {
+          "id": "country.9053006287256050",
+          "short_code": "us",
+          "wikidata": "Q30",
+          "text": "United States"
+        }
+      ]
+    },
+    {
+      "id": "poi.2473901222562",
+      "type": "Feature",
+      "place_type": ["poi"],
+      "relevance": 1,
+      "properties": {
+        "landmark": true,
+        "address": "2500 Hospital Dr",
+        "category": "doctor, physician"
+      },
+      "text": "Hospital Drive Pediatrics",
+      "place_name": "Hospital Drive Pediatrics, 2500 Hospital Dr, Mountain View, California 94040, United States",
+      "center": [-122.082138, 37.368913],
+      "geometry": {
+        "coordinates": [-122.082138, 37.368913],
+        "type": "Point"
+      },
+      "context": [
+        {
+          "id": "postcode.6434926912343470",
+          "text": "94040"
+        },
+        {
+          "id": "place.15154547807111820",
+          "wikidata": "Q486860",
+          "text": "Mountain View"
+        },
+        {
+          "id": "region.11319063928738010",
+          "short_code": "US-CA",
+          "wikidata": "Q99",
+          "text": "California"
+        },
+        {
+          "id": "country.9053006287256050",
+          "short_code": "us",
+          "wikidata": "Q30",
+          "text": "United States"
+        }
+      ]
+    },
+    {
+      "id": "poi.3350074540509",
+      "type": "Feature",
+      "place_type": ["poi"],
+      "relevance": 1,
+      "properties": {
+        "landmark": true,
+        "address": "633 S Knickerbocker Dr",
+        "category": "hospital, clinic, medical center",
+        "maki": "hospital"
+      },
+      "text": "Sunrise of Sunnyvale",
+      "place_name": "Sunrise of Sunnyvale, 633 S Knickerbocker Dr, Sunnyvale, California 94087, United States",
+      "center": [-122.058828, 37.373499],
+      "geometry": {
+        "coordinates": [-122.058828, 37.373499],
+        "type": "Point"
+      },
+      "context": [
+        {
+          "id": "neighborhood.292934",
+          "text": "De Anza"
+        },
+        {
+          "id": "postcode.5032743465678350",
+          "text": "94087"
+        },
+        {
+          "id": "place.11594633196261000",
+          "wikidata": "Q208459",
+          "text": "Sunnyvale"
+        },
+        {
+          "id": "region.11319063928738010",
+          "short_code": "US-CA",
+          "wikidata": "Q99",
+          "text": "California"
+        },
+        {
+          "id": "country.9053006287256050",
+          "short_code": "us",
+          "wikidata": "Q30",
+          "text": "United States"
+        }
+      ]
+    }
+  ],
+  "attribution": "NOTICE: © 2019 Mapbox and its suppliers. All rights reserved. Use of this data is subject to the Mapbox Terms of Service (https://www.mapbox.com/about/maps/). This response and the information it contains may not be retained. POI(s) provided by Foursquare."
+}
