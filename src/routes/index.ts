@@ -22,7 +22,11 @@ router.use(
 );
 router.use('/chat', passport.authenticate('jwt', { session: false }), chatroom);
 router.use('/search', passport.authenticate('jwt', { session: false }), search);
-router.use('/location', passport.authenticate('jwt', {session: false}), location);
+router.use(
+  '/location',
+  passport.authenticate('jwt', { session: false }),
+  location
+);
 
 router.use(
   '/smart-assistant',
