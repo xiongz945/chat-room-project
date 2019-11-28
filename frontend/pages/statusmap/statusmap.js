@@ -1,20 +1,11 @@
 import { API_ROOT } from '../../config.js';
 import userStore from '../../store/user.js';
 import locationApis from '../../apis/location-apis.js';
-import userApis from '../../apis/user-apis.js';
-
-const statusMap = {
-  1: 'OK',
-  2: 'Help',
-  3: 'Emergency',
-};
-
-const emojiMap = {
-  OK: '✅',
-  Help: '⚠️',
-  Emergency: '🆘',
-  undefined: '✅',
-};
+import chatroomApis from '../../../apis/chatroom-apis.js';
+import { statusMap } from '../chatroom/config.js';
+import {
+  shareStatusClickListener,
+} from './listeners/click-listeners.js';
 
 const socket = io(API_ROOT);
 socket.on('connect', function() {
@@ -29,10 +20,6 @@ socket.on('NEW_LOCATION', function(payload) {
 socket.on('disconnect', function() {
   console.log('Socket disconnected');
 });
-
-async function setUserStatus(status) {
-  return await userApis.patchUserStatus(status);
-}
 
 if (userStore.userGetters.isLogin) {
   document.getElementById('welcome-message').innerText = `Welcome, ${
@@ -49,26 +36,15 @@ document.getElementById('logout-button').onclick = async () => {
   router('login');
 };
 
-function closeMenu() {
-  const closeMenuBtn = document.querySelector('.close-canvas-menu');
-  closeMenuBtn.click();
-}
+// document
+//   .getElementById('logout-button')
+//   .addEventListener('click', logoutBtnClickListener);
 
-document.querySelector('#shareStatusBtn').onclick = async () => {
-  closeMenu();
-  const statusCode = document.getElementById('statusSelect').value;
-  if (statusCode in statusMap) {
-    const status = statusMap[statusCode];
-    // the status remains the same actually
-    console.log('update status to ' + status);
-    await setUserStatus({ status: status });
-    socket.emit('NOTIFY_STATUS_UPDATE', {
-      username: userStore.userGetters.user().username,
-      status: status,
-    });
-    userStore.userActions.updateStatus(status);
-  }
-};
+document
+  .querySelector('#shareStatusBtn')
+  .addEventListener('click', shareStatusClickListener);
+
+getUserStatus();
 
 receiveAllLocation();
 
@@ -136,6 +112,27 @@ async function receiveAllLocation() {
     for (let i = location.length - 1; i >= 0; --i) {
       updateStatusMap(location[i]);
     }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function getUserStatus() {
+  try {
+    const response = await chatroomApis.getPublicUsers();
+    let users = response['data']['users'];
+
+    users.forEach((user) => {
+      // display current user's status on the left side menu
+      // store current status in local storage
+      if (user['username'] === userStore.userGetters.user().username) {
+        const status = user['status'];
+        userStore.userActions.updateStatus(status ? status : 'undefined');
+        document.querySelector('#statusSelect').value = status
+          ? Object.keys(statusMap).find((key) => statusMap[key] === status)
+          : 'Choose Your Status';
+      }
+    });
   } catch (e) {
     console.log(e);
   }

@@ -3,18 +3,17 @@ import { API_ROOT } from '../../config.js';
 import messageApis from '../../apis/message-apis.js';
 import userApis from '../../apis/user-apis.js';
 import statusCheckApis from '../../apis/status-check-apis.js';
+import { statusMap } from '../chatroom/config.js';
 
 import messageStore from '../../store/message.js';
 import clockStore from '../../store/clock.js';
 import userStore from '../../store/user.js';
 
 import router from '../../router.js';
-
-const statusMap = {
-  1: 'OK',
-  2: 'Help',
-  3: 'Emergency',
-};
+import {getUserStatus} from '../statusMap/statusmap.js'
+import {
+  shareStatusClickListener,
+} from '../statusMap/listeners/click-listeners.js';
 
 const emojiMap = {
   OK: '✅',
@@ -37,6 +36,7 @@ if (userStore.userGetters.isLogin) {
 // Set user isOnline field to 'true' when page is ready
 setUserIsOnline({ isOnline: true });
 
+getUserStatus();
 // UI Render
 function renderStatusCheckList(data) {
   for (let statusCheck of data) {
@@ -112,38 +112,17 @@ document.getElementById('logout-button').onclick = async () => {
   router('login');
 };
 
-document.querySelector('#shareStatusBtn').onclick = async () => {
-  closeMenu();
-  const statusCode = document.getElementById('statusSelect').value;
-  if (statusCode in statusMap) {
-    const status = statusMap[statusCode];
-    // the status remains the same actually
-    console.log('update status to ' + status);
-    await setUserStatus({ status: status });
-    socket.emit('NOTIFY_STATUS_UPDATE', {
-      username: userStore.userGetters.user().username,
-      status: status,
-    });
-    userStore.userActions.updateStatus(status);
-  }
-};
+document
+  .querySelector('#shareStatusBtn')
+  .addEventListener('click', shareStatusClickListener);
 
 // Function definations
 async function logout() {
   return await userApis.logout();
 }
 
-async function setUserStatus(status) {
-  return await userApis.patchUserStatus(status);
-}
-
 async function setUserIsOnline(isOnline) {
   return await userApis.patchUserIsOnline(isOnline);
-}
-
-function closeMenu() {
-  const closeMenuBtn = document.querySelector('.close-canvas-menu');
-  closeMenuBtn.click();
 }
 
 async function fetchStatusCheckData() {
