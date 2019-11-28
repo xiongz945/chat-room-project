@@ -10,10 +10,8 @@ import clockStore from '../../store/clock.js';
 import userStore from '../../store/user.js';
 
 import router from '../../router.js';
-import {getUserStatus} from '../statusMap/statusmap.js'
-import {
-  shareStatusClickListener,
-} from '../statusMap/listeners/click-listeners.js';
+import { getUserStatus } from '../statusMap/statusmap.js';
+import { shareStatusClickListener } from '../statusMap/listeners/click-listeners.js';
 
 const emojiMap = {
   OK: '✅',

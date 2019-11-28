@@ -3,9 +3,7 @@ import userStore from '../../store/user.js';
 import locationApis from '../../apis/location-apis.js';
 import chatroomApis from '../../../apis/chatroom-apis.js';
 import { statusMap } from '../chatroom/config.js';
-import {
-  shareStatusClickListener,
-} from './listeners/click-listeners.js';
+import { shareStatusClickListener } from './listeners/click-listeners.js';
 
 const socket = io(API_ROOT);
 socket.on('connect', function() {
