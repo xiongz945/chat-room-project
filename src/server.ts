@@ -75,6 +75,10 @@ io.on('connection', function(socket: any) {
     io.emit('NEW_ANNOUNCEMENT', announcment);
   });
 
+  socket.on('NOTIFY_NEW_LOCATION', function(location: any) {
+    io.emit('NEW_LOCATION', location);
+  });
+
   socket.on('NOTIFY_NEW_PREDICTION', function(prediction: any) {
     console.log(prediction);
     io.emit('NEW_PREDICTION', prediction);
