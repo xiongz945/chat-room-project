@@ -106,6 +106,25 @@ function updateHospitalTable(index, data) {
   table.appendChild(line);
 }
 
+function addMapMarker(map, userCoordinates) {
+  map.jumpTo({
+    center: userCoordinates,
+    zoom: 14,
+  });
+
+  const points = map.points;
+  for (let i = 0; i < points.length; ++i) {
+    const marker = new mapboxgl.Marker();
+    marker.setLngLat(points[i]).addTo(map);
+  }
+
+  const mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
+  mapCanvas.width = '800';
+  mapCanvas.height = '1000';
+  mapCanvas.style.width = '400px';
+  mapCanvas.style.height = '500px';
+}
+
 function mapLoadedListener(event) {
   const map = event.target;
   const coordinates = map._container.firstElementChild;
@@ -124,29 +143,13 @@ function mapLoadedListener(event) {
       },
     },
   });
-
   map.addLayer({
     id: coordinates.id,
     source: coordinates.id,
     type: 'circle',
   });
 
-  map.jumpTo({
-    center: userCoordinates,
-    zoom: 14,
-  });
-
-  const points = map.points;
-  for (let i = 0; i < points.length; ++i) {
-    const marker = new mapboxgl.Marker();
-    marker.setLngLat(points[i]).addTo(map);
-  }
-
-  const mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
-  mapCanvas.width = '800';
-  mapCanvas.height = '1000';
-  mapCanvas.style.width = '400px';
-  mapCanvas.style.height = '500px';
+  addMapMarker(map, userCoordinates);
 }
 
 function updateLocationMap(points) {
