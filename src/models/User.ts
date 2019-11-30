@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema(
 
     isOnline: { type: Boolean, default: false },
     status: String,
-    role: {type: String, default: 'citizen'},
+    role: { type: String, default: 'citizen' },
     active: { type: Boolean, default: true },
 
     profile: {

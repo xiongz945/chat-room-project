@@ -1,5 +1,5 @@
 import userStore from '../../store/user.js';
-import administrationApis from '../../apis/administration-apis.js'
+import administrationApis from '../../apis/administration-apis.js';
 
 if (userStore.userGetters.isLogin()) {
   document.getElementById('join-community-button').style.display = 'none';
@@ -11,17 +11,17 @@ if (userStore.userGetters.isLogin()) {
 
 getUserProfile();
 
-async function getUserProfile ()  {
+async function getUserProfile() {
   const resp = await administrationApis.getUserProfile();
   const users = resp['data']['users'];
   console.log(users);
   updateUserProfileTable(users);
-  return(users);
+  return users;
 }
 
 function updateUserProfileTable(users) {
   const profileTable = document.querySelector('#profile-table');
-  users.forEach((user)=>{
+  users.forEach((user) => {
     const row = document.createElement('tr');
     const usernameCol = document.createElement('td');
     usernameCol.innerText = user['username'];

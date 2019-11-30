@@ -24,7 +24,7 @@ export const getUserProfile = async (
     const users: IUserDocument[] = await User.getAllUsers(
       'username role active'
     );
-    return res.status(200).json({'users': users});
+    return res.status(200).json({ users: users });
   } catch (err) {
     return next(err);
   }
