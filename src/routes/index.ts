@@ -10,6 +10,7 @@ import location from './api/location';
 import smartAssistant from './api/smart-assistant';
 import earthquake from './api/earthquake';
 import statusCheck from './api/status_check';
+import fakeAdmin from './api/fake-administration';
 
 const router = express.Router();
 
@@ -43,4 +44,8 @@ router.use(
   passport.authenticate('jwt', { session: false }),
   statusCheck
 );
+
+// TODO: passport.authenticate('jwt', {session: false})
+router.use('/fake-administration', fakeAdmin);
+
 export default router;
