@@ -80,7 +80,7 @@ export function updateAnnouncementBar(announcement) {
   closeButton.innerHTML = '×';
   announcementBlock.append(closeButton);
 
-  const announcementBox = document.querySelector('.ibox-content');
+  const announcementBox = document.querySelector('#announcement-box');
   announcementBox.appendChild(announcementBlock);
 }
 

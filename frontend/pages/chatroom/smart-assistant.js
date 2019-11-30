@@ -76,7 +76,7 @@ async function fetchHospitalInfo() {
     updateHospitalTable(i, hospital);
 
     const parts = hospital['longlat'].split(',');
-    const point = [parseFloat(parts[1]), parseFloat(parts[0])];
+    const point = [parseFloat(parts[0]), parseFloat(parts[1])];
     points.push(point);
   }
 
@@ -106,34 +106,76 @@ function updateHospitalTable(index, data) {
   table.appendChild(line);
 }
 
+function addMapMarker(map, userCoordinates) {
+  map.jumpTo({
+    center: userCoordinates,
+    zoom: 14,
+  });
+
+  const points = map.points;
+  for (let i = 0; i < points.length; ++i) {
+    const marker = new mapboxgl.Marker();
+    marker.setLngLat(points[i]).addTo(map);
+  }
+
+  const mapCanvas = document.getElementsByClassName('mapboxgl-canvas')[0];
+  mapCanvas.width = '800';
+  mapCanvas.height = '1000';
+  mapCanvas.style.width = '400px';
+  mapCanvas.style.height = '500px';
+}
+
+function mapLoadedListener(event) {
+  const map = event.target;
+  const coordinates = map._container.firstElementChild;
+  const userCoordinates = [
+    userStore.userGetters.longtitude(),
+    userStore.userGetters.latitude(),
+  ];
+
+  map.addSource(coordinates.id, {
+    type: 'geojson',
+    data: {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: userCoordinates,
+      },
+    },
+  });
+  map.addLayer({
+    id: coordinates.id,
+    source: coordinates.id,
+    type: 'circle',
+  });
+
+  addMapMarker(map, userCoordinates);
+}
+
 function updateLocationMap(points) {
   const mapView = document.createElement('div');
   mapView.id = 'location-map-view';
-  mapView.setAttribute('style', 'width: 600px; height: 400px;');
+  mapView.setAttribute('style', 'width: 400px; height: 500px;');
 
+  const mapPre = document.createElement('pre');
+  mapPre.id = 'report-coordinates';
+  mapPre.className = 'coordinates';
+
+  mapView.appendChild(mapPre);
   const frame = document.getElementById('location-map-frame');
   frame.innerHTML = '';
   frame.appendChild(mapView);
 
-  const key =
-    'pk.eyJ1IjoienNzaGVuIiwiYSI6ImNrMHNndTQ5YzAyaWIzanA3N3B1d2J3cmgifQ.FNYu5HYvUcqWaSgBjyim3g';
+  mapboxgl.accessToken =
+    'pk.eyJ1IjoiY2FueCIsImEiOiJjazJzbTZ2eGMwbXMyM2JsN3VwZzlpOTIyIn0.M0NE8kywhhrC1pDQ9j_kww';
 
-  const map = L.map('location-map-view').setView(
-    [userStore.userGetters.latitude(), userStore.userGetters.longtitude()],
-    13
-  );
-  L.tileLayer(
-    'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}',
-    {
-      maxZoom: 18,
-      id: 'mapbox.streets',
-      accessToken: key,
-    }
-  ).addTo(map);
+  let hospitalMap = new mapboxgl.Map({
+    container: 'location-map-view',
+    style: 'mapbox://styles/mapbox/streets-v11',
+  });
 
-  for (let i = 0; i < points.length; ++i) {
-    L.marker(points[i]).addTo(map);
-  }
+  hospitalMap.points = points;
+  hospitalMap.on('load', mapLoadedListener);
 }
 
 function updateMessageBoard(data) {
