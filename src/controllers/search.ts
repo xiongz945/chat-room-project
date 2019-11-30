@@ -2,12 +2,20 @@ import { Request, Response, NextFunction } from 'express';
 import { User, IUserDocument } from '../models/User';
 import { Message } from '../models/Message';
 
-export interface IGetSearchRequest extends Request {
+export interface IGetSearchByUsernameRequest extends Request {}
+
+export interface IGetSearchByStatusRequest extends Request {}
+
+export interface IGetSearchAnnouncementRequest extends Request {}
+
+export interface IGetSearchPublicMessageRequest extends Request {}
+
+export interface IGetSearchPrivateMessageRequest extends Request {
   user: IUserDocument;
 }
 
 export const getSearchUsersByUsername = async (
-  req: Request,
+  req: IGetSearchByUsernameRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -23,7 +31,7 @@ export const getSearchUsersByUsername = async (
 };
 
 export const getSearchUsersByStatus = async (
-  req: Request,
+  req: IGetSearchByStatusRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -39,7 +47,7 @@ export const getSearchUsersByStatus = async (
 };
 
 export const getSearchAnnouncements = async (
-  req: Request,
+  req: IGetSearchAnnouncementRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -56,7 +64,7 @@ export const getSearchAnnouncements = async (
 };
 
 export const getSearchPublicMessages = async (
-  req: Request,
+  req: IGetSearchPublicMessageRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -72,7 +80,7 @@ export const getSearchPublicMessages = async (
 };
 
 export const getSearchPrivateMessages = async (
-  req: IGetSearchRequest,
+  req: IGetSearchPrivateMessageRequest,
   res: Response,
   next: NextFunction
 ) => {
