@@ -9,6 +9,7 @@ export interface IUserDocument extends mongoose.Document {
   isOnline: boolean;
   status: string;
   role: string;
+  active: boolean;
 
   profile: {
     name?: string;
@@ -40,7 +41,8 @@ const userSchema = new mongoose.Schema(
 
     isOnline: { type: Boolean, default: false },
     status: String,
-    role: String,
+    role: {type: String, default: 'citizen'},
+    active: { type: Boolean, default: true },
 
     profile: {
       name: String,

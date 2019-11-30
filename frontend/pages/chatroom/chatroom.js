@@ -171,10 +171,14 @@ if (userStore.userGetters.isLogin()) {
 }
 
 // Display earthquake prediction menu when the user is coordinator
-if (userStore.userGetters.user().role === 'coordinator') {
+if (['coordinator', 'administrator'].includes(userStore.userGetters.user().role)) {
   document.querySelector(
     '#menu-prediction'
   ).parentElement.parentElement.hidden = false;
+}
+
+if (userStore.userGetters.user().role === 'administrator') {
+  document.querySelector('#menu-administration').parentElement.parentElement.hidden = false;
 }
 
 // Set user isOnline field to 'true' when page is ready
