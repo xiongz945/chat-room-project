@@ -1,7 +1,7 @@
 import userStore from '../../store/user.js';
 import earthquakeApis from '../../apis/earthquake-apis.js';
 import { API_ROOT } from '../../config.js';
-import {date2Str, time2Str} from './utils/utils.js';
+import { date2Str, time2Str } from './utils/utils.js';
 
 // Show welcome message
 if (userStore.userGetters.isLogin) {

@@ -1,6 +1,6 @@
 import userStore from '../../store/user.js';
 import earthquakeApis from '../../apis/earthquake-apis.js';
-import {date2Str, time2Str} from './utils/utils.js';
+import { date2Str, time2Str } from './utils/utils.js';
 
 if (userStore.userGetters.isLogin) {
   document.querySelector('#join-community-button').style.display = 'none';
@@ -66,9 +66,9 @@ document.querySelector('#earthquake-report-form').addEventListener(
   true
 );
 
-document
-  .querySelector('#update-report-form')
-  .addEventListener('submit', async (e) => {
+document.querySelector('#update-report-form').addEventListener(
+  'submit',
+  async (e) => {
     let updatedReport = assemble_report_payload(true);
     if (updatedReport.description.split(' ').length > 25) {
       alert('Description max 25 words!');
@@ -79,19 +79,33 @@ document
       report: updatedReport,
     });
     location.reload();
-  },true);
+  },
+  true
+);
 
 const assemble_report_payload = (isUpdate) => {
-  const date_selector = isUpdate ? '#update-date-input': '#date-input';
-  const time_selector = isUpdate ? '#update-time-input': '#time-input';
-  const description_selector = isUpdate ? '#update-description-input' : '#description-input';
-  const magnitude_selector = isUpdate ? '#update-magnitude-input' : '#magnitude-input';
-  const location_key = isUpdate ? 'update-map': 'report-map';
+  const date_selector = isUpdate ? '#update-date-input' : '#date-input';
+  const time_selector = isUpdate ? '#update-time-input' : '#time-input';
+  const description_selector = isUpdate
+    ? '#update-description-input'
+    : '#description-input';
+  const magnitude_selector = isUpdate
+    ? '#update-magnitude-input'
+    : '#magnitude-input';
+  const location_key = isUpdate ? 'update-map' : 'report-map';
   const killed_selector = isUpdate ? '#update-killed-input' : '#killed-input';
-  const injured_selector = isUpdate ? '#update-injured-input' : '#injured-input';
-  const missing_selector = isUpdate ? '#update-missing-input' : '#missing-input';
+  const injured_selector = isUpdate
+    ? '#update-injured-input'
+    : '#injured-input';
+  const missing_selector = isUpdate
+    ? '#update-missing-input'
+    : '#missing-input';
   return {
-    occurred_datetime: new Date(document.querySelector(date_selector).value + 'T' + document.querySelector(time_selector).value),
+    occurred_datetime: new Date(
+      document.querySelector(date_selector).value +
+        'T' +
+        document.querySelector(time_selector).value
+    ),
     description: document.querySelector(description_selector).value,
     magnitude: Number(document.querySelector(magnitude_selector).value),
     location: locationDict[location_key],

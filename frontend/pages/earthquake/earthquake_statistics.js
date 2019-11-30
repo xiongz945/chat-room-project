@@ -1,7 +1,7 @@
 import userStore from '../../store/user.js';
 import earthquakeApis from '../../apis/earthquake-apis.js';
-import {barOptions} from './config.js';
-import {str2Date} from './utils/utils.js';
+import { barOptions } from './config.js';
+import { str2Date } from './utils/utils.js';
 import { pie_chart_options } from './config.js';
 
 // Show welcome message

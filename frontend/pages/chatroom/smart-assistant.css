@@ -61,3 +61,13 @@ a.float:hover + div.label-container {
   visibility: visible;
   opacity: 1;
 }
+
+.coordinates {
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 9999;
+  display: block;
+}
