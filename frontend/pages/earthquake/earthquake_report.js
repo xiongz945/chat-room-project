@@ -83,23 +83,24 @@ document.querySelector('#update-report-form').addEventListener(
   true
 );
 
+const get_date_selector = isUpdate => isUpdate ? '#update-date-input' : '#date-input';
+const get_time_selector = isUpdate => isUpdate ? '#update-time-input' : '#time-input';
+const get_description_selector = isUpdate =>isUpdate ? '#update-description-input' : '#description-input';
+const get_magnitude_selector = isUpdate =>  isUpdate ? '#update-magnitude-input' : '#magnitude-input';
+const get_location_key = isUpdate => isUpdate ? 'update-map' : 'report-map';
+const get_killed_selector = isUpdate => isUpdate ? '#update-killed-input' : '#killed-input';
+const get_injured_selector = isUpdate=> isUpdate ? '#update-injured-input' : '#injured-input';
+const get_missing_selector = isUpdate=> isUpdate ? '#update-missing-input' : '#missing-input';
+
 const assemble_report_payload = (isUpdate) => {
-  const date_selector = isUpdate ? '#update-date-input' : '#date-input';
-  const time_selector = isUpdate ? '#update-time-input' : '#time-input';
-  const description_selector = isUpdate
-    ? '#update-description-input'
-    : '#description-input';
-  const magnitude_selector = isUpdate
-    ? '#update-magnitude-input'
-    : '#magnitude-input';
-  const location_key = isUpdate ? 'update-map' : 'report-map';
-  const killed_selector = isUpdate ? '#update-killed-input' : '#killed-input';
-  const injured_selector = isUpdate
-    ? '#update-injured-input'
-    : '#injured-input';
-  const missing_selector = isUpdate
-    ? '#update-missing-input'
-    : '#missing-input';
+  const date_selector = get_date_selector(isUpdate);
+  const time_selector = get_time_selector(isUpdate);
+  const description_selector = get_description_selector(isUpdate);
+  const magnitude_selector = get_magnitude_selector(isUpdate);
+  const location_key = get_location_key(isUpdate);
+  const killed_selector = get_killed_selector(isUpdate);
+  const injured_selector = get_injured_selector(isUpdate);
+  const missing_selector = get_missing_selector(isUpdate);
   return {
     occurred_datetime: new Date(
       document.querySelector(date_selector).value +
