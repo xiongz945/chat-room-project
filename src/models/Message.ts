@@ -1,4 +1,5 @@
 import mongoose, { Model } from 'mongoose';
+import { User } from './User';
 
 export interface IMessageDocument extends mongoose.Document {
   senderName: String;
@@ -25,6 +26,7 @@ export interface IMessageModel extends Model<IMessageDocument> {
     numOfResults: number,
     projection?: string
   ): IMessageDocument[];
+  updateMessages(oldUsername: string, newUsername: string): void;
 }
 
 const messageSchema = new mongoose.Schema(
@@ -63,6 +65,30 @@ const searchPublicItems = async (
   }
 };
 
+const updateMessagesWithSender = async(
+  oldSenderName: string,
+  newSenderName: string
+) => {
+  const filter = {senderName: oldSenderName};
+  const update = {
+    "$set":{senderName: newSenderName}
+  };
+
+  await Message.update(filter, update, {"multi": true});
+}
+
+const updateMessagesWithReceiver = async(
+  oldReceiverName: string,
+  newReceiverName: string
+) => {
+  const filter = {receiverName: oldReceiverName};
+  const update = {
+    "$set":{receiverName: newReceiverName}
+  };
+
+  await Message.update(filter, update, {"multi": true});
+}
+
 messageSchema.statics.searchPublicMessages = async function searchPublicMessages(
   keyword: string,
   projection: string = undefined
@@ -100,6 +126,13 @@ messageSchema.statics.searchAnnouncements = async function searchAnnouncements(
   projection: string = undefined
 ) {
   return searchPublicItems(keyword, projection, 'announcement');
+};
+
+messageSchema.statics.updateMessages = async function updateMessages(
+  oldUsername: string,
+  newUsername: string) {
+  updateMessagesWithSender(oldUsername, newUsername);
+  updateMessagesWithReceiver(oldUsername, newUsername);
 };
 
 export const Message: IMessageModel = mongoose.model<
