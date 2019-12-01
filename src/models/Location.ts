@@ -78,11 +78,11 @@ locationSchema.statics.updateLocation = async function updateLocation(
   newUsername: string
 ) {
   try {
-    const filter = { name: oldUsername };
-    const update = {
-      $set: { name: newUsername },
-    };
-    await Location.update(filter, update, { multi: true });
+    await Location.update(
+      { name: oldUsername },
+      { $set: { name: newUsername } },
+      { multi: true }
+    );
   } catch (err) {
     throw err;
   }

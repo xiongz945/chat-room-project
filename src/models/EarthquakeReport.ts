@@ -52,11 +52,11 @@ earthquakeReportSchema.statics.updateReport = async function updateReport(
   newReporterName: string
 ) {
   try {
-    const filter = { reporterName: oldReporterName };
-    const update = {
-      $set: { reporterName: newReporterName },
-    };
-    await EarthquakeReport.update(filter, update, { multi: true });
+    await EarthquakeReport.update(
+      { reporterName: oldReporterName },
+      { $set: { reporterName: newReporterName } },
+      { multi: true }
+    );
   } catch (err) {
     throw err;
   }

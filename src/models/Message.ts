@@ -133,8 +133,16 @@ messageSchema.statics.updateMessages = async function updateMessages(
   newUsername: string
 ) {
   try {
-    updateMessagesWithSender(oldUsername, newUsername);
-    updateMessagesWithReceiver(oldUsername, newUsername);
+    await Message.update(
+      { senderName: oldUsername },
+      { $set: { senderName: newUsername } },
+      { multi: true }
+    );
+    await Message.update(
+      { receiverName: oldUsername },
+      { $set: { receiverName: newUsername } },
+      { multi: true }
+    );
   } catch (err) {
     throw err;
   }
