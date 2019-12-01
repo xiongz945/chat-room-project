@@ -1,18 +1,5 @@
 import mongoose, { Model } from 'mongoose';
 
-const locationSchema = new mongoose.Schema(
-  {
-    name: String,
-    locationName: String,
-    placeID: String,
-    status: String,
-    desc: String,
-  },
-  {
-    timestamps: true,
-  }
-);
-
 export interface ILocationDocument extends mongoose.Document {
   name: String;
   location: String;
@@ -24,7 +11,7 @@ export interface ILocationDocument extends mongoose.Document {
 }
 
 export interface ILocationModel extends Model<ILocationDocument> {
-  getLocation(name: string, timestamp: any): ILocationDocument;
+  getLocation(id: string): ILocationDocument;
   getAllLocation(): ILocationDocument[];
   createNewLocation(
     name: string,
@@ -34,6 +21,19 @@ export interface ILocationModel extends Model<ILocationDocument> {
     desc: string
   ): ILocationDocument;
 }
+
+const locationSchema = new mongoose.Schema(
+  {
+    name: String,
+    location: String,
+    placeID: String,
+    status: String,
+    desc: String,
+  },
+  {
+    timestamps: true,
+  }
+);
 
 locationSchema.statics.createNewLocation = async function createNewLocation(
   name: string,
@@ -51,13 +51,12 @@ locationSchema.statics.createNewLocation = async function createNewLocation(
 };
 
 locationSchema.statics.getLocation = async function getLocation(
-  username: string,
-  timestamp: any
+  id: string
 ) {
   try {
+    const objectId = "ObjectId(" + id + ")";
     return await Location.find({
-      name: username,
-      createdAt: timestamp,
+      _id: objectId,
     }).exec();
   } catch (err) {
     throw err;
@@ -66,7 +65,7 @@ locationSchema.statics.getLocation = async function getLocation(
 
 locationSchema.statics.getAllLocation = async function getAllLocation() {
   try {
-    return await Location.find({}).exec();
+    return await Location.find({}).sort({createdAt: -1}).exec();
   } catch (err) {
     throw err;
   }

@@ -26,10 +26,8 @@ document
       });
       return false;
     }
-    shareLocation(location, placeID, desc);
-    setTimeout(function() {
-      close();
-    }, 200);
+    await shareLocation(location, placeID, desc);
+    router("statusmap");
   });
 
 async function shareLocation(location, placeID, desc) {
@@ -43,7 +41,7 @@ async function shareLocation(location, placeID, desc) {
   };
   try {
     await locationApis.postNewLocation(name, Location);
-    socket.emit('NOTIFY_NEW_LOCATION', Location);
+    // socket.emit('NOTIFY_NEW_LOCATION', Location);
     console.log('done posting');
   } catch (e) {
     console.log(e);

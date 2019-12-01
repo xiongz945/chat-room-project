@@ -6,13 +6,13 @@ export default {
     return res;
   },
 
-  async getLocation(username, data) {
-    const res = await get('/location/' + username, data);
+  async getLocation(id) {
+    const res = await get('/location/' + id);
     return res;
   },
 
-  async getAllLocation(data) {
-    const res = await get('/location/all', data);
+  async getAllLocation() {
+    const res = await get('/location');
     return res;
   },
 

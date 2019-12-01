@@ -1,15 +1,3 @@
-var icons = {
-  OK: {
-    icon: '../../../assets/img/green.png',
-  },
-  Help: {
-    icon: '../../../assets/img/yellow.png',
-  },
-  Emergency: {
-    icon: '../../../assets/img/red.png',
-  },
-};
-
 function initAutocomplete() {
   autocomplete = new google.maps.places.Autocomplete(
     document.getElementById('autocomplete'),
@@ -82,7 +70,7 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 function updateMap(payload) {
   let username = payload['name'];
   let userstatus = payload['status'];
-  let userplaceID = payload['placeid'];
+  let userplaceID = payload['placeID'];
   let userdesc = payload['desc'];
   var geocoder = new google.maps.Geocoder();
   geocoder.geocode({ placeId: userplaceID }, function(results, status) {
@@ -98,6 +86,8 @@ function updateMap(payload) {
       marker_icon = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
     } else if (userstatus === 'Emergency') {
       marker_icon = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+    } else if (userstatus === "undefined") {
+      marker_icon = 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png'
     }
 
     var marker = new google.maps.Marker({

@@ -6,13 +6,13 @@ const router = express.Router();
 
 // Location
 router.get(
-  '/:name',
+  '/:id',
   passportConfig.isAuthenticated,
   statusmapController.getLocation
 );
 
 router.get(
-  '/all',
+  '',
   passportConfig.isAuthenticated,
   statusmapController.getAllLocation
 );

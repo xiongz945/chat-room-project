@@ -19,7 +19,10 @@ export const getLocation = async (
 ) => {
   try {
     const timestamp: Date = new Date(parseInt(req.query.timestamp));
-    const location: any = Location.getLocation(req.params.name, timestamp);
+    const location: any = await Location.getLocation(
+      req.params.name,
+      timestamp
+    );
     return res.status(200).json({ location });
   } catch (err) {
     return next(err);
@@ -32,8 +35,8 @@ export const getAllLocation = async (
   next: NextFunction
 ) => {
   try {
-    const location: any = Location.getAllLocation();
-    return res.status(200).json({ location });
+    const locations: ILocationDocument[] = await Location.getAllLocation();
+    return res.status(200).json({ locations: locations });
   } catch (err) {
     return next(err);
   }
@@ -48,7 +51,7 @@ export const postNewLocation = async (
     const location = Location.createNewLocation(
       req.params.name,
       req.body.location,
-      req.body.placeID,
+      req.body.placeid,
       req.body.status,
       req.body.desc
     );
