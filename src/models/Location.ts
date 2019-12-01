@@ -78,15 +78,15 @@ locationSchema.statics.updateLocation = async function updateLocation(
   newUsername: string
 ) {
   try {
-    const filter = {name: oldUsername};
+    const filter = { name: oldUsername };
     const update = {
-      "$set":{name: newUsername}
+      $set: { name: newUsername },
     };
-    await Location.update(filter, update, {"multi": true});
+    await Location.update(filter, update, { multi: true });
   } catch (err) {
     throw err;
   }
-}
+};
 
 export const Location: ILocationModel = mongoose.model<
   ILocationDocument,

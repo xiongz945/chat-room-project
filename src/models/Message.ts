@@ -65,29 +65,29 @@ const searchPublicItems = async (
   }
 };
 
-const updateMessagesWithSender = async(
+const updateMessagesWithSender = async (
   oldSenderName: string,
   newSenderName: string
 ) => {
-  const filter = {senderName: oldSenderName};
+  const filter = { senderName: oldSenderName };
   const update = {
-    "$set":{senderName: newSenderName}
+    $set: { senderName: newSenderName },
   };
 
-  await Message.update(filter, update, {"multi": true});
-}
+  await Message.update(filter, update, { multi: true });
+};
 
-const updateMessagesWithReceiver = async(
+const updateMessagesWithReceiver = async (
   oldReceiverName: string,
   newReceiverName: string
 ) => {
-  const filter = {receiverName: oldReceiverName};
+  const filter = { receiverName: oldReceiverName };
   const update = {
-    "$set":{receiverName: newReceiverName}
+    $set: { receiverName: newReceiverName },
   };
 
-  await Message.update(filter, update, {"multi": true});
-}
+  await Message.update(filter, update, { multi: true });
+};
 
 messageSchema.statics.searchPublicMessages = async function searchPublicMessages(
   keyword: string,
@@ -130,7 +130,8 @@ messageSchema.statics.searchAnnouncements = async function searchAnnouncements(
 
 messageSchema.statics.updateMessages = async function updateMessages(
   oldUsername: string,
-  newUsername: string) {
+  newUsername: string
+) {
   try {
     updateMessagesWithSender(oldUsername, newUsername);
     updateMessagesWithReceiver(oldUsername, newUsername);

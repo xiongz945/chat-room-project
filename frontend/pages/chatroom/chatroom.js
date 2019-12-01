@@ -157,6 +157,19 @@ socket.on('NEW_PREDICTION', function(prediction) {
   $('#prediction-modal').modal('show');
 });
 
+socket.on('UPDATE_CHATROOM', async function(data) {
+  console.log('UPDATE_CHATROOM');
+  if (userStore.userGetters.user().username === data['oldUsername']) {
+    socket.emit('NOTIFY_USER_LOGOUT', data['newUsername']);
+    await userApis.logout();
+    window.onbeforeunload = undefined;
+    userStore.userActions.logoutUser();
+    router('login');
+  } else {
+    location.reload();
+  }
+});
+
 socket.on('disconnect', function() {
   console.log('Socket disconnected');
 });

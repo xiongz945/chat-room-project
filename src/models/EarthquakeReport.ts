@@ -52,15 +52,15 @@ earthquakeReportSchema.statics.updateReport = async function updateReport(
   newReporterName: string
 ) {
   try {
-    const filter = {reporterName: oldReporterName};
+    const filter = { reporterName: oldReporterName };
     const update = {
-      "$set":{reporterName: newReporterName}
+      $set: { reporterName: newReporterName },
     };
-    await EarthquakeReport.update(filter, update, {"multi": true});
+    await EarthquakeReport.update(filter, update, { multi: true });
   } catch (err) {
     throw err;
   }
-}
+};
 
 export const EarthquakeReport: IEarthquakeReportModel = mongoose.model<
   IEarthquakeReportDocument,

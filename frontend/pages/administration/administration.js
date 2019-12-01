@@ -1,6 +1,24 @@
 import userStore from '../../store/user.js';
 import { SHA256 } from '../../utils/hash.js';
+import { API_ROOT } from '../../config.js';
 import administrationApis from '../../apis/administration-apis.js';
+import userApis from '../../apis/user-apis.js';
+import router from '../../router.js';
+
+const socket = io(API_ROOT);
+
+socket.on('UPDATE_CHATROOM', async function(data) {
+  console.log('UPDATE_CHATROOM');
+  if (userStore.userGetters.user().username === data['oldUsername']) {
+    socket.emit('NOTIFY_USER_LOGOUT', data['newUsername']);
+    await userApis.logout();
+    window.onbeforeunload = undefined;
+    userStore.userActions.logoutUser();
+    router('login');
+  } else {
+    location.reload();
+  }
+});
 
 if (userStore.userGetters.isLogin()) {
   document.getElementById('join-community-button').style.display = 'none';
@@ -80,9 +98,11 @@ async function submitUpdateProfileFormListener() {
     updatedProfile['password'] = SHA256(plainPassword);
   }
   console.log(updatedProfile);
-  await administrationApis.updateUserProfile({
+  const resp = await administrationApis.updateUserProfile({
     user_id: userId,
     user: updatedProfile,
   });
-  location.reload();
+  const data = resp['data'];
+
+  socket.emit('NOTIFY_UPDATE_CHATROOM', data);
 }
