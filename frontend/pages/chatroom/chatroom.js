@@ -35,6 +35,7 @@ import {
   updateChatUserStatus,
   updateChatUserIsOnline,
 } from './utils/content-updaters.js';
+import { cleanAndLogout } from '../common/utils.js';
 
 // Set up Socket
 export const socket = io(API_ROOT);
@@ -158,13 +159,9 @@ socket.on('NEW_PREDICTION', function(prediction) {
 });
 
 socket.on('UPDATE_CHATROOM', async function(data) {
-  console.log('UPDATE_CHATROOM');
   if (userStore.userGetters.user().username === data['oldUsername']) {
     socket.emit('NOTIFY_USER_LOGOUT', data['newUsername']);
-    await userApis.logout();
-    window.onbeforeunload = undefined;
-    userStore.userActions.logoutUser();
-    router('login');
+    cleanAndLogout();
   } else {
     location.reload();
   }
