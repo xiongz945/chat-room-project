@@ -4,6 +4,14 @@ import * as statusmapController from '../../controllers/statusmap';
 
 const router = express.Router();
 
+// Status
+router.patch(
+  '/:id/status',
+  passportConfig.isAuthenticated,
+  statusmapController.updateStatus
+)
+
+
 // Location
 router.get(
   '/:id',

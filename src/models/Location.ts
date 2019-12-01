@@ -20,6 +20,7 @@ export interface ILocationModel extends Model<ILocationDocument> {
     status: string,
     desc: string
   ): ILocationDocument;
+  markAsSafe(id: string): ILocationDocument;
 }
 
 const locationSchema = new mongoose.Schema(
@@ -54,9 +55,9 @@ locationSchema.statics.getLocation = async function getLocation(
   id: string
 ) {
   try {
-    const objectId = "ObjectId(" + id + ")";
+    // const objectId = "ObjectId(" + id + ")";
     return await Location.find({
-      _id: objectId,
+      _id: id,
     }).exec();
   } catch (err) {
     throw err;
@@ -70,6 +71,14 @@ locationSchema.statics.getAllLocation = async function getAllLocation() {
     throw err;
   }
 };
+
+locationSchema.statics.markAsSafe = async function markAsSafe(id: string) {
+  try {
+    await Location.updateOne({_id: id}, {status: "OK"});
+  } catch (err) {
+    throw err;
+  }
+}
 
 export const Location: ILocationModel = mongoose.model<
   ILocationDocument,

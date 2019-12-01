@@ -89,11 +89,11 @@ function updateStatusMap(payload) {
 
   const btn_group = document.createElement('div');
   btn_group.className = 'btn-group';
-  const commentBtn = document.createElement('button');
-  commentBtn.className = 'btn btn-white btn-xs cmt-btn';
-  commentBtn.innerHTML = 'Comment';
-  commentBtn.id = docId;
-  btn_group.append(commentBtn);
+  const markBtn = document.createElement('button');
+  markBtn.className = 'btn btn-white btn-xs mark-btn';
+  markBtn.innerHTML = 'Mark as safe';
+  markBtn.id = docId;
+  btn_group.append(markBtn);
 
   social_body.append(btn_group);
   social_avatar.append(media_body);
@@ -103,8 +103,11 @@ function updateStatusMap(payload) {
   const statusBox = document.querySelector('#statusBox');
   statusBox.appendChild(statusBlock);
 
-  document.querySelectorAll('.cmt-btn').forEach((cmtBtn) => {
-    cmtBtn.addEventListener('click', cmtBtnClickListener);
+  if (userstatus === "OK") {
+    markBtn.style.visibility = "hidden";
+  }
+  document.querySelectorAll('.mark-btn').forEach((markBtn) => {
+    markBtn.addEventListener('click', markBtnClickListener);
   });
 
   updateMap(payload);
@@ -146,14 +149,11 @@ export async function getUserStatus() {
   }
 }
 
-async function cmtBtnClickListener(event) {
+async function markBtnClickListener(event) {
   const cmtBtn = event.srcElement;
   const docId = cmtBtn.id;
-  const location = await locationApis.getLocation(docId);
-  updateModal(location);
-  $('#myModal').modal('show');
-}
-
-function updateModal(location) {
-  
+  swal("Thank you!", "You marked the user's status as safe!", "success")
+  cmtBtn.style.visibility = "hidden";
+  await locationApis.patchStatus(docId);
+  setTimeout(() => window.location.reload(), 2000);
 }

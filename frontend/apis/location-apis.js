@@ -6,6 +6,11 @@ export default {
     return res;
   },
 
+  async patchStatus(id) {
+    const res = await patch('/location/'+id+'/status');
+    return res;
+  },
+
   async getLocation(id) {
     const res = await get('/location/' + id);
     return res;

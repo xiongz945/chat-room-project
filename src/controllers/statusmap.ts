@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Location, ILocationDocument } from '../models/Location';
+import { encodeXText } from 'nodemailer/lib/shared';
 
 export interface IPostLocationRequest extends Request {
   username: string;
@@ -9,7 +10,7 @@ export interface IPostLocationRequest extends Request {
 }
 
 export interface IGetLocationRequest extends Request {
-  username: string;
+  id: string;
 }
 
 export const getLocation = async (
@@ -18,10 +19,8 @@ export const getLocation = async (
   next: NextFunction
 ) => {
   try {
-    const timestamp: Date = new Date(parseInt(req.query.timestamp));
     const location: any = await Location.getLocation(
-      req.params.name,
-      timestamp
+      req.params.id
     );
     return res.status(200).json({ location });
   } catch (err) {
@@ -78,6 +77,19 @@ export const postNewComment = async (
   next: NextFunction
 ) => {
   try {
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const updateStatus = async (
+  req: IGetLocationRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await Location.markAsSafe(req.params.id);
+    return res.status(200).json({});
   } catch (err) {
     return next(err);
   }
