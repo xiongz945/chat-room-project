@@ -44,4 +44,12 @@ describe('Test Earthquake Report Model', () => {
     const allReports = await EarthquakeReport.getAllReports();
     expect(allReports).toHaveLength(3);
   });
+
+  test('test updateReport', async () => {
+    EarthquakeReport.updateReport('a', 'b');
+    const reports = await EarthquakeReport.find();
+    for (let i = 0; i < reports.length; ++i) {
+      expect(reports[i]).toHaveProperty('reporterName', 'b');
+    }
+  });
 });

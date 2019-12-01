@@ -65,6 +65,7 @@ const searchPublicItems = async (
   }
 };
 
+/*
 const updateMessagesWithSender = async (
   oldSenderName: string,
   newSenderName: string
@@ -88,6 +89,7 @@ const updateMessagesWithReceiver = async (
 
   await Message.update(filter, update, { multi: true });
 };
+*/
 
 messageSchema.statics.searchPublicMessages = async function searchPublicMessages(
   keyword: string,
