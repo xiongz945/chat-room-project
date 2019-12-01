@@ -83,14 +83,21 @@ document.querySelector('#update-report-form').addEventListener(
   true
 );
 
-const get_date_selector = isUpdate => isUpdate ? '#update-date-input' : '#date-input';
-const get_time_selector = isUpdate => isUpdate ? '#update-time-input' : '#time-input';
-const get_description_selector = isUpdate =>isUpdate ? '#update-description-input' : '#description-input';
-const get_magnitude_selector = isUpdate =>  isUpdate ? '#update-magnitude-input' : '#magnitude-input';
-const get_location_key = isUpdate => isUpdate ? 'update-map' : 'report-map';
-const get_killed_selector = isUpdate => isUpdate ? '#update-killed-input' : '#killed-input';
-const get_injured_selector = isUpdate=> isUpdate ? '#update-injured-input' : '#injured-input';
-const get_missing_selector = isUpdate=> isUpdate ? '#update-missing-input' : '#missing-input';
+const get_date_selector = (isUpdate) =>
+  isUpdate ? '#update-date-input' : '#date-input';
+const get_time_selector = (isUpdate) =>
+  isUpdate ? '#update-time-input' : '#time-input';
+const get_description_selector = (isUpdate) =>
+  isUpdate ? '#update-description-input' : '#description-input';
+const get_magnitude_selector = (isUpdate) =>
+  isUpdate ? '#update-magnitude-input' : '#magnitude-input';
+const get_location_key = (isUpdate) => (isUpdate ? 'update-map' : 'report-map');
+const get_killed_selector = (isUpdate) =>
+  isUpdate ? '#update-killed-input' : '#killed-input';
+const get_injured_selector = (isUpdate) =>
+  isUpdate ? '#update-injured-input' : '#injured-input';
+const get_missing_selector = (isUpdate) =>
+  isUpdate ? '#update-missing-input' : '#missing-input';
 
 const assemble_report_payload = (isUpdate) => {
   const date_selector = get_date_selector(isUpdate);
