@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../models/User';
 import { Message } from '../models/Message';
+import { Location } from '../models/Location';
+import { EarthquakeReport } from '../models/EarthquakeReport';
 
 export const patchUserProfile = async (
   req: Request,
@@ -19,8 +21,9 @@ export const patchUserProfile = async (
       JSON.parse(req.body.active),
       req.body.role
     );
-
     Message.updateMessages(oldUserName, newUserName);
+    Location.updateLocation(oldUserName, newUserName);
+    EarthquakeReport.updateReport(oldUserName, newUserName);
 
     return res.status(200).json({});
   } catch (err) {

@@ -131,8 +131,12 @@ messageSchema.statics.searchAnnouncements = async function searchAnnouncements(
 messageSchema.statics.updateMessages = async function updateMessages(
   oldUsername: string,
   newUsername: string) {
-  updateMessagesWithSender(oldUsername, newUsername);
-  updateMessagesWithReceiver(oldUsername, newUsername);
+  try {
+    updateMessagesWithSender(oldUsername, newUsername);
+    updateMessagesWithReceiver(oldUsername, newUsername);
+  } catch (err) {
+    throw err;
+  }
 };
 
 export const Message: IMessageModel = mongoose.model<

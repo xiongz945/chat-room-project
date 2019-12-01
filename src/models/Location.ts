@@ -33,6 +33,7 @@ export interface ILocationModel extends Model<ILocationDocument> {
     status: string,
     desc: string
   ): ILocationDocument;
+  updateLocation(oldUsername: string, newUsername: string): void;
 }
 
 locationSchema.statics.createNewLocation = async function createNewLocation(
@@ -71,6 +72,21 @@ locationSchema.statics.getAllLocation = async function getAllLocation() {
     throw err;
   }
 };
+
+locationSchema.statics.updateLocation = async function updateLocation(
+  oldUsername: string,
+  newUsername: string
+) {
+  try {
+    const filter = {name: oldUsername};
+    const update = {
+      "$set":{name: newUsername}
+    };
+    await Location.update(filter, update, {"multi": true});
+  } catch (err) {
+    throw err;
+  }
+}
 
 export const Location: ILocationModel = mongoose.model<
   ILocationDocument,
