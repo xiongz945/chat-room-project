@@ -25,11 +25,21 @@ export interface IUserDocument extends mongoose.Document {
 }
 
 export interface IUserModel extends Model<IUserDocument> {
+  findUserById(id: string): IUserDocument;
   findUserByName(username: string): IUserDocument;
   createNewUser(doc: any): IUserDocument;
   getAllUsers(projection?: string): IUserDocument[];
   searchUsersByName(keyword: string, projection?: string): IUserDocument[];
   searchUsersByStatus(keyword: string, projection?: string): IUserDocument[];
+  /*
+  updateUserInfo(
+    oldUserName: string,
+    newUserName: string,
+    password: string,
+    active: boolean,
+    role: string
+  ): void;
+  */
 }
 
 const userSchema = new mongoose.Schema(
@@ -90,6 +100,14 @@ userSchema.methods.comparePassword = function(candidatePassword: string) {
       }
     );
   });
+};
+
+userSchema.statics.findUserById = async function findUserById(id: string) {
+  try {
+    return await User.findOne({ _id: id });
+  } catch (err) {
+    throw err;
+  }
 };
 
 userSchema.statics.findUserByName = async function findUserByName(
@@ -169,6 +187,29 @@ userSchema.methods.setStatus = async function setStatus(status: string) {
     throw err;
   }
 };
+
+/*
+userSchema.statics.updateUserInfo = async function updateUserInfo(
+  oldUserName: string,
+  newUserName: string,
+  password: string,
+  active: boolean,
+  role: string
+) {
+  try {
+    const filter = { username: oldUserName };
+    const update = {
+      username: newUserName,
+      active: active,
+      role: role,
+      //TODO: Need to update password
+    };
+    await User.findOneAndUpdate(filter, update);
+  } catch (err) {
+    throw err;
+  }
+};
+*/
 
 export const User: IUserModel = mongoose.model<IUserDocument, IUserModel>(
   'User',

@@ -44,6 +44,7 @@ router.use(
   passport.authenticate('jwt', { session: false }),
   statusCheck
 );
+
 router.use(
   '/administration',
   passport.authenticate('jwt', { session: false }),

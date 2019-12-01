@@ -33,6 +33,7 @@ export interface ILocationModel extends Model<ILocationDocument> {
     status: string,
     desc: string
   ): ILocationDocument;
+  updateLocation(oldUsername: string, newUsername: string): void;
 }
 
 locationSchema.statics.createNewLocation = async function createNewLocation(
@@ -67,6 +68,21 @@ locationSchema.statics.getLocation = async function getLocation(
 locationSchema.statics.getAllLocation = async function getAllLocation() {
   try {
     return await Location.find({}).exec();
+  } catch (err) {
+    throw err;
+  }
+};
+
+locationSchema.statics.updateLocation = async function updateLocation(
+  oldUsername: string,
+  newUsername: string
+) {
+  try {
+    await Location.update(
+      { name: oldUsername },
+      { $set: { name: newUsername } },
+      { multi: true }
+    );
   } catch (err) {
     throw err;
   }

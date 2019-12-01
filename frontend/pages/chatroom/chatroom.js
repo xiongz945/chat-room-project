@@ -35,6 +35,7 @@ import {
   updateChatUserStatus,
   updateChatUserIsOnline,
 } from './utils/content-updaters.js';
+import { cleanAndLogout } from '../common/utils.js';
 
 // Set up Socket
 export const socket = io(API_ROOT);
@@ -155,6 +156,15 @@ socket.on('NEW_PREDICTION', function(prediction) {
     });
   });
   $('#prediction-modal').modal('show');
+});
+
+socket.on('UPDATE_CHATROOM', async function(data) {
+  if (userStore.userGetters.user().username === data['oldUsername']) {
+    socket.emit('NOTIFY_USER_LOGOUT', data['newUsername']);
+    cleanAndLogout();
+  } else {
+    location.reload();
+  }
 });
 
 socket.on('disconnect', function() {

@@ -1,6 +1,9 @@
 import bcrypt from 'bcrypt-nodejs';
 import mongoose from 'mongoose';
 import { IUserDocument, User } from '../models/User';
+import { Message } from '../models/Message';
+import { Location } from '../models/Location';
+import { EarthquakeReport } from '../models/EarthquakeReport';
 import { NextFunction, Request, Response } from 'express';
 
 /**
@@ -40,11 +43,24 @@ export const updateUserProfile = async (
       return res.status(401).json({ err: 'Unauthorized' });
     }
     const payload = req.body;
-    const userID = payload['user_id'];
-    const user = payload['user'];
-    await hashUserPassword(user);
-    await User.updateOne({ _id: userID }, user);
-    return res.status(200).json({});
+    const userId = payload['user_id'];
+
+    const oldUser = await User.findUserById(userId);
+    const oldUsername = oldUser['username'];
+
+    const newUser = payload['user'];
+    const newUsername = newUser['username'];
+
+    await hashUserPassword(newUser);
+    await User.updateOne({ _id: userId }, newUser);
+
+    Message.updateMessages(oldUsername, newUsername);
+    Location.updateLocation(oldUsername, newUsername);
+    EarthquakeReport.updateReport(oldUsername, newUsername);
+
+    return res
+      .status(200)
+      .json({ oldUsername: oldUsername, newUsername: newUsername });
   } catch (err) {
     return next(err);
   }
