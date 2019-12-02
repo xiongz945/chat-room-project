@@ -101,7 +101,7 @@
                 >
               </a>
             </li>
-            <li>
+            <li hidden>
               <a href="../statusCheckList/statusCheckList.html"
                 ><i class="fa fa-list"></i>
                 <span class="nav-label" id="menu-status-check-report"
@@ -154,15 +154,19 @@
               class="nav navbar-top-links navbar-right"
               style="padding-right: 15px"
             >
-              <button
+              <!-- <button
                 type="button"
                 class="btn btn-primary"
                 data-toggle="modal"
                 data-target="#smart-assistant-knob"
               >
                 Smart Assistant
-              </button>
-
+              </button> -->
+              <li class="margin-right:15px">
+                <a data-toggle="modal" data-target="#smart-assistant-knob"
+                  ><i class="fa fa-user"></i>Smart Assistant</a
+                >
+              </li>
               <div
                 class="modal inmodal fade"
                 id="smart-assistant-knob"
@@ -314,7 +318,9 @@
                 </div>
               </div>
 
-              <li><a id="magnifier-button">🔍</a></li>
+              <li>
+                <a id="magnifier-button"><i class="fa fa-search"></i>Search</a>
+              </li>
               <li id="welcome-message" style="padding-right: 15px">
                 Welcome!
               </li>
@@ -378,7 +384,7 @@
                 <div class="ibox-title">
                   Chat room panel
                   <button
-                    class="btn-sm btn-primary btn-outline pull-right"
+                    class="btn btn-sm btn-primary btn-outline pull-right"
                     id="hideDirBtn"
                     data-toggle="collapse"
                     data-target="#chat-users"
@@ -413,8 +419,14 @@
                             class="form-control message-input"
                             name="message"
                             id="message"
-                            placeholder="Please Enter Message Here or Record Voice"
+                            placeholder="Please Enter Message Here"
                           ></textarea>
+                          <button
+                            class="btn btn-block btn-primary"
+                            id="send-message-button"
+                          >
+                            Send Message
+                          </button>
                           <a
                             href="#"
                             id="smart-assistant-icon"
@@ -428,12 +440,13 @@
                             <i class="fa fa-play label-arrow"></i>
                           </div>
                         </div>
-                        <button class="btn btn-block btn-primary" id="record">
-                          Record Voice
-                        </button>
                       </div>
                     </div>
                   </div>
+                  <p class="text-center" style="padding-top: 10px">Or</p>
+                  <button class="btn btn-block btn-primary" id="record">
+                    <i class="fa fa-microphone"></i> Record Voice
+                  </button>
                 </div>
               </div>
               <div class="ibox search-view" hidden>

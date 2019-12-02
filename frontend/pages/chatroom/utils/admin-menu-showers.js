@@ -7,6 +7,10 @@ if (
   document.querySelector(
     '#menu-prediction'
   ).parentElement.parentElement.hidden = false;
+
+  document.querySelector(
+    '#menu-status-check-report'
+  ).parentElement.parentElement.hidden = false;
 }
 
 if (userStore.userGetters.user().role === 'administrator') {
