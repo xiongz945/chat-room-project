@@ -73,7 +73,6 @@ locationSchema.statics.getAllLocation = async function getAllLocation() {
   }
 };
 
-
 locationSchema.statics.markAsSafe = async function markAsSafe(id: string) {
   try {
     await Location.updateOne({ _id: id }, { status: 'OK' });
@@ -96,7 +95,6 @@ locationSchema.statics.updateLocation = async function updateLocation(
     throw err;
   }
 };
-
 
 export const Location: ILocationModel = mongoose.model<
   ILocationDocument,
