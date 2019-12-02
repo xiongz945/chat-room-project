@@ -21,7 +21,7 @@ export const patchUserProfile = async (
       JSON.parse(req.body.active),
       req.body.role
     );
-    Message.updateMessages(oldUserName, newUserName);
+    Message.updateMessages(oldUserName, newUserName, true);
     Location.updateLocation(oldUserName, newUserName);
     EarthquakeReport.updateReport(oldUserName, newUserName);
 
