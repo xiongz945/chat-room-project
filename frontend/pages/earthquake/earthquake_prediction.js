@@ -1,6 +1,7 @@
 import userStore from '../../store/user.js';
 import earthquakeApis from '../../apis/earthquake-apis.js';
 import { API_ROOT } from '../../config.js';
+import { date2Str, time2Str } from './utils/utils.js';
 
 // Show welcome message
 if (userStore.userGetters.isLogin) {
@@ -24,7 +25,7 @@ let predictionMap = new mapboxgl.Map({
 });
 
 // Add marker in map
-let marker = new mapboxgl.Marker({
+export const prediction_marker = new mapboxgl.Marker({
   draggable: true,
 });
 
@@ -60,7 +61,7 @@ predictionMap.on('load', () => {
       center: userCoordinates,
       zoom: 14,
     });
-    marker.setLngLat(userCoordinates).addTo(predictionMap);
+    prediction_marker.setLngLat(userCoordinates).addTo(predictionMap);
     coordinates.innerHTML =
       'Longitude: ' +
       userCoordinates[0] +
@@ -68,19 +69,19 @@ predictionMap.on('load', () => {
       userCoordinates[1];
 
     function onDragEnd() {
-      let lngLat = marker.getLngLat();
+      let lngLat = prediction_marker.getLngLat();
       coordinates.innerHTML =
         'Longitude: ' + lngLat.lng + '<br />Latitude: ' + lngLat.lat;
     }
 
-    marker.on('dragend', onDragEnd);
+    prediction_marker.on('dragend', onDragEnd);
   });
 });
 
 document.querySelector('#earthquake-prediction-form').addEventListener(
   'submit',
   async (e) => {
-    let lngLat = marker.getLngLat();
+    let lngLat = prediction_marker.getLngLat();
     let prediction = {
       occurred_datetime: new Date(
         document.querySelector('#date-input').value +
@@ -110,20 +111,3 @@ document.querySelector('#earthquake-prediction-form').addEventListener(
   },
   true
 );
-
-function prefixInteger(num, length) {
-  return ('0000000000000000' + num).substr(-length);
-}
-
-function date2Str(date) {
-  const yyyy = prefixInteger(date.getFullYear(), 4);
-  const MM = prefixInteger(date.getMonth() + 1, 2);
-  const dd = prefixInteger(date.getDate(), 2);
-  return yyyy + '-' + MM + '-' + dd;
-}
-
-function time2Str(time) {
-  const HH = prefixInteger(time.getHours(), 2);
-  const mm = prefixInteger(time.getMinutes(), 2);
-  return HH + ':' + mm;
-}

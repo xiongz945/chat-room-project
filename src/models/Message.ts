@@ -1,4 +1,5 @@
 import mongoose, { Model } from 'mongoose';
+import { User } from './User';
 
 export interface IMessageDocument extends mongoose.Document {
   senderName: String;
@@ -25,6 +26,7 @@ export interface IMessageModel extends Model<IMessageDocument> {
     numOfResults: number,
     projection?: string
   ): IMessageDocument[];
+  updateMessages(oldUsername: string, newUsername: string): void;
 }
 
 const messageSchema = new mongoose.Schema(
@@ -45,13 +47,14 @@ messageSchema.index({
   content: 'text',
 });
 
-messageSchema.statics.searchPublicMessages = async function searchPublicMessages(
+const searchPublicItems = async (
   keyword: string,
-  projection: string = undefined
-) {
+  projection: string = undefined,
+  receiver: string
+) => {
   const conditions: any = {
     $text: { $search: keyword },
-    receiverName: 'public',
+    receiverName: receiver,
   };
   try {
     return await Message.find(conditions, projection)
@@ -60,6 +63,39 @@ messageSchema.statics.searchPublicMessages = async function searchPublicMessages
   } catch (err) {
     throw err;
   }
+};
+
+/*
+const updateMessagesWithSender = async (
+  oldSenderName: string,
+  newSenderName: string
+) => {
+  const filter = { senderName: oldSenderName };
+  const update = {
+    $set: { senderName: newSenderName },
+  };
+
+  await Message.update(filter, update, { multi: true });
+};
+
+const updateMessagesWithReceiver = async (
+  oldReceiverName: string,
+  newReceiverName: string
+) => {
+  const filter = { receiverName: oldReceiverName };
+  const update = {
+    $set: { receiverName: newReceiverName },
+  };
+
+  await Message.update(filter, update, { multi: true });
+};
+*/
+
+messageSchema.statics.searchPublicMessages = async function searchPublicMessages(
+  keyword: string,
+  projection: string = undefined
+) {
+  return searchPublicItems(keyword, projection, 'public');
 };
 
 messageSchema.statics.searchPrivateMessages = async function searchPrivateMessages(
@@ -91,14 +127,24 @@ messageSchema.statics.searchAnnouncements = async function searchAnnouncements(
   numOfResults: number,
   projection: string = undefined
 ) {
-  const conditions: any = {
-    $text: { $search: keyword },
-    receiverName: 'announcement',
-  };
+  return searchPublicItems(keyword, projection, 'announcement');
+};
+
+messageSchema.statics.updateMessages = async function updateMessages(
+  oldUsername: string,
+  newUsername: string
+) {
   try {
-    return await Message.find(conditions, projection)
-      .sort({ createdAt: -1 })
-      .exec();
+    await Message.update(
+      { senderName: oldUsername },
+      { $set: { senderName: newUsername } },
+      { multi: true }
+    );
+    await Message.update(
+      { receiverName: oldUsername },
+      { $set: { receiverName: newUsername } },
+      { multi: true }
+    );
   } catch (err) {
     throw err;
   }

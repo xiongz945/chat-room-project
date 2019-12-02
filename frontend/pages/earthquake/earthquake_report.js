@@ -1,5 +1,6 @@
 import userStore from '../../store/user.js';
 import earthquakeApis from '../../apis/earthquake-apis.js';
+import { date2Str, time2Str } from './utils/utils.js';
 
 if (userStore.userGetters.isLogin) {
   document.querySelector('#join-community-button').style.display = 'none';
@@ -54,19 +55,7 @@ async function updateBtnClickListener(event) {
 document.querySelector('#earthquake-report-form').addEventListener(
   'submit',
   async (e) => {
-    let report = {
-      occurred_datetime: new Date(
-        document.querySelector('#date-input').value +
-          'T' +
-          document.querySelector('#time-input').value
-      ),
-      description: document.querySelector('#description-input').value,
-      magnitude: Number(document.querySelector('#magnitude-input').value),
-      location: locationDict['report-map'],
-      killed: Number(document.querySelector('#killed-input').value),
-      injured: Number(document.querySelector('#injured-input').value),
-      missing: Number(document.querySelector('#missing-input').value),
-    };
+    let report = assemble_report_payload(false);
     if (report.description.split(' ').length > 25) {
       alert('Description max 25 words!');
       return;
@@ -77,24 +66,10 @@ document.querySelector('#earthquake-report-form').addEventListener(
   true
 );
 
-document
-  .querySelector('#update-report-form')
-  .addEventListener('submit', async (e) => {
-    let updatedReport = {
-      occurred_datetime: new Date(
-        document.querySelector('#update-date-input').value +
-          'T' +
-          document.querySelector('#update-time-input').value
-      ),
-      description: document.querySelector('#update-description-input').value,
-      magnitude: Number(
-        document.querySelector('#update-magnitude-input').value
-      ),
-      location: locationDict['update-map'],
-      killed: Number(document.querySelector('#update-killed-input').value),
-      injured: Number(document.querySelector('#update-injured-input').value),
-      missing: Number(document.querySelector('#update-missing-input').value),
-    };
+document.querySelector('#update-report-form').addEventListener(
+  'submit',
+  async (e) => {
+    let updatedReport = assemble_report_payload(true);
     if (updatedReport.description.split(' ').length > 25) {
       alert('Description max 25 words!');
       return;
@@ -104,7 +79,49 @@ document
       report: updatedReport,
     });
     location.reload();
-  });
+  },
+  true
+);
+
+const get_date_selector = (isUpdate) =>
+  isUpdate ? '#update-date-input' : '#date-input';
+const get_time_selector = (isUpdate) =>
+  isUpdate ? '#update-time-input' : '#time-input';
+const get_description_selector = (isUpdate) =>
+  isUpdate ? '#update-description-input' : '#description-input';
+const get_magnitude_selector = (isUpdate) =>
+  isUpdate ? '#update-magnitude-input' : '#magnitude-input';
+const get_location_key = (isUpdate) => (isUpdate ? 'update-map' : 'report-map');
+const get_killed_selector = (isUpdate) =>
+  isUpdate ? '#update-killed-input' : '#killed-input';
+const get_injured_selector = (isUpdate) =>
+  isUpdate ? '#update-injured-input' : '#injured-input';
+const get_missing_selector = (isUpdate) =>
+  isUpdate ? '#update-missing-input' : '#missing-input';
+
+const assemble_report_payload = (isUpdate) => {
+  const date_selector = get_date_selector(isUpdate);
+  const time_selector = get_time_selector(isUpdate);
+  const description_selector = get_description_selector(isUpdate);
+  const magnitude_selector = get_magnitude_selector(isUpdate);
+  const location_key = get_location_key(isUpdate);
+  const killed_selector = get_killed_selector(isUpdate);
+  const injured_selector = get_injured_selector(isUpdate);
+  const missing_selector = get_missing_selector(isUpdate);
+  return {
+    occurred_datetime: new Date(
+      document.querySelector(date_selector).value +
+        'T' +
+        document.querySelector(time_selector).value
+    ),
+    description: document.querySelector(description_selector).value,
+    magnitude: Number(document.querySelector(magnitude_selector).value),
+    location: locationDict[location_key],
+    killed: Number(document.querySelector(killed_selector).value),
+    injured: Number(document.querySelector(injured_selector).value),
+    missing: Number(document.querySelector(missing_selector).value),
+  };
+};
 
 function mapLoadedListener(event) {
   let map = event.target;
@@ -148,8 +165,8 @@ function mapLoadedListener(event) {
       userCoordinates[0] +
       '<br />Latitude: ' +
       userCoordinates[1];
-    function onDragEnd() {
-      let lngLat = marker.getLngLat();
+    function onDragEnd(event) {
+      let lngLat = event.target.getLngLat();
       locationDict[map._container.id] = {
         longitude: lngLat.lng,
         latitude: lngLat.lat,
@@ -237,21 +254,4 @@ function fillUpdateForm(report) {
     center: lngLat,
     zoom: 14,
   });
-}
-
-function prefixInteger(num, length) {
-  return ('0000000000000000' + num).substr(-length);
-}
-
-function date2Str(date) {
-  const yyyy = prefixInteger(date.getFullYear(), 4);
-  const MM = prefixInteger(date.getMonth() + 1, 2);
-  const dd = prefixInteger(date.getDate(), 2);
-  return yyyy + '-' + MM + '-' + dd;
-}
-
-function time2Str(time) {
-  const HH = prefixInteger(time.getHours(), 2);
-  const mm = prefixInteger(time.getMinutes(), 2);
-  return HH + ':' + mm;
 }

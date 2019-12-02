@@ -21,6 +21,7 @@ export interface ILocationModel extends Model<ILocationDocument> {
     desc: string
   ): ILocationDocument;
   markAsSafe(id: string): ILocationDocument;
+  updateLocation(oldUsername: string, newUsername: string): void;
 }
 
 const locationSchema = new mongoose.Schema(
@@ -72,6 +73,7 @@ locationSchema.statics.getAllLocation = async function getAllLocation() {
   }
 };
 
+
 locationSchema.statics.markAsSafe = async function markAsSafe(id: string) {
   try {
     await Location.updateOne({ _id: id }, { status: 'OK' });
@@ -79,6 +81,22 @@ locationSchema.statics.markAsSafe = async function markAsSafe(id: string) {
     throw err;
   }
 };
+
+locationSchema.statics.updateLocation = async function updateLocation(
+  oldUsername: string,
+  newUsername: string
+) {
+  try {
+    await Location.update(
+      { name: oldUsername },
+      { $set: { name: newUsername } },
+      { multi: true }
+    );
+  } catch (err) {
+    throw err;
+  }
+};
+
 
 export const Location: ILocationModel = mongoose.model<
   ILocationDocument,
