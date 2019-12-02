@@ -39,12 +39,34 @@
             <li class="nav-header">
               <div class="dropdown profile-element">
                 <h2 class="text-white">
-                  CHATROOM
+                  ESN
                 </h2>
               </div>
             </li>
-            <div><br /></div>
-            <div></div>
+            <li style="margin:10px">
+              <div class="input-group">
+                <select
+                  class="custom-select custom-select-sm"
+                  id="statusSelect"
+                >
+                  <option selected value="Choose Your Status"
+                    >Choose Your Status</option
+                  >
+                  <option value="1">✅ OK</option>
+                  <option value="2">⚠️ Help</option>
+                  <option value="3">🆘 Emergency</option>
+                </select>
+                <div class="input-group-append">
+                  <button
+                    class="btn btn-primary btn-sm"
+                    type="button"
+                    id="shareStatusBtn"
+                  >
+                    Share
+                  </button>
+                </div>
+              </div>
+            </li>
             <li>
               <a href="/pages/chatroom/chatroom.html"
                 ><i class="fa fa-comments"></i>
@@ -52,14 +74,22 @@
               </a>
             </li>
             <li>
-              <a href="#"
-                ><i class="fa fa-comments"></i>
-                <span class="nav-label" id="menu-earthquake">Earth Report</span>
+              <a href="/pages/statusmap/statusmap.html"
+                ><i class="fa fa-map"></i>
+                <span class="nav-label" id="menu-statusmap">Status Map</span>
+              </a>
+            </li>
+            <li>
+              <a href="/pages/earthquake/earthquake_report.html"
+                ><i class="fa fa-file"></i>
+                <span class="nav-label" id="menu-earthquake"
+                  >Earthquake Report</span
+                >
               </a>
             </li>
             <li>
               <a href="/pages/earthquake/earthquake_statistics.html"
-                ><i class="fa fa-comments"></i>
+                ><i class="fa fa-list"></i>
                 <span class="nav-label" id="menu-statistics"
                   >Earthquake Statistics</span
                 >
@@ -67,15 +97,23 @@
             </li>
             <li hidden>
               <a href="/pages/earthquake/earthquake_prediction.html"
-                ><i class="fa fa-comments"></i>
+                ><i class="fa fa-list"></i>
                 <span class="nav-label" id="menu-prediction"
                   >Earthquake Prediction</span
                 >
               </a>
             </li>
+            <li>
+              <a href="../statusCheckList/statusCheckList.html"
+                ><i class="fa fa-list"></i>
+                <span class="nav-label" id="menu-status-check-report"
+                  >Status Check Report</span
+                >
+              </a>
+            </li>
             <li class="active">
               <a href="../administration/administration.html"
-                ><i class="fa fa-list"></i>
+                ><i class="fa fa-user"></i>
                 <span class="nav-label" id="menu-administration"
                   >Administer User Profile</span
                 >
@@ -301,5 +339,9 @@
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
 
     <script type="module" src="administration.js"></script>
+    <script
+      type="module"
+      src="../chatroom/utils/admin-menu-showers.js"
+    ></script>
   </body>
 </html>
