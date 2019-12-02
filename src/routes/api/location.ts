@@ -4,15 +4,22 @@ import * as statusmapController from '../../controllers/statusmap';
 
 const router = express.Router();
 
+// Status
+router.patch(
+  '/:id/status',
+  passportConfig.isAuthenticated,
+  statusmapController.updateStatus
+);
+
 // Location
 router.get(
-  '/:name',
+  '/:id',
   passportConfig.isAuthenticated,
   statusmapController.getLocation
 );
 
 router.get(
-  '/all',
+  '',
   passportConfig.isAuthenticated,
   statusmapController.getAllLocation
 );
@@ -21,19 +28,6 @@ router.post(
   '/:name',
   passportConfig.isAuthenticated,
   statusmapController.postNewLocation
-);
-
-// Comment
-router.get(
-  '/:name/comment',
-  passportConfig.isAuthenticated,
-  statusmapController.getComment
-);
-
-router.post(
-  '/:name/comment',
-  passportConfig.isAuthenticated,
-  statusmapController.postNewComment
 );
 
 export default router;

@@ -1,18 +1,5 @@
 import mongoose, { Model } from 'mongoose';
 
-const locationSchema = new mongoose.Schema(
-  {
-    name: String,
-    locationName: String,
-    placeID: String,
-    status: String,
-    desc: String,
-  },
-  {
-    timestamps: true,
-  }
-);
-
 export interface ILocationDocument extends mongoose.Document {
   name: String;
   location: String;
@@ -24,7 +11,7 @@ export interface ILocationDocument extends mongoose.Document {
 }
 
 export interface ILocationModel extends Model<ILocationDocument> {
-  getLocation(name: string, timestamp: any): ILocationDocument;
+  getLocation(id: string): ILocationDocument;
   getAllLocation(): ILocationDocument[];
   createNewLocation(
     name: string,
@@ -33,8 +20,22 @@ export interface ILocationModel extends Model<ILocationDocument> {
     status: string,
     desc: string
   ): ILocationDocument;
+  markAsSafe(id: string): ILocationDocument;
   updateLocation(oldUsername: string, newUsername: string): void;
 }
+
+const locationSchema = new mongoose.Schema(
+  {
+    name: String,
+    location: String,
+    placeID: String,
+    status: String,
+    desc: String,
+  },
+  {
+    timestamps: true,
+  }
+);
 
 locationSchema.statics.createNewLocation = async function createNewLocation(
   name: string,
@@ -51,14 +52,11 @@ locationSchema.statics.createNewLocation = async function createNewLocation(
   }
 };
 
-locationSchema.statics.getLocation = async function getLocation(
-  username: string,
-  timestamp: any
-) {
+locationSchema.statics.getLocation = async function getLocation(id: string) {
   try {
+    // const objectId = "ObjectId(" + id + ")";
     return await Location.find({
-      name: username,
-      createdAt: timestamp,
+      _id: id,
     }).exec();
   } catch (err) {
     throw err;
@@ -67,7 +65,18 @@ locationSchema.statics.getLocation = async function getLocation(
 
 locationSchema.statics.getAllLocation = async function getAllLocation() {
   try {
-    return await Location.find({}).exec();
+    return await Location.find({})
+      .sort({ createdAt: -1 })
+      .exec();
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+locationSchema.statics.markAsSafe = async function markAsSafe(id: string) {
+  try {
+    await Location.updateOne({ _id: id }, { status: 'OK' });
   } catch (err) {
     throw err;
   }
@@ -87,6 +96,7 @@ locationSchema.statics.updateLocation = async function updateLocation(
     throw err;
   }
 };
+
 
 export const Location: ILocationModel = mongoose.model<
   ILocationDocument,

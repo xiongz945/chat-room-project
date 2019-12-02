@@ -6,23 +6,18 @@ export default {
     return res;
   },
 
-  async getLocation(username, data) {
-    const res = await get('/location/' + username, data);
+  async patchStatus(id) {
+    const res = await patch('/location/' + id + '/status');
     return res;
   },
 
-  async getAllLocation(data) {
-    const res = await get('/location/all', data);
+  async getLocation(id) {
+    const res = await get('/location/' + id);
     return res;
   },
 
-  async postNewComment(data) {
-    const res = await post('/location/' + username + '/comment', data);
-    return res;
-  },
-
-  async getHistoryComment(username, data) {
-    const res = await get('/location/' + username + '/comment', data);
+  async getAllLocation() {
+    const res = await get('/location');
     return res;
   },
 };

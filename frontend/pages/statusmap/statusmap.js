@@ -2,6 +2,8 @@ import { API_ROOT } from '../../config.js';
 import userStore from '../../store/user.js';
 import locationApis from '../../apis/location-apis.js';
 import chatroomApis from '../../../apis/chatroom-apis.js';
+import userApis from '../../apis/user-apis.js';
+import router from '../../router.js';
 import { statusMap } from '../chatroom/config.js';
 import { shareStatusClickListener } from './listeners/click-listeners.js';
 
@@ -24,23 +26,23 @@ if (userStore.userGetters.isLogin) {
     userStore.userGetters.user().username
   }!`;
   document.getElementById('logout-button').style.display = 'block';
+} else {
+  router('login');
 }
 
 document.getElementById('logout-button').onclick = async () => {
   socket.emit('NOTIFY_USER_LOGOUT', userStore.userGetters.user().username);
-  await logout();
+  await userApis.logout();
   window.onbeforeunload = undefined;
   userStore.userActions.logoutUser();
   router('login');
 };
 
-// document
-//   .getElementById('logout-button')
-//   .addEventListener('click', logoutBtnClickListener);
-
 document
   .querySelector('#shareStatusBtn')
   .addEventListener('click', shareStatusClickListener);
+
+// document.querySelector('')
 
 getUserStatus();
 
@@ -50,8 +52,9 @@ function updateStatusMap(payload) {
   let username = payload['name'];
   let userstatus = payload['status'];
   let userlocation = payload['location'];
-  let userplaceID = payload['placeid'];
+  let time = payload['createdAt'];
   let userdesc = payload['desc'];
+  let docId = payload['_id'];
 
   const statusBlock = document.createElement('div');
   statusBlock.className = 'social-feed-box';
@@ -69,7 +72,7 @@ function updateStatusMap(payload) {
   const breakline = document.createElement('br');
   const createTime = document.createElement('small');
   createTime.className = 'text-muted';
-  let date = new Date();
+  let date = new Date(time);
   createTime.innerHTML =
     date.toLocaleTimeString() + '-' + date.toLocaleDateString();
 
@@ -86,10 +89,11 @@ function updateStatusMap(payload) {
 
   const btn_group = document.createElement('div');
   btn_group.className = 'btn-group';
-  const commentBtn = document.createElement('button');
-  commentBtn.className = 'btn btn-white btn-xs';
-  commentBtn.innerHTML = 'Comment';
-  btn_group.append(commentBtn);
+  const markBtn = document.createElement('button');
+  markBtn.className = 'btn btn-white btn-xs mark-btn';
+  markBtn.innerHTML = 'Mark as safe';
+  markBtn.id = docId;
+  btn_group.append(markBtn);
 
   social_body.append(btn_group);
   social_avatar.append(media_body);
@@ -99,17 +103,26 @@ function updateStatusMap(payload) {
   const statusBox = document.querySelector('#statusBox');
   statusBox.appendChild(statusBlock);
 
+  if (userstatus === 'OK') {
+    markBtn.style.visibility = 'hidden';
+  }
+  document.querySelectorAll('.mark-btn').forEach((markBtn) => {
+    markBtn.addEventListener('click', markBtnClickListener);
+  });
+
   updateMap(payload);
 }
 
 async function receiveAllLocation() {
   try {
+    console.log('Trying to receive all locations');
     const response = await locationApis.getAllLocation();
-    const location = response['data']['location'];
-
-    for (let i = location.length - 1; i >= 0; --i) {
-      updateStatusMap(location[i]);
-    }
+    console.log(response);
+    const locations = response['data']['locations'];
+    console.log(locations);
+    locations.forEach((location) => {
+      updateStatusMap(location);
+    });
   } catch (e) {
     console.log(e);
   }
@@ -134,4 +147,13 @@ export async function getUserStatus() {
   } catch (e) {
     console.log(e);
   }
+}
+
+async function markBtnClickListener(event) {
+  const cmtBtn = event.srcElement;
+  const docId = cmtBtn.id;
+  swal('Thank you!', "You marked the user's status as safe!", 'success');
+  cmtBtn.style.visibility = 'hidden';
+  await locationApis.patchStatus(docId);
+  setTimeout(() => window.location.reload(), 2000);
 }
