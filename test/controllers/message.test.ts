@@ -62,6 +62,7 @@ describe('Test Message Controller', () => {
           senderName: 'abc',
           content: 'Testing',
           receiverName: 'public',
+          active: true
         },
       ],
     });

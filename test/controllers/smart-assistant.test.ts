@@ -109,6 +109,7 @@ describe('Test Smart Assistant Controller', () => {
     expect(res.json).toHaveBeenCalledWith({
       messages: [
         {
+          active: true,
           senderName: '456',
           content: 'Hello',
           receiverName: 'smart-assistant',
