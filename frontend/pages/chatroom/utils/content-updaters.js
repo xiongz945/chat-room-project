@@ -114,6 +114,9 @@ export function updateChatUserStatus(username, status) {
 }
 
 export function appendUserList(data) {
+  // Hide user if user is inactive
+  if (data.active === false) return;
+
   const chatUser = document.createElement('div');
   chatUser.className = 'chat-user';
   chatUser.id = 'chat-user@' + data['username'];
