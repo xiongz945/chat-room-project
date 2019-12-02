@@ -54,7 +54,9 @@ export const updateUserProfile = async (
     await hashUserPassword(newUser);
     await User.updateOne({ _id: userId }, newUser);
 
-    Message.updateMessages(oldUsername, newUsername, newUser.active);
+    const isActive = newUser.active === 'active';
+
+    Message.updateMessages(oldUsername, newUsername, isActive);
     Location.updateLocation(oldUsername, newUsername);
     EarthquakeReport.updateReport(oldUsername, newUsername);
 
