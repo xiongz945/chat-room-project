@@ -54,31 +54,6 @@ describe('Test statusmap controller', () => {
     expect(res.json).toHaveBeenCalledWith({});
   });
 
-  test('postNewLocation() - successfully post one new location', async () => {
-    const req: any = {
-      params: {
-        name: 'Amy',
-      },
-      body: {
-        location: 'McDaniel Avenue, San Jose, CA, USA',
-        placeid:
-          'EiJNY0RhbmllbCBBdmVudWUsIFNhbiBKb3NlLCBDQSwgVVNBIi4qLAoUChIJVw1nqRbLj4ARL2wLcXZeHL8SFAoSCfU_-Yrkyo-AEXtxn8oKjJ25',
-        status: 'Help',
-        desc: 'I need help',
-      },
-    };
-    const res: any = {
-      status: jest.fn((code) => {
-        return res;
-      }),
-      json: jest.fn((resp: any) => {}),
-    };
-    const next = jest.fn();
-    await statusmapController.postNewLocation(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({});
-  });
-
   test('getAllLocation() - return all locations successfully', async () => {
     const req: any = {};
     const res: any = {
@@ -110,6 +85,31 @@ describe('Test statusmap controller', () => {
         },
       ],
     });
+  });
+  
+  test('postNewLocation() - successfully post one new location', async () => {
+    const req: any = {
+      params: {
+        name: 'Amy',
+      },
+      body: {
+        location: 'McDaniel Avenue, San Jose, CA, USA',
+        placeid:
+          'EiJNY0RhbmllbCBBdmVudWUsIFNhbiBKb3NlLCBDQSwgVVNBIi4qLAoUChIJVw1nqRbLj4ARL2wLcXZeHL8SFAoSCfU_-Yrkyo-AEXtxn8oKjJ25',
+        status: 'Help',
+        desc: 'I need help',
+      },
+    };
+    const res: any = {
+      status: jest.fn((code) => {
+        return res;
+      }),
+      json: jest.fn((resp: any) => {}),
+    };
+    const next = jest.fn();
+    await statusmapController.postNewLocation(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({});
   });
 
   test('getLocation() - return one location successfully', async () => {
