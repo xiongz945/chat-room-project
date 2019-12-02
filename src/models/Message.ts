@@ -27,7 +27,11 @@ export interface IMessageModel extends Model<IMessageDocument> {
     numOfResults: number,
     projection?: string
   ): IMessageDocument[];
-  updateMessages(oldUsername: string, newUsername: string, isActive: Boolean): void;
+  updateMessages(
+    oldUsername: string,
+    newUsername: string,
+    isActive: Boolean
+  ): void;
 }
 
 const messageSchema = new mongoose.Schema(
@@ -138,33 +142,26 @@ messageSchema.statics.searchAnnouncements = async function searchAnnouncements(
 messageSchema.statics.updateMessages = async function updateMessages(
   oldUsername: string,
   newUsername: string,
-  isActive: any,
+  isActive: any
 ) {
   try {
-
     let senderUpdate = undefined;
     let receiverUpdate = undefined;
 
     if (isActive === false) {
-       senderUpdate = { $set: { senderName: newUsername, active: false } };
-       receiverUpdate = { $set: { receiverName: newUsername, active: false } };
+      senderUpdate = { $set: { senderName: newUsername, active: false } };
+      receiverUpdate = { $set: { receiverName: newUsername, active: false } };
     } else {
        senderUpdate = { $set: { senderName: newUsername, active: true } };
        receiverUpdate = { $set: { receiverName: newUsername, active: true } };
     }
 
-    await Message.update(
-      { senderName: oldUsername },
-      senderUpdate,
-      { multi: true }
-    );
-    await Message.update(
-      { receiverName: oldUsername },
-      receiverUpdate,
-      { multi: true }
-    );
-
-
+    await Message.update({ senderName: oldUsername }, senderUpdate, {
+      multi: true,
+    });
+    await Message.update({ receiverName: oldUsername }, receiverUpdate, {
+      multi: true,
+    });
   } catch (err) {
     throw err;
   }

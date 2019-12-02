@@ -48,6 +48,12 @@ export const updateUserProfile = async (
     const oldUser = await User.findUserById(userId);
     const oldUsername = oldUser['username'];
 
+    if (oldUsername === 'ESNAdmin') {
+      return res
+        .status(200)
+        .json({ oldUsername: oldUsername, newUsername: oldUsername });
+    }
+
     const newUser = payload['user'];
     const newUsername = newUser['username'];
 
