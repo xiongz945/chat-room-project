@@ -86,7 +86,7 @@ describe('Test statusmap controller', () => {
       ],
     });
   });
-  
+
   test('postNewLocation() - successfully post one new location', async () => {
     const req: any = {
       params: {
