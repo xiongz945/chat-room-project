@@ -63,6 +63,9 @@ const serveExistingUser = async (
       if (!user) {
         return res.status(400).json({ message: ['invalid password'] });
       }
+      if (!user.active) {
+        return res.status(400).json({ message: ['user is inactive'] });
+      }
       req.logIn(user, { session: false }, (err) => {
         return loginHandler(err, res, next, user, 'authenticated');
       });

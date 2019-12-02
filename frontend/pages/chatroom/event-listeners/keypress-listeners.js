@@ -21,3 +21,15 @@ export const messageKeypressListener = (e) => {
     }
   }
 };
+
+export const messageClickListener = (e) => {
+  e.preventDefault();
+
+  const mode = userStore.userGetters.chatMode();
+  if (mode === 'public') {
+    sendPublicMessage();
+  } else if (mode === 'private') {
+    sendPrivateMessage();
+  }
+  document.querySelector('#message').value = '';
+};

@@ -74,6 +74,14 @@ async function validateForm(event) {
         'This password is wrong. Please correct it.'
       );
       break;
+    case 'user is inactive':
+      cleanTextBoxAndShowHelpMessage(
+        username,
+        password,
+        passwordMessage,
+        'This user is inactive.'
+      );
+      break;
     case 'non-existing username': {
       swal(
         {

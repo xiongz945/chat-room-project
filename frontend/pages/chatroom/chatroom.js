@@ -12,7 +12,10 @@ import {
   searchBtnClickListener,
   announcementBtnClickListener,
 } from './event-listeners/click-listeners.js';
-import { messageKeypressListener } from './event-listeners/keypress-listeners.js';
+import {
+  messageKeypressListener,
+  messageClickListener,
+} from './event-listeners/keypress-listeners.js';
 import { switchToPrivateChat } from './utils/view-switchers.js';
 import {
   receivePublicMessage,
@@ -165,10 +168,13 @@ socket.on('disconnect', function() {
 // UI change based on user login status
 if (userStore.userGetters.isLogin()) {
   document.getElementById('join-community-button').style.display = 'none';
-  document.getElementById('welcome-message').innerText = `Welcome, ${
+  document.getElementById(
+    'logout-button'
+  ).innerHTML = ` <a> <i class="fa fa-sign-out"></i> Logout ${
     userStore.userGetters.user().username
-  }!`;
+  }</a>`;
   document.getElementById('logout-button').style.display = 'block';
+  document.getElementById('welcome-message').style.display = 'none';
 }
 
 // Set user isOnline field to 'true' when page is ready
@@ -204,6 +210,10 @@ document
 document
   .querySelector('#message')
   .addEventListener('keypress', messageKeypressListener);
+
+document
+  .querySelector('#send-message-button')
+  .addEventListener('click', messageClickListener);
 
 document
   .querySelector('#menu-chatroom')
