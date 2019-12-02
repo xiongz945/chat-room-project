@@ -1,15 +1,6 @@
 import { API_ROOT } from '../../config.js';
 
-import router from '../../router.js';
-
-import messageStore from '../../store/message.js';
-import clockStore from '../../store/clock.js';
 import userStore from '../../store/user.js';
-
-import messageApis from '../../apis/message-apis.js';
-import userApis from '../../apis/user-apis.js';
-import chatroomApis from '../../apis/chatroom-apis.js';
-import searchApis from '../../apis/search-apis.js';
 
 import { setUserIsOnline, getAllUserInfo } from './utils/api-senders.js';
 import {
@@ -178,21 +169,6 @@ if (userStore.userGetters.isLogin()) {
     userStore.userGetters.user().username
   }!`;
   document.getElementById('logout-button').style.display = 'block';
-}
-
-// Display earthquake prediction menu when the user is coordinator
-if (
-  ['coordinator', 'administrator'].includes(userStore.userGetters.user().role)
-) {
-  document.querySelector(
-    '#menu-prediction'
-  ).parentElement.parentElement.hidden = false;
-}
-
-if (userStore.userGetters.user().role === 'administrator') {
-  document.querySelector(
-    '#menu-administration'
-  ).parentElement.parentElement.hidden = false;
 }
 
 // Set user isOnline field to 'true' when page is ready
