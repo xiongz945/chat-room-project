@@ -83,6 +83,11 @@ io.on('connection', function(socket: any) {
     console.log(prediction);
     io.emit('NEW_PREDICTION', prediction);
   });
+
+  socket.on('NOTIFY_UPDATE_CHATROOM', function(data: any) {
+    io.emit('UPDATE_CHATROOM', data);
+  });
+
   socket.on('disconnect', async function() {
     const username = socketIDtoName[socket.id];
     delete socketIDtoName[socket.id];

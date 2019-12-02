@@ -35,6 +35,7 @@ import {
   updateChatUserStatus,
   updateChatUserIsOnline,
 } from './utils/content-updaters.js';
+import { cleanAndLogout } from '../common/utils.js';
 
 // Set up Socket
 export const socket = io(API_ROOT);
@@ -157,6 +158,15 @@ socket.on('NEW_PREDICTION', function(prediction) {
   $('#prediction-modal').modal('show');
 });
 
+socket.on('UPDATE_CHATROOM', async function(data) {
+  if (userStore.userGetters.user().username === data['oldUsername']) {
+    socket.emit('NOTIFY_USER_LOGOUT', data['newUsername']);
+    cleanAndLogout();
+  } else {
+    location.reload();
+  }
+});
+
 socket.on('disconnect', function() {
   console.log('Socket disconnected');
 });
@@ -171,9 +181,17 @@ if (userStore.userGetters.isLogin()) {
 }
 
 // Display earthquake prediction menu when the user is coordinator
-if (userStore.userGetters.user().role === 'coordinator') {
+if (
+  ['coordinator', 'administrator'].includes(userStore.userGetters.user().role)
+) {
   document.querySelector(
     '#menu-prediction'
+  ).parentElement.parentElement.hidden = false;
+}
+
+if (userStore.userGetters.user().role === 'administrator') {
+  document.querySelector(
+    '#menu-administration'
   ).parentElement.parentElement.hidden = false;
 }
 
