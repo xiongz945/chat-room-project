@@ -51,9 +51,7 @@ locationSchema.statics.createNewLocation = async function createNewLocation(
   }
 };
 
-locationSchema.statics.getLocation = async function getLocation(
-  id: string
-) {
+locationSchema.statics.getLocation = async function getLocation(id: string) {
   try {
     // const objectId = "ObjectId(" + id + ")";
     return await Location.find({
@@ -66,7 +64,9 @@ locationSchema.statics.getLocation = async function getLocation(
 
 locationSchema.statics.getAllLocation = async function getAllLocation() {
   try {
-    return await Location.find({}).sort({createdAt: -1}).exec();
+    return await Location.find({})
+      .sort({ createdAt: -1 })
+      .exec();
   } catch (err) {
     throw err;
   }
@@ -74,11 +74,11 @@ locationSchema.statics.getAllLocation = async function getAllLocation() {
 
 locationSchema.statics.markAsSafe = async function markAsSafe(id: string) {
   try {
-    await Location.updateOne({_id: id}, {status: "OK"});
+    await Location.updateOne({ _id: id }, { status: 'OK' });
   } catch (err) {
     throw err;
   }
-}
+};
 
 export const Location: ILocationModel = mongoose.model<
   ILocationDocument,

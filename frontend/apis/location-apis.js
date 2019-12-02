@@ -7,7 +7,7 @@ export default {
   },
 
   async patchStatus(id) {
-    const res = await patch('/location/'+id+'/status');
+    const res = await patch('/location/' + id + '/status');
     return res;
   },
 
@@ -18,16 +18,6 @@ export default {
 
   async getAllLocation() {
     const res = await get('/location');
-    return res;
-  },
-
-  async postNewComment(data) {
-    const res = await post('/location/' + username + '/comment', data);
-    return res;
-  },
-
-  async getHistoryComment(username, data) {
-    const res = await get('/location/' + username + '/comment', data);
     return res;
   },
 };

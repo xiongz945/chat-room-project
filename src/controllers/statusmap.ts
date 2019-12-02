@@ -19,9 +19,7 @@ export const getLocation = async (
   next: NextFunction
 ) => {
   try {
-    const location: any = await Location.getLocation(
-      req.params.id
-    );
+    const location: any = await Location.getLocation(req.params.id);
     return res.status(200).json({ location });
   } catch (err) {
     return next(err);
@@ -54,29 +52,7 @@ export const postNewLocation = async (
       req.body.status,
       req.body.desc
     );
-    return res.status(200).json('{}');
-  } catch (err) {
-    return next(err);
-  }
-};
-
-export const getComment = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-  } catch (err) {
-    return next(err);
-  }
-};
-
-export const postNewComment = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+    return res.status(200).json({});
   } catch (err) {
     return next(err);
   }

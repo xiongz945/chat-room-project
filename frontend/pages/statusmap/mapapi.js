@@ -86,8 +86,8 @@ function updateMap(payload) {
       marker_icon = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
     } else if (userstatus === 'Emergency') {
       marker_icon = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
-    } else if (userstatus === "undefined") {
-      marker_icon = 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png'
+    } else if (userstatus === 'undefined') {
+      marker_icon = 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
     }
 
     var marker = new google.maps.Marker({

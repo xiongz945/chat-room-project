@@ -36,7 +36,6 @@ describe('Test statusmap controller', () => {
     await mongoose.connection.db.dropDatabase();
   });
 
-
   test('updateStatus() - successfully mark one user as safe', async () => {
     const req: any = {
       params: {
@@ -79,8 +78,6 @@ describe('Test statusmap controller', () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({});
   });
-
-
 
   test('getAllLocation() - return all locations successfully', async () => {
     const req: any = {};
@@ -149,5 +146,4 @@ describe('Test statusmap controller', () => {
       ],
     });
   });
-
 });

@@ -9,8 +9,7 @@ router.patch(
   '/:id/status',
   passportConfig.isAuthenticated,
   statusmapController.updateStatus
-)
-
+);
 
 // Location
 router.get(
@@ -29,19 +28,6 @@ router.post(
   '/:name',
   passportConfig.isAuthenticated,
   statusmapController.postNewLocation
-);
-
-// Comment
-router.get(
-  '/:name/comment',
-  passportConfig.isAuthenticated,
-  statusmapController.getComment
-);
-
-router.post(
-  '/:name/comment',
-  passportConfig.isAuthenticated,
-  statusmapController.postNewComment
 );
 
 export default router;

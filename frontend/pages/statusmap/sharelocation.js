@@ -27,7 +27,7 @@ document
       return false;
     }
     await shareLocation(location, placeID, desc);
-    router("statusmap");
+    router('statusmap');
   });
 
 async function shareLocation(location, placeID, desc) {

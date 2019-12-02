@@ -103,8 +103,8 @@ function updateStatusMap(payload) {
   const statusBox = document.querySelector('#statusBox');
   statusBox.appendChild(statusBlock);
 
-  if (userstatus === "OK") {
-    markBtn.style.visibility = "hidden";
+  if (userstatus === 'OK') {
+    markBtn.style.visibility = 'hidden';
   }
   document.querySelectorAll('.mark-btn').forEach((markBtn) => {
     markBtn.addEventListener('click', markBtnClickListener);
@@ -152,8 +152,8 @@ export async function getUserStatus() {
 async function markBtnClickListener(event) {
   const cmtBtn = event.srcElement;
   const docId = cmtBtn.id;
-  swal("Thank you!", "You marked the user's status as safe!", "success")
-  cmtBtn.style.visibility = "hidden";
+  swal('Thank you!', "You marked the user's status as safe!", 'success');
+  cmtBtn.style.visibility = 'hidden';
   await locationApis.patchStatus(docId);
   setTimeout(() => window.location.reload(), 2000);
 }
