@@ -20,7 +20,11 @@ describe('Message API', () => {
     });
     await message.save();
 
-    const user = new User({ username: '123', password: '1234' });
+    const user = new User({
+      username: '123',
+      password: '1234',
+      role: 'coordinator',
+    });
     await user.save();
   }, 10000);
 

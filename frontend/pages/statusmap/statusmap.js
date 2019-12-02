@@ -106,9 +106,18 @@ function updateStatusMap(payload) {
   if (userstatus === 'OK') {
     markBtn.style.visibility = 'hidden';
   }
-  document.querySelectorAll('.mark-btn').forEach((markBtn) => {
-    markBtn.addEventListener('click', markBtnClickListener);
-  });
+  if (
+    userStore.userGetters.user().role === 'coordinator' ||
+    userStore.userGetters.user().role === 'administrator'
+  ) {
+    document.querySelectorAll('.mark-btn').forEach((markBtn) => {
+      markBtn.addEventListener('click', markBtnClickListener);
+    });
+  } else {
+    document.querySelectorAll('.mark-btn').forEach((markBtn) => {
+      markBtn.hidden = true;
+    });
+  }
 
   updateMap(payload);
 }

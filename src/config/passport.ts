@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { JWT_SECRET } from '../config/secrets';
 
 // import { User, UserType } from '../models/User';
-import { User } from '../models/User';
+import { User, IUserDocument } from '../models/User';
 import { Request, Response, NextFunction } from 'express';
 
 const LocalStrategy = passportLocal.Strategy;
@@ -93,4 +93,27 @@ export const isAuthenticated = (
     return next();
   }
   return res.status(401).json({ err: 'You are not authenticated.' });
+};
+
+export const isLegalAnnouncement = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const reqUser = req.user as IUserDocument;
+  if (reqUser.role === 'coordinator' || reqUser.role === 'administrator') {
+    return next();
+  } else return res.status(401).json({ err: 'You are not authorized.' });
+};
+
+export const isLegalStatusCheck = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const reqUser = req.user as IUserDocument;
+  if (reqUser.role === 'administrator') {
+    return next();
+  } else
+    return res.status(401).json({ err: 'You are not authorized to do so.' });
 };

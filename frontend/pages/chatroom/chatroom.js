@@ -221,9 +221,16 @@ document
   .querySelector('#search-button')
   .addEventListener('click', searchBtnClickListener);
 
-document
-  .querySelector('#announcement-button')
-  .addEventListener('click', announcementBtnClickListener);
+if (
+  userStore.userGetters.user().role === 'coordinator' ||
+  userStore.userGetters.user().role === 'administrator'
+) {
+  document
+    .querySelector('#announcement-button')
+    .addEventListener('click', announcementBtnClickListener);
+} else {
+  document.querySelector('#announcement-button').hidden = true;
+}
 
 // Function definations
 function sortUser() {

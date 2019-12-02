@@ -11,7 +11,11 @@ describe('Chatroom API', () => {
   let token: string;
 
   beforeAll(async () => {
-    const user = new User({ username: '123', password: '1234' });
+    const user = new User({
+      username: '123',
+      password: '1234',
+      role: 'administrator',
+    });
     await user.save();
   });
 
