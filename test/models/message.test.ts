@@ -35,7 +35,7 @@ describe('Test Message Model', () => {
   });
 
   test('updateMessages() - Update the message content', async () => {
-    Message.updateMessages('kd', 'james');
+    Message.updateMessages('kd', 'james', true);
     const message1s = await Message.find({ receiverName: 'ad' });
     const message1 = message1s[0];
     const message2s = await Message.find({ senderName: 'ad' });
