@@ -3,6 +3,7 @@ import { emojiMap } from '../config.js';
 import { switchToPrivateChat } from './view-switchers.js';
 
 export function updateMessageBoard(data) {
+  if (data.active === false) return;
   const chatMessage = document.createElement('div');
   if (userStore.userGetters.user().username === data['senderName']) {
     chatMessage.className = 'chat-message right';

@@ -9,6 +9,7 @@ export interface IMessageDocument extends mongoose.Document {
   status: String;
   createdAt: Date;
   updatedAt: Date;
+  active: Boolean;
 }
 
 export interface IMessageModel extends Model<IMessageDocument> {
@@ -26,7 +27,7 @@ export interface IMessageModel extends Model<IMessageDocument> {
     numOfResults: number,
     projection?: string
   ): IMessageDocument[];
-  updateMessages(oldUsername: string, newUsername: string): void;
+  updateMessages(oldUsername: string, newUsername: string, isActive: Boolean): void;
 }
 
 const messageSchema = new mongoose.Schema(
@@ -39,6 +40,10 @@ const messageSchema = new mongoose.Schema(
     content: String,
     voice: String,
     status: String,
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );
@@ -132,19 +137,34 @@ messageSchema.statics.searchAnnouncements = async function searchAnnouncements(
 
 messageSchema.statics.updateMessages = async function updateMessages(
   oldUsername: string,
-  newUsername: string
+  newUsername: string,
+  isActive: any,
 ) {
   try {
+
+    let senderUpdate = undefined;
+    let receiverUpdate = undefined;
+
+    if (isActive === false) {
+       senderUpdate = { $set: { senderName: newUsername, active: false } };
+       receiverUpdate = { $set: { receiverName: newUsername, active: false } };
+    } else {
+       senderUpdate = { $set: { senderName: newUsername} };
+       receiverUpdate = { $set: { receiverName: newUsername } };
+    }
+
     await Message.update(
       { senderName: oldUsername },
-      { $set: { senderName: newUsername } },
+      senderUpdate,
       { multi: true }
     );
     await Message.update(
       { receiverName: oldUsername },
-      { $set: { receiverName: newUsername } },
+      receiverUpdate,
       { multi: true }
     );
+
+
   } catch (err) {
     throw err;
   }
