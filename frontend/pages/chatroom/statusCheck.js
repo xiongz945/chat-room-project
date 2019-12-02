@@ -8,9 +8,13 @@ import router from '../../router.js';
 const socket = io(API_ROOT);
 
 // Bind event listener
-document
-  .querySelector('#status-check-button')
-  .addEventListener('click', () => confirmBroadcast());
+if (userStore.userGetters.user().role === 'administrator') {
+  document
+    .querySelector('#status-check-button')
+    .addEventListener('click', () => confirmBroadcast());
+} else {
+  document.querySelector('#status-check-button').hidden = true;
+}
 
 document
   .querySelector('#status-check-confirm-button')

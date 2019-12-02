@@ -13,6 +13,7 @@ router.get(
 router.post(
   '/announcements',
   passportConfig.isAuthenticated,
+  passportConfig.isLegalAnnouncement,
   messageController.postAnnouncement
 );
 
@@ -27,6 +28,7 @@ router.get(
 router.post(
   '/:receiverName',
   passportConfig.isAuthenticated,
+
   messageController.postMessage
 );
 router.get(

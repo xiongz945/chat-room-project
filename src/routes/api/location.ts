@@ -8,6 +8,7 @@ const router = express.Router();
 router.patch(
   '/:id/status',
   passportConfig.isAuthenticated,
+  passportConfig.isLegalAnnouncement,
   statusmapController.updateStatus
 );
 

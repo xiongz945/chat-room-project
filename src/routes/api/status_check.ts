@@ -14,6 +14,7 @@ router.get(
 router.post(
   '/',
   passportConfig.isAuthenticated,
+  passportConfig.isLegalStatusCheck,
   statusCheckController.postStatusCheck
 );
 
