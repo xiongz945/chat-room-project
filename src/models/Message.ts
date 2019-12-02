@@ -152,8 +152,8 @@ messageSchema.statics.updateMessages = async function updateMessages(
       senderUpdate = { $set: { senderName: newUsername, active: false } };
       receiverUpdate = { $set: { receiverName: newUsername, active: false } };
     } else {
-       senderUpdate = { $set: { senderName: newUsername, active: true } };
-       receiverUpdate = { $set: { receiverName: newUsername, active: true } };
+      senderUpdate = { $set: { senderName: newUsername, active: true } };
+      receiverUpdate = { $set: { receiverName: newUsername, active: true } };
     }
 
     await Message.update({ senderName: oldUsername }, senderUpdate, {
