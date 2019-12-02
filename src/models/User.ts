@@ -31,7 +31,6 @@ export interface IUserModel extends Model<IUserDocument> {
   getAllUsers(projection?: string): IUserDocument[];
   searchUsersByName(keyword: string, projection?: string): IUserDocument[];
   searchUsersByStatus(keyword: string, projection?: string): IUserDocument[];
-  /*
   updateUserInfo(
     oldUserName: string,
     newUserName: string,
@@ -39,7 +38,6 @@ export interface IUserModel extends Model<IUserDocument> {
     active: boolean,
     role: string
   ): void;
-  */
 }
 
 const userSchema = new mongoose.Schema(
@@ -188,7 +186,6 @@ userSchema.methods.setStatus = async function setStatus(status: string) {
   }
 };
 
-/*
 userSchema.statics.updateUserInfo = async function updateUserInfo(
   oldUserName: string,
   newUserName: string,
@@ -209,7 +206,6 @@ userSchema.statics.updateUserInfo = async function updateUserInfo(
     throw err;
   }
 };
-*/
 
 export const User: IUserModel = mongoose.model<IUserDocument, IUserModel>(
   'User',
