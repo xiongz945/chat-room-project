@@ -4,13 +4,13 @@ import messageApis from '../../apis/message-apis.js';
 import userApis from '../../apis/user-apis.js';
 import statusCheckApis from '../../apis/status-check-apis.js';
 import { statusMap } from '../chatroom/config.js';
+import chatroomApis from '../../../apis/chatroom-apis.js';
 
 import messageStore from '../../store/message.js';
 import clockStore from '../../store/clock.js';
 import userStore from '../../store/user.js';
 
 import router from '../../router.js';
-import { getUserStatus } from '../statusMap/statusmap.js';
 import { shareStatusClickListener } from '../statusMap/listeners/click-listeners.js';
 
 const emojiMap = {
@@ -137,3 +137,24 @@ function showDetailModal(data) {
 
 // Fetch status data
 fetchStatusCheckData();
+
+async function getUserStatus() {
+  try {
+    const response = await chatroomApis.getPublicUsers();
+    let users = response['data']['users'];
+
+    users.forEach((user) => {
+      // display current user's status on the left side menu
+      // store current status in local storage
+      if (user['username'] === userStore.userGetters.user().username) {
+        const status = user['status'];
+        userStore.userActions.updateStatus(status ? status : 'undefined');
+        document.querySelector('#statusSelect').value = status
+          ? Object.keys(statusMap).find((key) => statusMap[key] === status)
+          : 'Choose Your Status';
+      }
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}

@@ -80,7 +80,7 @@ export const postMessage = async (
           (e) => {}
         );
         // const text = await speeh2text(path.join(form.uploadDir, filename));
-        content = 'Unable to connect to Google Speech2Text Service';
+        content = '';
       }
       const message = new Message({
         senderName: fields.senderName,
